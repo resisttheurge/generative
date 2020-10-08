@@ -24,7 +24,8 @@ const StyledAnchor = styled('a')(
   {
     '&:hover': {
       textDecoration: 'underline',
-      cursor: "pointer"
+      cursor: 'pointer',
+      userSelect: 'none'
     }
   },
   compose(
