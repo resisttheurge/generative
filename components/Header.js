@@ -23,7 +23,8 @@ const HeaderContainer = styled('div')(
 const StyledAnchor = styled('a')(
   {
     '&:hover': {
-      textDecoration: 'underline'
+      textDecoration: 'underline',
+      cursor: "pointer"
     }
   },
   compose(
