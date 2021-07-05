@@ -45,11 +45,11 @@ const StyledAnchor = styled('a')(
 )
 
 const navItems = [
-  ['/', 'Home'],
-  ['/about', 'About'],
-  ['/scratch', 'WIP'],
-  ['/glsl', 'Shaders'],
-  ['/p5', 'Processing'],
+  // ['/', 'Home'],
+  // ['/about', 'About'],
+  // ['/scratch', 'WIP'],
+  // ['/glsl', 'Shaders'],
+  // ['/p5', 'Processing'],
   ['/poisson-disk-sampling', 'Poisson Disk Sampling'],
   ['/palettes', 'Palettes'],
   ['/dot-noise', 'Dot Noise'],
