@@ -1,3 +1,10 @@
 .next/
 node_modules/
 .DS_STORE
+.yarn/*
+!.yarn/cache
+!.yarn/patches
+!.yarn/plugins
+!.yarn/releases
+!.yarn/sdks
+!.yarn/versions
