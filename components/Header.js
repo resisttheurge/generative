@@ -60,7 +60,7 @@ const navItems = [
 
 const makeLinks = pathname =>
   navItems.map(([href, title]) => (
-    <Link key={href} href={href}>
+    <Link key={href} href={href} passHref>
       <StyledAnchor
         fontFamily='normal'
         mr={['s', 'm', 'l']}
