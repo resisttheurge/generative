@@ -48,7 +48,7 @@ const navItems = [
   // ['/', 'Home'],
   // ['/about', 'About'],
   // ['/scratch', 'WIP'],
-  ['/glsl', 'Shaders'],
+  // ['/glsl', 'Shaders'],
   // ['/p5', 'Processing'],
   ['/grids', 'Grids'],
   ['/poisson-disk-sampling', 'Poisson Disk Sampling'],

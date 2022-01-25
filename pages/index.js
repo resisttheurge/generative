@@ -1,7 +1,8 @@
 import Layout from '../components/Layout'
+import Grids from './grids'
 
 const Index = () => (
-  <Layout />
+  <Grids />
 )
 
 export default Index
