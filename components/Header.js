@@ -22,6 +22,7 @@ const HeaderContainer = styled('div')(
 
 const StyledAnchor = styled('a')(
   {
+    textDecoration: 'none',
     '&:hover': {
       textDecoration: 'underline',
       cursor: 'pointer',
