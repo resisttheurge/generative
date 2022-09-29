@@ -1,9 +1,17 @@
 import usePaper from '../lib/usePaper'
-import StyledCanvas from './StyledCanvas'
 
-const PaperCanvas = ({ paperFn }) => {
+export const PaperCanvas = ({ paperFn, ...props }) => {
   const { canvasRef } = usePaper(paperFn, [])
-  return <StyledCanvas ref={canvasRef} width='100%' height='100%' />
+  return (
+    <canvas
+      {...props}
+      ref={canvasRef}
+      sx={{
+        width: '100%',
+        height: '100%'
+      }}
+    />
+  )
 }
 
 export default PaperCanvas

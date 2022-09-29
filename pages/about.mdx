@@ -1,0 +1,96 @@
+import { Flex, Button } from 'theme-ui'
+import * as R from 'ramda'
+import Layout from '../components/Layout'
+import strategies from '../lib/strategies'
+import * as g from '../lib/utilities/generators'
+
+export const meta = {
+  title: 'About'
+}
+
+An experiment in space and time.
+
+## Grids
+
+A long-running and poorly-defined project.
+
+### Grids
+
+I've actually re-designed the backend architecture to this one quite a few times over the years, it's interesting! Let me tell you about it.
+<Flex
+  sx={{
+    justifyContent: 'center'
+  }}
+>
+  <Button variant='primary'>Listen intently</Button>
+  <Button variant='secondary'>Listen, but don't really pay attention</Button>
+  <Button variant='muted'>Walk away</Button>
+</Flex>
+
+
+#### Grids
+##### Grids
+###### Grids
+An important journey.
+> Why not me?
+- Why not you?
+1. Why not all of us?
+
+What I would have said was `() => 'I've been ready'`, but I didn't think it through.
+
+---
+
+Let's test out some generators!
+
+export const rng = g.rng(g.seed('Oh no!'))
+
+<ul>
+  <li>
+    {
+      g.apply(
+        rng,
+        g.nat(2)
+      )
+    }
+  </li>
+    <li>
+    {
+      g.apply(
+        rng,
+        g.nat(2)
+      )
+    }
+  </li>
+    <li>
+    {
+      g.apply(
+        rng,
+        g.nat(2)
+      )
+    }
+  </li>
+    <li>
+    {
+      g.apply(
+        rng,
+        g.nat(2)
+      )
+    }
+  </li>
+    <li>
+    {
+      g.apply(
+        rng,
+        g.nat(2)
+      )
+    }
+  </li>
+</ul>
+
+_let me in let me in_
+
+**save me save me Save ME**
+
+_**yiiiiiiikes**_
+
+export default ({ children }) => <Layout meta={meta}>{children}</Layout>

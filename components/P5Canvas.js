@@ -1,9 +1,18 @@
 import useP5 from '../lib/useP5'
-import { StyledDiv } from './StyledCanvas'
+import { Box } from 'theme-ui'
 
-const P5Canvas = ({ p5Fn }) => {
+const P5Canvas = ({ p5Fn, ...props }) => {
   const { canvasRef } = useP5(p5Fn, [])
-  return <StyledDiv ref={canvasRef} width='100%' height='100%' />
+  return (
+    <Box
+      {...props}
+      ref={canvasRef}
+      sx={{
+        width: '100%',
+        height: '100%'
+      }}
+    />
+  )
 }
 
 export default P5Canvas

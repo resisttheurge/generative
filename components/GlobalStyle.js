@@ -1,15 +1,16 @@
-import { createGlobalStyle } from 'styled-components'
+import { Global } from '@emotion/react'
 
-import 'normalize.css'
-import 'material-icons/iconfont/material-icons.css'
-
-const GlobalStyle = createGlobalStyle`
-html {
-  box-sizing: border-box;
-}
-*, *:before, *:after {
-  box-sizing: inherit;
-}
-`
+const GlobalStyle = (props) => (
+  <Global
+    styles={(theme) => ({
+      html: {
+        boxSizing: 'border-box'
+      },
+      '*, *:before, *:after': {
+        boxSizing: 'inherit'
+      }
+    })}
+  />
+)
 
 export default GlobalStyle

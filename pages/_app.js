@@ -1,23 +1,26 @@
 import App from 'next/app'
 import React from 'react'
-import { ThemeProvider } from 'styled-components'
-import 'normalize.css'
-import 'material-icons/iconfont/material-icons.css'
+import { ThemeProvider } from 'theme-ui'
+import Prism from '@theme-ui/prism'
 
 import theme from '../lib/theme'
 
 import GlobalStyle from '../components/GlobalStyle'
+import Layout from '../components/Layout'
 
 export default class MyApp extends App {
   render () {
     const { Component, pageProps } = this.props
+    const components = {
+      pre: ({ children }) => <code>{children}</code>,
+      code: Prism
+    }
+    console.dir(theme)
     return (
-      <>
-        <ThemeProvider theme={theme}>
-          <GlobalStyle />
-          <Component {...pageProps} />
-        </ThemeProvider>
-      </>
+      <ThemeProvider theme={theme} components={components}>
+        <GlobalStyle />
+        <Component {...pageProps} />
+      </ThemeProvider>
     )
   }
 }

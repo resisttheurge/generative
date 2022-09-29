@@ -1,9 +1,18 @@
-import StyledCanvas from './StyledCanvas'
 import useWebGL from '../lib/useWebGL'
 
-const WebGLCanvas = ({ webglFn }) => {
+export const WebGLCanvas = ({ webglFn, ...props }) => {
   const { canvasRef } = useWebGL(webglFn, [])
-  return <StyledCanvas ref={canvasRef} width='100%' height='100%' />
+  return (
+    <canvas
+      {...props}
+      ref={canvasRef}
+      sx={{
+        flex: 1,
+        width: '100%',
+        height: '100%'
+      }}
+    />
+  )
 }
 
 export default WebGLCanvas

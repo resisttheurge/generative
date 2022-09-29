@@ -1,5 +1,4 @@
-import Layout from '../components/Layout'
-import Grids from './grids'
+import Grids from './art/grids'
 
 const Index = () => (
   <Grids />
