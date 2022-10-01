@@ -3,10 +3,9 @@ import React from 'react'
 import { ThemeProvider } from 'theme-ui'
 import Prism from '@theme-ui/prism'
 
-import theme from '../lib/theme'
+import * as theme from '../lib/theme'
 
 import GlobalStyle from '../components/GlobalStyle'
-import Layout from '../components/Layout'
 
 export default class MyApp extends App {
   render () {
