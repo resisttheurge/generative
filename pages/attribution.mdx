@@ -1,4 +1,12 @@
-As any software developers after the first, 
+import { IconButton, Layout } from '../components'
+
+export const meta = {
+  title: 'Attribution'
+}
+
+## I Owe a Deep Debt
+
+As any software developer after the first, 
 I am humbly dependent on many wonderful people and projects. 
 
 This attribution cannot hope to be exhaustive, but you can clone the [repository](https://github.com/resisttheurge/generative) 
@@ -10,50 +18,69 @@ and run `yarn info --name-only -AR` if you want to browse the full bulk of my de
 
 All of the icons used in the UI of this site were made by [Nikita Ivanov](https://thenounproject.com/nickivanov/) from the [Noun Project](https://thenounproject.com/). 
 
-#### UI Actions
+### UI Actions
 
+<IconButton icon='color-mode'/> 
 Color Mode by Nikita Ivanov from <a href="https://thenounproject.com/browse/icons/term/color-mode/" target="_blank" title="Color Mode Icons">Noun Project</a>
 
+<IconButton icon='more'/> 
 More by Nikita Ivanov from <a href="https://thenounproject.com/browse/icons/term/more/" target="_blank" title="More Icons">Noun Project</a>
 
+<IconButton icon='menu'/> 
 Menu by Nikita Ivanov from <a href="https://thenounproject.com/browse/icons/term/menu/" target="_blank" title="Menu Icons">Noun Project</a>
 
+<IconButton icon='close'/> 
 Close by Nikita Ivanov from <a href="https://thenounproject.com/browse/icons/term/close/" target="_blank" title="Close Icons">Noun Project</a>
 
+<IconButton icon='gear'/> 
 Gear by Nikita Ivanov from <a href="https://thenounproject.com/browse/icons/term/gear/" target="_blank" title="Gear Icons">Noun Project</a>
 
-#### Bookmarks
+### Bookmarks
 
+<IconButton icon='bookmark'/> 
 Bookmark (Empty) by Nikita Ivanov from <a href="https://thenounproject.com/browse/icons/term/bookmark/" target="_blank" title="Bookmark Icons">Noun Project</a>
 
+<IconButton icon='bookmark-filled'/> 
 Bookmark (Filled) by Nikita Ivanov from <a href="https://thenounproject.com/browse/icons/term/bookmark/" target="_blank" title="Bookmark Icons">Noun Project</a>
 
-#### Visibility
+### Visibility
 
+<IconButton icon='eye-closed'/> 
 Eye Closed by Nikita Ivanov from <a href="https://thenounproject.com/browse/icons/term/eye-closed/" target="_blank" title="Eye Closed Icons">Noun Project</a>
 
+<IconButton icon='eye'/> 
 Eye by Nikita Ivanov from <a href="https://thenounproject.com/browse/icons/term/eye/" target="_blank" title="Eye Icons">Noun Project</a>
 
-#### Editor
+### Editor
 
+<IconButton icon='edit'/> 
 Edit by Nikita Ivanov from <a href="https://thenounproject.com/browse/icons/term/edit/" target="_blank" title="Edit Icons">Noun Project</a>
 
+<IconButton icon='delete'/> 
 Delete by Nikita Ivanov from <a href="https://thenounproject.com/browse/icons/term/delete/" target="_blank" title="Delete Icons">Noun Project</a>
 
+<IconButton icon='check'/> 
 Check by Nikita Ivanov from <a href="https://thenounproject.com/browse/icons/term/check/" target="_blank" title="Check Icons">Noun Project</a>
 
 ### Form Elements
 
 #### Checkboxes
 
+<IconButton icon='checkbox'/> 
 Checkbox by Nikita Ivanov from <a href="https://thenounproject.com/browse/icons/term/checkbox/" target="_blank" title="Checkbox Icons">Noun Project</a>
 
+<IconButton icon='indeterminate'/> 
 Indeterminate by Nikita Ivanov from <a href="https://thenounproject.com/browse/icons/term/indeterminate/" target="_blank" title="Indeterminate Icons">Noun Project</a>
 
+<IconButton icon='checked'/> 
 Check by Nikita Ivanov from <a href="https://thenounproject.com/browse/icons/term/check/" target="_blank" title="Check Icons">Noun Project</a>
 
 #### Radio Buttons
 
+<IconButton icon='radio-button-off'/> 
 Radio Button Off by Nikita Ivanov from <a href="https://thenounproject.com/browse/icons/term/radio-button-off/" target="_blank" title="Radio Button Off Icons">Noun Project</a>
 
+<IconButton icon='radio-button-on'/> 
 Radio Button On by Nikita Ivanov from <a href="https://thenounproject.com/browse/icons/term/radio-button-on/" target="_blank" title="Radio Button On Icons">Noun Project</a>
+
+export default ({ children }) => <Layout meta={meta}>{children}</Layout>

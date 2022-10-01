@@ -5,7 +5,7 @@ import * as R from 'ramda'
 import { saveAs } from 'file-saver'
 import PaperCanvas from '../../components/PaperCanvas'
 import * as g from '../../lib/generator'
-import Layout from '../../components/Layout'
+import { Layout } from '../../components'
 import { useState } from 'react'
 import { Box, Button, Field, Slider } from 'theme-ui'
 
