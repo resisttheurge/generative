@@ -3,7 +3,6 @@ import { makeNoise2D } from 'open-simplex-noise'
 import * as tome from 'chromotome'
 import chroma from 'chroma-js'
 import PaperCanvas from '../../components/PaperCanvas'
-import { seededPoissonGenerator } from '../../lib/poisson'
 import * as g from '../../lib/generators'
 
 const PDS = () => {

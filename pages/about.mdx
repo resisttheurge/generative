@@ -2,7 +2,7 @@ import { Flex, Button } from 'theme-ui'
 import * as R from 'ramda'
 import Layout from '../components/Layout'
 import strategies from '../lib/strategies'
-import * as g from '../lib/utilities/generators'
+import * as g from '../lib/generator'
 
 export const meta = {
   title: 'About'
@@ -42,49 +42,10 @@ What I would have said was `() => 'I've been ready'`, but I didn't think it thro
 
 Let's test out some generators!
 
-export const rng = g.rng(g.seed('Oh no!'))
+export const seed = g.seed('Oh no!')
 
 <ul>
-  <li>
-    {
-      g.apply(
-        rng,
-        g.nat(2)
-      )
-    }
-  </li>
-    <li>
-    {
-      g.apply(
-        rng,
-        g.nat(2)
-      )
-    }
-  </li>
-    <li>
-    {
-      g.apply(
-        rng,
-        g.nat(2)
-      )
-    }
-  </li>
-    <li>
-    {
-      g.apply(
-        rng,
-        g.nat(2)
-      )
-    }
-  </li>
-    <li>
-    {
-      g.apply(
-        rng,
-        g.nat(2)
-      )
-    }
-  </li>
+  
 </ul>
 
 _let me in let me in_

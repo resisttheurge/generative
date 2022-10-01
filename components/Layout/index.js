@@ -15,7 +15,7 @@ const Layout = ({ meta, ...props }) => (
         gridGap: 0,
         gridTemplateRows: ['auto', 'auto 1fr'],
         gridTemplateColumns: ['auto', '1fr auto', '1fr auto 1fr'],
-        overflow: 'hidden',
+        overflow: 'clip',
         width: '100vw',
         height: '100vh'
       }}

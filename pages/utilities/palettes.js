@@ -5,7 +5,7 @@ import chroma from 'chroma-js'
 import { useState } from 'react'
 
 import { Select } from 'theme-ui'
-import PaperCanvas from '../components/PaperCanvas'
+import PaperCanvas from '../../components/PaperCanvas'
 
 const paletteNames = tome.getNames()
 
