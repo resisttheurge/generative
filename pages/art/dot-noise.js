@@ -2,6 +2,7 @@ import chroma from 'chroma-js'
 import * as tome from 'chromotome'
 import { makeNoise2D } from 'open-simplex-noise'
 import paper, { Point, Shape } from 'paper'
+import { Layout } from '../../components'
 import PaperCanvas from '../../components/PaperCanvas'
 
 const DotNoise = () => {
@@ -22,29 +23,31 @@ const DotNoise = () => {
   const noiseScale = 0.01
 
   return (
-    <PaperCanvas
-      paperFn={() => {
-        const bounds = paper.view.bounds
-        const { width, height } = bounds
-        const q = 0.1 / noiseScale
-        const bg = new Shape.Rectangle(bounds)
-        bg.fillColor = background
+    <Layout meta={{ title: 'Dot Noise' }}>
+      <PaperCanvas
+        paperFn={() => {
+          const bounds = paper.view.bounds
+          const { width, height } = bounds
+          const q = 0.1 / noiseScale
+          const bg = new Shape.Rectangle(bounds)
+          bg.fillColor = background
 
-        for (let x = q / 2; x < width + q; x += q) {
-          for (let y = q / 2; y < height + q; y += q) {
-            const pos = new Point(x, y)
-            const n = noise(x * noiseScale, y * noiseScale)
-            const nn = Math.abs(n)
-            const square = new Shape.Circle(pos, (nn * q + q / 2) / Math.PI)
-            square.fillColor = scale(n).name()
+          for (let x = q / 2; x < width + q; x += q) {
+            for (let y = q / 2; y < height + q; y += q) {
+              const pos = new Point(x, y)
+              const n = noise(x * noiseScale, y * noiseScale)
+              const nn = Math.abs(n)
+              const square = new Shape.Circle(pos, (nn * q + q / 2) / Math.PI)
+              square.fillColor = scale(n).name()
+            }
           }
-        }
 
-        paper.view.onResize = event => {
-          console.log(event)
-        }
-      }}
-    />
+          paper.view.onResize = event => {
+            console.log(event)
+          }
+        }}
+      />
+    </Layout>
   )
 }
 

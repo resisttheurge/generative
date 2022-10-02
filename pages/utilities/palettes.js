@@ -6,6 +6,7 @@ import { useState } from 'react'
 
 import { Select } from 'theme-ui'
 import PaperCanvas from '../../components/PaperCanvas'
+import { Layout } from '../../components'
 
 const paletteNames = tome.getNames()
 
@@ -14,7 +15,7 @@ const Palettes = () => {
     paletteNames[Math.floor(Math.random() * paletteNames.length)]
   )
   return (
-    <>
+    <Layout meta={{ title: 'Palettes' }}>
       <Select
         value={selectedPalette}
         onChange={event => setSelectedPalette(event.target.value)}
@@ -89,7 +90,7 @@ const Palettes = () => {
           colors.map(makeRectangles(colors, y++))
         }}
       />
-    </>
+    </Layout>
   )
 }
 

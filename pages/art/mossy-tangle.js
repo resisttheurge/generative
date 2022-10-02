@@ -3,6 +3,7 @@ import * as tome from 'chromotome'
 import * as r from 'ramda'
 import { makeNoise2D } from 'open-simplex-noise'
 import paper, { Point, Path } from 'paper'
+import { Layout } from '../../components'
 
 const calculateNoiseFlow = (palette, scale, noiseScale) => {
   const noise = makeNoise2D(666)
@@ -40,18 +41,19 @@ const calculateNoiseFlow = (palette, scale, noiseScale) => {
 }
 
 const MossyTangle = () => (
-  <PaperCanvas
-    paperFn={() => {
-      const { width, height } = paper.view.size
-      const scale = 40
-      const noiseScale = 0.005
-      const xs = r.map(x => x * scale, r.range(0, width / scale + 1))
-      const ys = r.map(y => y * scale, r.range(0, height / scale + 1))
-      const points = r.chain(x => r.map(y => new Point(x, y), ys), xs)
-      const palette = tome.get('cc242')
-      const background = new Path.Rectangle(paper.view.bounds)
-      background.fillColor = palette.background || 0xffffffff
-      points.forEach(calculateNoiseFlow(palette.colors, scale, noiseScale))
+  <Layout meta={{ title: 'Mossy Tangle' }}>
+    <PaperCanvas
+      paperFn={() => {
+        const { width, height } = paper.view.size
+        const scale = 40
+        const noiseScale = 0.005
+        const xs = r.map(x => x * scale, r.range(0, width / scale + 1))
+        const ys = r.map(y => y * scale, r.range(0, height / scale + 1))
+        const points = r.chain(x => r.map(y => new Point(x, y), ys), xs)
+        const palette = tome.get('cc242')
+        const background = new Path.Rectangle(paper.view.bounds)
+        background.fillColor = palette.background || 0xffffffff
+        points.forEach(calculateNoiseFlow(palette.colors, scale, noiseScale))
       // const vectors = points.map(point => {
       //   const nextPoint = point.clone()
       //   nextPoint.x = nextPoint.x + scale
@@ -66,8 +68,9 @@ const MossyTangle = () => (
       //   path.add(point.add(vector))
       //   return path
       // })
-    }}
-  />
+      }}
+    />
+  </Layout>
 )
 
 export default MossyTangle
