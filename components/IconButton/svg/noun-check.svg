@@ -1,4 +1,39 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<svg width="700pt" height="700pt" version="1.1" viewBox="0 0 700 700" xmlns="http://www.w3.org/2000/svg">
- <path d="m589.4 156.47-253.4 277.53-196-224 0.14453-0.20312c18.875-26.32 56.078-31.184 81.09-10.605l114.77 94.809 245-217c26.059 18.613 29.992 55.82 8.3984 79.469z"/>
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg
+   width="700pt"
+   height="700pt"
+   version="1.1"
+   viewBox="0 0 700 700"
+   id="svg4"
+   sodipodi:docname="noun-check.svg"
+   inkscape:version="1.2.1 (9c6d41e4, 2022-07-14)"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg">
+  <defs
+     id="defs8" />
+  <sodipodi:namedview
+     id="namedview6"
+     pagecolor="#ffffff"
+     bordercolor="#000000"
+     borderopacity="0.25"
+     inkscape:showpageshadow="2"
+     inkscape:pageopacity="0.0"
+     inkscape:pagecheckerboard="0"
+     inkscape:deskcolor="#d1d1d1"
+     inkscape:document-units="pt"
+     showgrid="false"
+     inkscape:zoom="0.25285714"
+     inkscape:cx="464.68927"
+     inkscape:cy="466.66667"
+     inkscape:window-width="1309"
+     inkscape:window-height="456"
+     inkscape:window-x="0"
+     inkscape:window-y="0"
+     inkscape:window-maximized="0"
+     inkscape:current-layer="svg4" />
+  <path
+     d="m 567.71415,250.96956 -253.4,277.53 -196,-224 0.14453,-0.20312 c 18.875,-26.32 56.078,-31.184 81.09,-10.605 l 114.77,94.809 245,-217 c 26.059,18.613 29.992,55.82 8.3984,79.469 z"
+     id="path2" />
 </svg>

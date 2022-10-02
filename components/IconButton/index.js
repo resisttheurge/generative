@@ -78,13 +78,17 @@ export const IconButton = ({ icon, ...props }) => {
     <OgIconButton
       {...props}
       sx={{
-        m: 2
+        p: 1,
+        m: 2,
+        justifyContent: 'center',
+        alignItems: 'center'
       }}
     >
       <Icon
         sx={{
-          width: '32px',
-          height: '32px'
+          fill: 'text',
+          width: '24px',
+          height: '24px'
         }}
       />
     </OgIconButton>

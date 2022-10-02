@@ -1,6 +1,6 @@
 import Head from 'next/head'
 import Link from 'next/link'
-import { Box, Heading, NavLink, Text, Themed } from 'theme-ui'
+import { Box, Heading, NavLink, Text, Themed, useColorMode } from 'theme-ui'
 import { useState } from 'react'
 
 import links from './links'
@@ -34,7 +34,7 @@ const SideNav = ({ open, links, ...props }) => {
         position: 'relative', /* or choose `absolute` depending on desired behavior */
         top: 0,
         bottom: 0,
-        width: '66vw',
+        maxWidth: '300px',
         left: '-100vw',
         transition: 'transform .3s ease-in-out',
         transform: open ? 'translateX(100vw)' : 'none',
@@ -48,6 +48,7 @@ const SideNav = ({ open, links, ...props }) => {
 
 export const Layout = ({ meta, ...props }) => {
   const [navOpen, setNavOpen] = useState(false)
+  const [colorMode, setColorMode] = useColorMode()
   return (
     <>
       <Head>
@@ -80,13 +81,15 @@ export const Layout = ({ meta, ...props }) => {
           variant='display'
           sx={{
             gridArea: 'title',
-            justifySelf: 'center'
+            justifySelf: 'center',
+            alignSelf: 'center'
           }}
         >
           {meta.title}
         </Heading>
         <IconButton
           icon='color-mode'
+          onClick={() => setColorMode(colorMode === 'default' ? 'dark' : 'default')}
           sx={{
             gridArea: 'rightMenu'
           }}

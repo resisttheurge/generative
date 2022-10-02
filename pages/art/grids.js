@@ -1,9 +1,7 @@
 import PaperCanvas from '../../components/PaperCanvas'
 import * as tome from 'chromotome'
-import { makeNoise2D } from 'open-simplex-noise'
 import paper, { Point, Path } from 'paper'
-import poissonGenerator from '../../lib/poisson'
-import { genInRange, chooseOne, genIntInRange, genBool } from '../../lib/random'
+import { blueNoiseLib, blueNoise, number, constantFrom, int, bool, simplexNoise2d } from '../../lib/generator'
 
 class Grid {
   constructor ({ width, height, noiseSeed, resolution, noiseScale, thetaFn }) {

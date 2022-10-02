@@ -5,11 +5,13 @@ import * as R from 'ramda'
 import { saveAs } from 'file-saver'
 import PaperCanvas from '../../components/PaperCanvas'
 import * as g from '../../lib/generator'
-import { Layout } from '../../components'
+import { Layout, IconButton } from '../../components'
 import { useState } from 'react'
 import { Box, Button, Field, Slider } from 'theme-ui'
 
 const PDS = () => {
+  const [configOpen, setConfigOpen] = useState(false)
+
   const [seedStr, setSeedStr] = useState('Hello world!')
   const [multiplier, setMultiplier] = useState(1)
   const [buffer, setBuffer] = useState(150)
@@ -90,14 +92,29 @@ const PDS = () => {
             }
           }}
         />
-        <Box as='form' sx={{ variant: 'forms.form', zIndex: 10, top: 0, right: 0, position: 'absolute' }} onSubmit={event => event.preventDefault()}>
-          <Field label='Seed' name='seed' value={seedStr} onChange={R.compose(setSeedStr, R.prop('value'), R.prop('target'))} />
-          <Field label={`Multiplier: ${multiplier}`} as={Slider} name='multiplier' min={0.05} max={1.5} step={0.05} defaultValue={multiplier} onChange={R.compose(setMultiplier, R.prop('value'), R.prop('target'))} />
-          <Field label={`Buffer: ${buffer}`} as={Slider} name='buffer' min={50} max={250} defaultValue={buffer} onChange={R.compose(setBuffer, Number.parseInt, R.prop('value'), R.prop('target'))} />
-          <Field label={`Samples: ${samples}`} as={Slider} name='samples' min={15} max={45} defaultValue={samples} onChange={R.compose(setSamples, Number.parseInt, R.prop('value'), R.prop('target'))} />
-          <Field label={`Noise Zoom: ${noiseZoom}`} as={Slider} name='noiseZoom' min={1} max={1200} defaultValue={noiseZoom} onChange={R.compose(setNoiseZoom, Number.parseInt, R.prop('value'), R.prop('target'))} />
+        <Box
+          as='form'
+          sx={{
+            variant: 'forms.form',
+            top: 0,
+            right: 0,
+            position: 'absolute',
+            opacity: configOpen ? 0.9 : 0,
+            transition: 'opacity .25s ease-in-out'
+
+          }}
+          onSubmit={event => event.preventDefault()}
+        >
+          <Field enabled={configOpen} label='Seed' name='seed' value={seedStr} onChange={R.compose(setSeedStr, R.prop('value'), R.prop('target'))} />
+          <Field enabled={configOpen} label={`Multiplier: ${multiplier}`} as={Slider} name='multiplier' min={0.05} max={1.5} step={0.05} defaultValue={multiplier} onChange={R.compose(setMultiplier, R.prop('value'), R.prop('target'))} />
+          <Field enabled={configOpen} label={`Buffer: ${buffer}`} as={Slider} name='buffer' min={50} max={250} defaultValue={buffer} onChange={R.compose(setBuffer, Number.parseInt, R.prop('value'), R.prop('target'))} />
+          <Field enabled={configOpen} label={`Samples: ${samples}`} as={Slider} name='samples' min={15} max={45} defaultValue={samples} onChange={R.compose(setSamples, Number.parseInt, R.prop('value'), R.prop('target'))} />
+          <Field enabled={configOpen} label={`Noise Zoom: ${noiseZoom}`} as={Slider} name='noiseZoom' min={1} max={1200} defaultValue={noiseZoom} onChange={R.compose(setNoiseZoom, Number.parseInt, R.prop('value'), R.prop('target'))} />
           <Button
-            variant='primary'
+            enabled={configOpen} variant='primary'
+            sx={{
+              justifySelf: 'stretch'
+            }}
             onClick={() => {
               const data = new Blob([paper.project.exportSVG({ asString: true })], {
                 type: 'image/svg+xml;charset=utf-8'
@@ -108,6 +125,16 @@ const PDS = () => {
             Save SVG
           </Button>
         </Box>
+        <IconButton
+          icon='gear'
+          sx={{
+            position: 'absolute',
+            top: 0,
+            right: 0,
+            opacity: 1
+          }}
+          onClick={() => setConfigOpen(!configOpen)}
+        />
       </Box>
     </Layout>
   )
