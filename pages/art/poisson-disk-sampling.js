@@ -1,3 +1,5 @@
+/* global Blob */
+
 import paper, { Point, Rectangle, Shape, Size } from 'paper'
 import * as tome from 'chromotome'
 import chroma from 'chroma-js'
