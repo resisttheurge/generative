@@ -13,7 +13,7 @@ const NavLinks = ({ title, links, ...props }) => (
       {Object.entries(links)
         .map(
           ([key, value]) => (
-            <Themed.li key={value}>
+            <Themed.li key={typeof value === 'string' ? value : key}>
               {
                 typeof value === 'string'
                   ? <Link href={value} passHref><NavLink>{key}</NavLink></Link>

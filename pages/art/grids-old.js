@@ -3,13 +3,8 @@ import * as tome from 'chromotome'
 import paper, { Point, Path } from 'paper'
 import { blueNoiseLib, blueNoise, number, constantFrom, int, bool, simplexNoise2d } from '../../lib/generator'
 
-const initGrid =
-  ({ width, height, resolution, noiseFn, thetaFn }) => {
-
-  }
-
 class Grid {
-  constructor ({ width, height, resolution, noiseFn, thetaFn }) {
+  constructor ({ width, height, noiseSeed, resolution, noiseScale, thetaFn }) {
     this.noise = makeNoise2D(noiseSeed)
     this.leftX = Math.floor(width * -0.5)
     this.rightX = Math.floor(width * 1.5)

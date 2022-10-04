@@ -1,6 +1,6 @@
 import App from 'next/app'
 import React from 'react'
-import { ThemeProvider } from 'theme-ui'
+import { Link, ThemeProvider } from 'theme-ui'
 import Prism from '@theme-ui/prism'
 
 import * as theme from '../lib/theme'
@@ -11,6 +11,7 @@ export default class MyApp extends App {
   render () {
     const { Component, pageProps } = this.props
     const components = {
+      a: Link,
       pre: ({ children }) => <code>{children}</code>,
       code: Prism
     }

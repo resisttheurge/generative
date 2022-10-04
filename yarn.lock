@@ -9415,6 +9415,18 @@ fsevents@^2.3.2:
   languageName: node
   linkType: hard
 
+"react-resize-detector@npm:^7.1.2":
+  version: 7.1.2
+  resolution: "react-resize-detector@npm:7.1.2"
+  dependencies:
+    lodash: ^4.17.21
+  peerDependencies:
+    react: ^16.0.0 || ^17.0.0 || ^18.0.0
+    react-dom: ^16.0.0 || ^17.0.0 || ^18.0.0
+  checksum: 0536ae6ec152a1eb220b3f89a67194a4c02359d6cc2d1e439064439431dfe20e1233791d91eb1574365991f187d02576a01fe5319373a990a0f0c0bb4b137d71
+  languageName: node
+  linkType: hard
+
 "react@npm:^17.0.0":
   version: 17.0.2
   resolution: "react@npm:17.0.2"
@@ -9840,6 +9852,7 @@ resolve@^2.0.0-next.3:
     ramda: ^0.26.1
     react: ^17.0.0
     react-dom: latest
+    react-resize-detector: ^7.1.2
     standard: ^16.0.3
     theme-ui: ^0.14.7
   languageName: unknown

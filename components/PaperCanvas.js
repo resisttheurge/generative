@@ -1,7 +1,7 @@
 import usePaper from '../lib/usePaper'
 
 export const PaperCanvas = ({ paperFn, ...props }) => {
-  const { canvasRef } = usePaper(paperFn, [])
+  const { canvasRef } = usePaper(paperFn)
   return (
     <canvas
       {...props}
