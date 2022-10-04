@@ -1,7 +1,9 @@
+/* global Blob */
+
 import chroma from 'chroma-js'
 import * as tome from 'chromotome'
 import paper, { Point, Shape } from 'paper'
-import { useMemo, useState } from 'react'
+import { useState } from 'react'
 import * as R from 'ramda'
 import { saveAs } from 'file-saver'
 import { Box, Button, Field, Select, Slider } from 'theme-ui'
@@ -12,8 +14,8 @@ import usePaper from '../../lib/usePaper'
 const DotNoise = () => {
   const [configOpen, setConfigOpen] = useState(false)
 
-  const [seedStr, setSeedStr] = useState('Hello world!')
-  const [noiseZoom, setNoiseZoom] = useState(1200)
+  const [seedStr, setSeedStr] = useState('Blips and blops!')
+  const [noiseZoom, setNoiseZoom] = useState(150)
 
   const [{ initPalette, noise }] = ofShape({
     initPalette: chooseFrom(tome.getAll()),
