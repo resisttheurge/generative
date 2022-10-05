@@ -73,7 +73,7 @@ const RainbowClouds = () => {
             }}
             onClick={() => {
               const data = new Blob([paper.project.exportSVG({ asString: true })], { type: 'image/svg+xml;charset=utf-8' })
-              saveAs(data, 'Poisson Disk Sampling')
+              saveAs(data, 'Rainbow Clouds')
             }}
           >
             Save SVG

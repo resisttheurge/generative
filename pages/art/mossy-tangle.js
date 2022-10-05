@@ -96,7 +96,7 @@ const MossyTangle = () => {
             }}
             onClick={() => {
               const data = new Blob([paper.project.exportSVG({ asString: true })], { type: 'image/svg+xml;charset=utf-8' })
-              saveAs(data, 'Poisson Disk Sampling')
+              saveAs(data, 'Mossy Tangle')
             }}
           >
             Save SVG
