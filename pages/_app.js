@@ -15,7 +15,6 @@ export default class MyApp extends App {
       pre: ({ children }) => <code>{children}</code>,
       code: Prism
     }
-    console.dir(theme)
     return (
       <ThemeProvider theme={theme} components={components}>
         <GlobalStyle />
