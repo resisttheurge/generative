@@ -6,23 +6,25 @@ import { useState } from 'react'
 import links from './links'
 import { IconButton } from '../IconButton'
 
+const { ul: Ul, li: Li } = Themed
+
 const NavLinks = ({ title, links, ...props }) => (
   <>
     {title ? <Text variant='bold'>{title}</Text> : undefined}
-    <Themed.ul>
+    <Ul>
       {Object.entries(links)
         .map(
           ([key, value]) => (
-            <Themed.li key={typeof value === 'string' ? value : key}>
+            <Li key={typeof value === 'string' ? value : key}>
               {
                 typeof value === 'string'
                   ? <Link href={value} passHref><NavLink>{key}</NavLink></Link>
                   : <NavLinks title={key} links={value} />
               }
-            </Themed.li>
+            </Li>
           )
         )}
-    </Themed.ul>
+    </Ul>
   </>
 )
 
@@ -94,17 +96,20 @@ export const Layout = ({ meta, ...props }) => {
             gridArea: 'rightMenu'
           }}
         />
-        <main
+        <Box
+          as='main'
           onClick={() => setNavOpen(false)}
           sx={{
+            position: 'relative',
             gridArea: 'content',
             justifySelf: 'stretch',
+            alignSelf: 'stretch',
             bg: 'background',
-            overflowY: 'scroll'
+            overflowY: 'auto'
           }}
         >
           {props.children}
-        </main>
+        </Box>
         <SideNav
           open={navOpen}
           links={links}
