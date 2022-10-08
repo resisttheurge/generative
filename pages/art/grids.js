@@ -1,90 +1,59 @@
-import PaperCanvas from '../../components/PaperCanvas'
+/* global Blob */
+
 import * as tome from 'chromotome'
 import paper, { Point, Path } from 'paper'
-import { blueNoiseLib, blueNoise, number, constantFrom, int, bool, simplexNoise2d } from '../../lib/generator'
+import { blueNoiseLib, blueNoise, number, chooseFrom, int, bool, simplexNoise2d, flatMap, record, repeat, ofShape, uniform, map, tuple, seed } from '../../lib/generator'
+import * as R from 'ramda'
+import { fromJS } from 'immutable'
+import { useState } from 'react'
+import { IconButton, Layout } from '../../components'
+import { Box, Button, Field } from 'theme-ui'
+import usePaper from '../../lib/usePaper'
+import { saveAs } from 'file-saver'
 
-const initGrid =
-  ({ width, height, resolution, noiseFn, thetaFn }) => {
+// State
+const initGrid = ({ position, width, height, resolution, noise, thetaGen }) => {
+  const [numCols, numRows] = [width / resolution, height / resolution].map(Math.floor)
 
+  const generator = map(
+    fromJS,
+    tuple(
+      R.range(0, numCols)
+        .map(col =>
+          tuple(
+            R.range(0, numRows)
+              .map(row => {
+                const x = position.x + (col * resolution)
+                const y = position.y + (row * resolution)
+                const theta = thetaGen({ x, y, col, row, numCols, numRows })
+                return ofShape({ x, y, theta })
+              })
+          )
+        )
+    )
+  )
+
+  const gridCoordinates = ({ x, y }) =>
+    [
+      (x - position.x) / resolution,
+      (y - position.y) / resolution
+    ].map(Math.floor)
+
+  const inBounds = (position) => {
+    // console.log(position)
+    const [col, row] = gridCoordinates(position)
+    // console.log(col, row)
+    return col >= 0 && col < numCols && row >= 0 && row < numRows
   }
 
-class Grid {
-  constructor ({ width, height, resolution, noiseFn, thetaFn }) {
-    this.noise = makeNoise2D(noiseSeed)
-    this.leftX = Math.floor(width * -0.5)
-    this.rightX = Math.floor(width * 1.5)
-    this.topY = Math.floor(height * -0.5)
-    this.bottomY = Math.floor(height * 1.5)
-    this.resolution = resolution
-    this.numColumns = Math.floor((this.rightX - this.leftX) / this.resolution)
-    this.numRows = Math.floor((this.bottomY - this.topY) / this.resolution)
-    this.grid = []
-    this.noiseScale = noiseScale
-    for (let col = 0; col < this.numColumns; col++) {
-      this.grid.push([])
-      for (let row = 0; row < this.numRows; row++) {
-        const x = this.leftX + (col * this.resolution)
-        const y = this.topY + (row * this.resolution)
-        const theta = thetaFn(col, row, x, y, this.numColumns, this.numRows, this.scaledNoise.bind(this))
-        this.grid[col].push({
-          x, y, theta
-        })
-      }
-    }
-  }
-
-  scaledNoise (x, y) {
-    return this.noise(x * this.noiseScale, y * this.noiseScale)
-  }
-
-  get width () {
-    return this.rightX - this.leftX
-  }
-
-  get height () {
-    return this.bottomY - this.topY
-  }
-
-  drawGrid () {
-    for (let col = 0; col < this.numColumns; col++) {
-      const vLine = new Path.Line(new Point(col * this.resolution, this.topY), new Point(col * this.resolution, this.bottomY))
-      vLine.strokeColor = 'black'
-      for (let row = 0; row < this.numRows; row++) {
-        const hLine = new Path.Line(new Point(this.leftX, row * this.resolution), new Point(this.rightX, row * this.resolution))
-        hLine.strokeColor = 'black'
-
-        // console.dir(cell)
-        const { theta } = this.grid[col][row]
-        const gridPoint = new Point(col * this.resolution, row * this.resolution)
-
-        const center = gridPoint.add(this.resolution / 2)
-        const circle = new Path.Circle(center, this.resolution / 8)
-        circle.strokeColor = 'black'
-
-        const vector = new Point(this.resolution / 2, 0)
-        vector.angleInRadians = theta
-        const path = new Path()
-        path.strokeColor = 'black'
-        path.moveTo(center)
-        path.lineTo(center.add(vector))
-      }
-    }
-  }
-
-  createCurve (start, stepLength = this.resolution, numSteps = 1) {
+  const createCurve = (grid, start, stepLength = resolution, numSteps = 1) => {
     const curve = new Path()
     curve.moveTo(start)
     let cur = start
     for (let n = 0; n < numSteps; n++) {
-      const xOffset = cur.x - this.leftX
-      const yOffset = cur.y - this.topY
-      const col = Math.floor(xOffset / this.resolution)
-      const row = Math.floor(yOffset / this.resolution)
-      if (
-        col >= 0 && col < this.numColumns &&
-        row >= 0 && row < this.numRows
-      ) {
-        const { theta } = this.grid[col][row]
+      if (inBounds(cur)) {
+        const cell = grid.getIn(gridCoordinates(cur))
+        const { theta } = cell.toJS()
         const vector = new Point(stepLength, 0)
         vector.angleInRadians = theta
         cur = cur.add(vector)
@@ -95,130 +64,251 @@ class Grid {
     }
     return curve
   }
-}
 
-const genDashArray = (segmentLength) => {
-  const numDashPairs = genIntInRange(0)
-  const result = []
-  for (let n = 0; n < numDashPairs; n++) {
-    result.push(genInRange(segmentLength))
-    result.push(genInRange(segmentLength))
-  }
-  return result
-}
-
-const genCurveConfig = ({ resolution, palette }) => {
-  const segmentLength = resolution / genInRange(1, 4)
-  return ({
-    segmentLength,
-    numSegments: genIntInRange(10, 40),
-    strokeColor: chooseOne(palette.colors),
-    opacity: genInRange(0.1, 1),
-    strokeWidth: genIntInRange(1, resolution),
-    strokeCap: chooseOne(['butt', 'round', 'square']),
-    strokeJoin: chooseOne(['miter', 'round', 'bevel']),
-    dashArray: genBool() ? genDashArray(segmentLength) : [],
-    miterLimit: segmentLength / genInRange(1, 4),
-    smooth: chooseOne([true, false]),
-    simplify: chooseOne([true, false])
-  })
-}
-
-const genConfig = ({ height, width }) => {
-  const palette = tome.getRandom()
-  const backgroundColor = palette.background || 0xffffffff
-  const resolutionFactor = genInRange(5, 50)
-  const resolution = width / resolutionFactor
-  const noiseComponent = genInRange(1)
-  const piDivisions = chooseOne([2, 3, 5, 7, 11])
-  const result = ({
+  return {
+    position,
     width,
     height,
-    palette,
     resolution,
-    resolutionFactor,
-    backgroundColor,
-    noiseSeed: genInRange(Number.MAX_SAFE_INTEGER),
-    noiseScale: genInRange(0.0001, 0.1),
-    noiseComponent,
-    piDivisions,
-    thetaFn: (col, row, x, y, numCols, numRows, noiseFn) => (Math.cos(x) + Math.sin(y) + (noiseFn(x, y) * genInRange(0.25))) * Math.PI,
-    poissonRadius: resolution * genIntInRange(1, resolutionFactor) / resolutionFactor,
-    poissonSamples: genIntInRange(5, 10),
-    curveGenOptions: {
-      segmentLengthPerCurve: genBool(),
-      numSegmentsPerCurve: genBool(),
-      colorPerCurve: genBool(),
-      opacityPerCurve: genBool(),
-      widthPerCurve: genBool(),
-      capPerCurve: genBool(),
-      joinPerCurve: genBool(),
-      dashArrayPerCurve: genBool(),
-      smoothPerCurve: genBool(),
-      simplifyPerCurve: genBool()
-    },
-    globalCurveProperties: genCurveConfig({ resolution, palette })
-  })
-
-  while (!result.curveGenOptions.colorPerCurve && result.globalCurveProperties.strokeColor === backgroundColor) {
-    result.globalCurveProperties.strokeColor = chooseOne(palette.colors)
+    numCols,
+    numRows,
+    generator,
+    gridCoordinates,
+    inBounds,
+    createCurve
   }
-
-  return result
 }
 
-const Grids = () => (
-  <PaperCanvas
-    paperFn={() => {
-      const config = genConfig(paper.view.size)
-      console.dir(config)
+// Random Generators
+const dashArray = segmentLength =>
+  flatMap(
+    numDashPairs =>
+      repeat(numDashPairs * 2, number({ min: 0, max: segmentLength })),
+    int({ min: 0, max: 0 })
+  )
 
-      const background = new Path.Rectangle(paper.view.bounds)
-      background.fillColor = config.backgroundColor
+const safeStrokeColor = ({ palette, backgroundColor }) =>
+  chooseFrom(
+    palette.colors
+      .filter(color => color !== backgroundColor)
+  )
 
-      const grid = new Grid(config)
+const curveConfig = ({ resolution, palette, backgroundColor }) =>
+  flatMap(
+    ({ segmentLengthFactor, genDashArray, miterLimitFactor }) => {
+      const segmentLength = resolution / segmentLengthFactor
+      const miterLimit = segmentLength / miterLimitFactor
+      return ofShape({
+        miterLimit,
+        segmentLength,
+        numSegments: int({ min: 10, max: 40 }),
+        strokeColor: safeStrokeColor({ palette, backgroundColor }),
+        opacity: number({ min: 0.1, max: 1 }),
+        strokeWidth: int({ min: 1, max: resolution }),
+        strokeCap: chooseFrom(['butt', 'round', 'square']),
+        strokeJoin: chooseFrom(['miter', 'round', 'bevel']),
+        smooth: bool(),
+        simplify: bool(),
+        dashArray: genDashArray ? dashArray(segmentLength) : []
+      })
+    },
+    record({
+      segmentLengthFactor: number({ min: 1, max: 4 }),
+      genDashArray: bool(),
+      miterLimitFactor: number({ min: 1, max: 4 })
+    })
+  )
 
-      // grid.drawGrid()
+const curveGenOptions = record({
+  segmentLengthPerCurve: bool(),
+  numSegmentsPerCurve: bool(),
+  colorPerCurve: bool(),
+  opacityPerCurve: bool(),
+  widthPerCurve: bool(),
+  capPerCurve: bool(),
+  joinPerCurve: bool(),
+  dashArrayPerCurve: bool(),
+  smoothPerCurve: bool(),
+  simplifyPerCurve: bool()
+})
 
-      const { generator } = poissonGenerator([grid.width, grid.height], config.poissonRadius, config.poissonSamples, () => {})
-      console.groupCollapsed('Individual Curves')
-      for (const [x, y] of generator()) {
-        const options = config.curveGenOptions
-        const global = config.globalCurveProperties
-        const local = genCurveConfig(config)
+const config = ({ position = { x: 0, y: 0 }, width, height }) =>
+  flatMap(
+    ({ palette, resolutionFactor, noiseComponent, piDivisions, noise, ...config }) => {
+      const backgroundColor = palette.background || 0xffffffff
+      const resolution = width / resolutionFactor
+      return ofShape({
+        ...config,
+        position,
+        width,
+        height,
+        palette,
+        backgroundColor,
+        resolutionFactor,
+        resolution,
+        noiseComponent,
+        piDivisions,
+        noise,
+        thetaGen: ({ x, y, col, row, numCols, numRows }) =>
+          map(
+            jitter =>
+              Math.PI *
+              (
+                Math.cos(x) +
+                Math.sin(y) +
+                (jitter * noise(x, y))
+              ),
+            number(({ min: 0, max: 0.25 }))
+          ),
+        poissonRadius: map(
+          resolutionFactorNumerator =>
+            resolution * resolutionFactorNumerator / resolutionFactor,
+          int({ min: 1, max: resolutionFactor })
+        ),
+        globalCurveProperties: curveConfig({ resolution, palette, backgroundColor })
+      })
+    },
+    record({
+      curveGenOptions,
+      palette: chooseFrom(tome.getAll()),
+      resolutionFactor: number({ min: 5, max: 50 }),
+      noiseComponent: uniform,
+      piDivisions: chooseFrom([2, 3, 5, 7, 11]),
+      poissonSamples: int({ min: 5, max: 10 }),
+      noise: flatMap(zoom => simplexNoise2d({ zoom }), number({ min: 10, max: 1000 }))
+    })
+  )
 
-        console.dir(local)
+const data = ({ position, width, height }) =>
+  flatMap(
+    conf => {
+      const lib = initGrid({ position: { x: -0.5 * width, y: -0.5 * height }, width: 2 * width, height: 2 * height, ...conf })
+      const curveConfigGen = curveConfig({ resolution: lib.resolution, palette: conf.palette, backgroundColor: conf.backgroundColor })
+      const sampler = flatMap(
+        noiseSamples => {
+          // console.dir(noiseSamples)
+          const result = noiseSamples.map(([x, y]) => ofShape({ x, y, curveConfig: curveConfigGen }))
+          // console.dir(result)
+          return tuple(result.toJS())
+        },
+        blueNoise(blueNoiseLib({
+          dimensions: [width, height],
+          radius: conf.poissonRadius,
+          samples: conf.poissonSamples
+        }))
+      )
+      return map(
+        ({ grid, samples }) => ({
+          lib,
+          grid,
+          samples,
+          config: conf
+        }),
+        ofShape({
+          grid: lib.generator,
+          samples: sampler
+        }))
+    },
+    config({ position, width, height })
+  )
 
-        const segmentLength = (options.segmentLengthPerCurve ? local : global).segmentLength
-        const numSegments = (options.numSegmentsPerCurve ? local : global).numSegments
-        const curve = grid.createCurve(new Point(x + grid.leftX, y + grid.topY), segmentLength, numSegments)
+const Grids = () => {
+  const [configOpen, setConfigOpen] = useState(false)
+  const [seedStr, setSeedStr] = useState('Griidsss')
 
-        curve.strokeColor = (options.colorPerCurve ? local : global).strokeColor
-        curve.opacity = (options.opacityPerCurve ? local : global).opacity
-        curve.strokeWidth = (options.widthPerCurve ? local : global).strokeWidth
-        curve.strokeCap = (options.capPerCurve ? local : global).strokeCap
-        curve.strokeJoin = (options.joinPerCurve ? local : global).strokeJoin
-        curve.dashArray = (options.dashArrayPerCurve ? local : global).dashArray
+  let curSeed = seed(seedStr)
 
-        if (options.smoothPerCurve) {
-          if (local.smooth) {
-            curve.smooth()
-          }
-        } else if (global.smooth) {
+  const setup = () => {
+    const [{ lib, grid, samples, config }, setupSeed] = data(paper.view.size)(curSeed)
+    curSeed = setupSeed
+
+    // console.groupCollapsed('Data')
+    // console.dir({ lib, grid, samples, config })
+    // console.groupEnd()
+
+    const background = new Path.Rectangle(paper.view.bounds)
+    background.fillColor = config.backgroundColor
+
+    const options = config.curveGenOptions
+    const global = config.globalCurveProperties
+    for (const { x, y, curveConfig: local } of samples) {
+      const segmentLength = (options.segmentLengthPerCurve ? local : global).segmentLength
+      const numSegments = (options.numSegmentsPerCurve ? local : global).numSegments
+      const curve = lib.createCurve(grid, new Point(x, y), segmentLength, numSegments)
+
+      curve.strokeColor = (options.colorPerCurve ? local : global).strokeColor
+      curve.opacity = (options.opacityPerCurve ? local : global).opacity
+      curve.strokeWidth = (options.widthPerCurve ? local : global).strokeWidth
+      curve.strokeCap = (options.capPerCurve ? local : global).strokeCap
+      curve.strokeJoin = (options.joinPerCurve ? local : global).strokeJoin
+      curve.dashArray = (options.dashArrayPerCurve ? local : global).dashArray
+
+      if (options.smoothPerCurve) {
+        if (local.smooth) {
           curve.smooth()
         }
+      } else if (global.smooth) {
+        curve.smooth()
+      }
 
-        if (options.simplifyPerCurve) {
-          if (local.simplify) {
-            curve.simplify()
-          }
-        } else if (global.simplify) {
+      if (options.simplifyPerCurve) {
+        if (local.simplify) {
           curve.simplify()
         }
+      } else if (global.simplify) {
+        curve.simplify()
       }
-      console.groupEnd()
-    }}
-  />
-)
+    }
+  }
+
+  const onResize = setup
+
+  const { canvasRef } = usePaper(() => {}, { setup, onResize })
+
+  return (
+    <Layout meta={{ title: 'Grids' }}>
+      <Box sx={{ position: 'relative', width: '100%', height: '100%' }}>
+        <canvas ref={canvasRef} sx={{ width: '100%', height: '100%' }} />
+        <Box
+          as='form'
+          sx={{
+            variant: 'forms.form',
+            top: 0,
+            right: 0,
+            position: 'absolute',
+            opacity: configOpen ? 1 : 0,
+            transition: 'opacity .25s ease-in-out'
+
+          }}
+          onSubmit={event => event.preventDefault()}
+        >
+          <Field label='Seed' name='seed' value={seedStr} onChange={R.compose(setSeedStr, R.prop('value'), R.prop('target'))} />
+          <Button
+            variant='primary'
+            sx={{
+              justifySelf: 'stretch'
+            }}
+            onClick={() => {
+              const data = new Blob([paper.project.exportSVG({ asString: true })], { type: 'image/svg+xml;charset=utf-8' })
+              saveAs(data, 'Grids')
+            }}
+          >
+            Save SVG
+          </Button>
+        </Box>
+        <IconButton
+          icon='gear'
+          sx={{
+            position: 'absolute',
+            top: 0,
+            right: 0,
+            opacity: 1
+          }}
+          onClick={() => setConfigOpen(!configOpen)}
+        />
+      </Box>
+    </Layout>
+  )
+}
 
 export default Grids
