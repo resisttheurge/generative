@@ -7,12 +7,14 @@ import * as theme from '../lib/theme'
 
 import GlobalStyle from '../components/GlobalStyle'
 
-export default class MyApp extends App {
+const Pre = (props) => <code {...props} />
+
+export class MyApp extends App {
   render () {
     const { Component, pageProps } = this.props
     const components = {
       a: Link,
-      pre: ({ children }) => <code>{children}</code>,
+      pre: Pre,
       code: Prism
     }
     return (
@@ -23,3 +25,5 @@ export default class MyApp extends App {
     )
   }
 }
+
+export default MyApp
