@@ -72,7 +72,7 @@ const PDS = () => {
         },
         pds: g.blueNoise(g.blueNoiseLib({ samples, dimensions: [width, height], radius: multiplier * buffer }))
       })
-    ), [seedStr, multiplier, buffer, samples, noiseZoom])
+    ), [offset, radius, seed, multiplier, buffer, samples, noiseZoom])
 
   const { canvasRef } = usePaper(() => {}, {
     setup: () => {

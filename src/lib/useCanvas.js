@@ -21,7 +21,7 @@ const _onResize =
   }
 
 // Canvas hook that includes full lifecycle API, loading indicator, and automatic resizing
-const useCanvas = (draw, options = {}, deps = []) => {
+const useCanvas = (draw, options = {}) => {
   const {
     setup = canvas => {},
     preDraw = canvas => {},
@@ -40,21 +40,21 @@ const useCanvas = (draw, options = {}, deps = []) => {
 
   const { width, height } = useResizeDetector({ targetRef, onResize: onResizeCB })
 
-  // onComponentDidMount hook for first resize and calling setup lifecycle function
   useEffect(() => {
+    const canvas = targetRef.current
     setLoading(true)
-    const { width, height } = targetRef.current.getBoundingClientRect()
-    _onResize(targetRef.current, width, height)
-    setup(targetRef.current)
-    targetRef.current.style.width = '100%'
-    targetRef.current.style.height = '100%'
+    const { width, height } = canvas.getBoundingClientRect()
+    _onResize(canvas, width, height)
+    setup(canvas)
+    canvas.style.width = '100%'
+    canvas.style.height = '100%'
     setLoading(false)
     return () => {
       setLoading(true)
-      teardown(targetRef.current)
+      teardown(canvas)
       setLoading(false)
     }
-  }, [setup])
+  }, [setup, onResize, teardown])
 
   // main effect hook for interacting with window.requestAnimationFrame and calling the ...draw() lifecycle methods
   useEffect(() => {
@@ -95,7 +95,7 @@ const useCanvas = (draw, options = {}, deps = []) => {
     return () => {
       window.cancelAnimationFrame(animationFrameId)
     }
-  }, [targetRef, draw, options, ...deps])
+  }, [targetRef, preDraw, draw, postDraw, options])
 
   return { loading, width, height, canvasRef: targetRef }
 }

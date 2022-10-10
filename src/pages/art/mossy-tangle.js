@@ -60,7 +60,7 @@ const MossyTangle = () => {
     const background = new Path.Rectangle(paper.view.bounds)
     background.fillColor = palette.background || 0xffffffff
     points.forEach(calculateNoiseFlow(palette.colors, scale, noiseZoom))
-  }, [seedStr, palette, scale, noiseZoom])
+  }, [palette, scale, noiseZoom])
 
   const onResize = setup
 
