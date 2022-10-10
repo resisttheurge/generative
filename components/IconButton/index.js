@@ -94,3 +94,5 @@ export const IconButton = ({ icon, ...props }) => {
     </OgIconButton>
   )
 }
+
+export default IconButton

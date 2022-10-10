@@ -1,5 +1,5 @@
 export const links = {
-  // Home: '/',
+  Home: '/',
   // About: '/about',
   // Attribution: '/attribution',
   Art: {
