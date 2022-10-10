@@ -11,7 +11,12 @@ export const NavLinks = ({ title, links, ...props }) => (
       {Object.entries(links)
         .map(
           ([key, value]) => (
-            <Li key={typeof value === 'string' ? value : key}>
+            <Li
+              key={typeof value === 'string' ? value : key}
+              sx={{
+                my: 2
+              }}
+            >
               {
                 typeof value === 'string'
                   ? <Link href={value} passHref><NavLink>{key}</NavLink></Link>
