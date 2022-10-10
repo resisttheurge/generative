@@ -1,4 +1,3 @@
-import Image from 'next/image'
 import { useMemo } from 'react'
 import propTypes from 'prop-types'
 
