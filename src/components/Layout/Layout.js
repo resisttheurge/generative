@@ -34,7 +34,8 @@ export const Layout = ({ meta, ...props }) => {
           icon={navOpen ? 'close' : 'menu'}
           onClick={() => setNavOpen(!navOpen)}
           sx={{
-            gridArea: 'leftMenu'
+            gridArea: 'leftMenu',
+            m: 2
           }}
         />
         <Heading
@@ -51,7 +52,8 @@ export const Layout = ({ meta, ...props }) => {
           icon='color-mode'
           onClick={() => setColorMode(colorMode === 'default' ? 'dark' : 'default')}
           sx={{
-            gridArea: 'rightMenu'
+            gridArea: 'rightMenu',
+            m: 2
           }}
         />
         <Box
