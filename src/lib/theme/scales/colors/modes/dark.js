@@ -9,16 +9,22 @@ export const text = chroma('#FFF').alpha(0.75).hex()
 export const textInverse = chroma('#000').alpha(0.75).hex()
 
 /** Body background color */
-export const primary = palette.background
-
-/** Primary brand color for links, buttons, etc. */
 export const background = palette.colors[0]
 
+/** Dark background for hover */
+export const darkBackground = chroma(background).darken().hex()
+
+/** Bright background for fields */
+export const brightBackground = chroma(background).brighten().hex()
+
+/** Primary brand color for links, buttons, etc. */
+export const primary = palette.background
+
 /** A secondary brand color for alternative styling */
-export const accent = palette.colors[1]
+export const secondary = palette.colors[2]
 
 /** A contrast color for emphasizing UI */
-export const secondary = palette.colors[2]
+export const accent = palette.colors[1]
 
 /** A background color for highlighting text */
 export const highlight = palette.colors[3]

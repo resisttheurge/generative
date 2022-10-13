@@ -1,7 +1,7 @@
 export const links = {
   Home: '/',
-  // About: '/about',
-  // Attribution: '/attribution',
+  About: '/about',
+  Attribution: '/attribution',
   Art: {
     Grids: '/art/grids',
     'Poisson Disk Sampling': '/art/poisson-disk-sampling',
@@ -11,8 +11,8 @@ export const links = {
     'Circle Movements': '/art/circle-movements'
   },
   Utilities: {
-    Palettes: '/utilities/palettes'
-    // 'Style Guide': '/utilities/style-guide'
+    Palettes: '/utilities/palettes',
+    'Style Guide': '/utilities/style-guide'
   }
 }
 

@@ -6,15 +6,14 @@ import chroma from 'chroma-js'
 import * as R from 'ramda'
 import { saveAs } from 'file-saver'
 import * as g from '../../lib/generator'
-import { Layout, IconButton } from '../../components'
+import { Layout, ConfigMenu, ConfigField } from '../../components'
 import { useMemo, useState } from 'react'
-import { Box, Button, Field, Slider } from 'theme-ui'
+import { Box, Button, Field, Select, Slider } from 'theme-ui'
 import usePaper from '../../lib/usePaper'
 
 const PDS = () => {
-  const [configOpen, setConfigOpen] = useState(false)
-
   const [seedStr, setSeedStr] = useState('Hello world!')
+  const [palette, setPalette] = useState(tome.getRandom())
   const [multiplier, setMultiplier] = useState(1)
   const [buffer, setBuffer] = useState(150)
   const [samples, setSamples] = useState(30)
@@ -64,7 +63,7 @@ const PDS = () => {
         samples,
         radius,
         noiseZoom,
-        palette: g.chooseFrom(tome.getAll()),
+        palette: true ? palette : g.chooseFrom(tome.getAll()),
         noises: {
           vectorNoise: g.simplexNoise2d({ zoom: noiseZoom * multiplier }),
           offsetVectorNoise: g.simplexNoise2d({ zoom: noiseZoom * multiplier }),
@@ -72,7 +71,7 @@ const PDS = () => {
         },
         pds: g.blueNoise(g.blueNoiseLib({ samples, dimensions: [width, height], radius: multiplier * buffer }))
       })
-    ), [offset, radius, seed, multiplier, buffer, samples, noiseZoom])
+    ), [palette, offset, radius, seed, multiplier, buffer, samples, noiseZoom])
 
   const { canvasRef } = usePaper(() => {}, {
     setup: () => {
@@ -109,47 +108,22 @@ const PDS = () => {
     <Layout meta={{ title: 'Poisson Disk Sampling' }}>
       <Box sx={{ position: 'relative', width: '100%', height: '100%' }}>
         <canvas ref={canvasRef} sx={{ width: '100%', height: '100%' }} />
-        <Box
-          as='form'
-          sx={{
-            variant: 'forms.form',
-            top: 0,
-            right: 0,
-            position: 'absolute',
-            opacity: configOpen ? 1 : 0,
-            transition: 'opacity .25s ease-in-out'
-
-          }}
+        <ConfigMenu
           onSubmit={event => event.preventDefault()}
-        >
-          <Field label='Seed' name='seed' value={seedStr} onChange={R.compose(setSeedStr, R.prop('value'), R.prop('target'))} />
-          <Field label={`Multiplier: ${multiplier}`} as={Slider} name='multiplier' min={0.05} max={1.5} step={0.05} defaultValue={multiplier} onChange={R.compose(setMultiplier, R.prop('value'), R.prop('target'))} />
-          <Field label={`Buffer: ${buffer}`} as={Slider} name='buffer' min={50} max={250} defaultValue={buffer} onChange={R.compose(setBuffer, Number.parseInt, R.prop('value'), R.prop('target'))} />
-          <Field label={`Samples: ${samples}`} as={Slider} name='samples' min={15} max={45} defaultValue={samples} onChange={R.compose(setSamples, Number.parseInt, R.prop('value'), R.prop('target'))} />
-          <Field label={`Noise Zoom: ${noiseZoom}`} as={Slider} name='noiseZoom' min={1} max={1200} defaultValue={noiseZoom} onChange={R.compose(setNoiseZoom, Number.parseInt, R.prop('value'), R.prop('target'))} />
-          <Button
-            variant='primary'
-            sx={{
-              justifySelf: 'stretch'
-            }}
-            onClick={() => {
-              const data = new Blob([paper.project.exportSVG({ asString: true })], { type: 'image/svg+xml;charset=utf-8' })
-              saveAs(data, 'Poisson Disk Sampling')
-            }}
-          >
-            Save SVG
-          </Button>
-        </Box>
-        <IconButton
-          icon='gear'
-          sx={{
-            position: 'absolute',
-            top: 0,
-            right: 0,
-            opacity: 1
+          onClickDownload={() => {
+            const data = new Blob([paper.project.exportSVG({ asString: true })], { type: 'image/svg+xml;charset=utf-8' })
+            saveAs(data, 'Poisson Disk Sampling')
           }}
-          onClick={() => setConfigOpen(!configOpen)}
-        />
+        >
+          <ConfigField label='Seed' name='seed' value={seedStr} onChange={R.compose(setSeedStr, R.prop('value'), R.prop('target'))} />
+          <ConfigField randomizable label={`Palette: ${palette.name}`} as={Select} name='palette' defaultValue={palette.name} onChange={R.compose(setPalette, tome.get, R.prop('value'), R.prop('target'))}>
+            {tome.getNames().map(name => <option key={name}>{name}</option>)}
+          </ConfigField>
+          <ConfigField label={`Multiplier: ${multiplier}`} as={Slider} name='multiplier' min={0.05} max={1.5} step={0.05} defaultValue={multiplier} onChange={R.compose(setMultiplier, R.prop('value'), R.prop('target'))} />
+          <ConfigField label={`Buffer: ${buffer}`} as={Slider} name='buffer' min={50} max={250} defaultValue={buffer} onChange={R.compose(setBuffer, Number.parseInt, R.prop('value'), R.prop('target'))} />
+          <ConfigField label={`Samples: ${samples}`} as={Slider} name='samples' min={15} max={45} defaultValue={samples} onChange={R.compose(setSamples, Number.parseInt, R.prop('value'), R.prop('target'))} />
+          <ConfigField label={`Noise Zoom: ${noiseZoom}`} as={Slider} name='noiseZoom' min={1} max={1200} defaultValue={noiseZoom} onChange={R.compose(setNoiseZoom, Number.parseInt, R.prop('value'), R.prop('target'))} />
+        </ConfigMenu>
       </Box>
     </Layout>
   )

@@ -1,3 +1,4 @@
+export * from './ConfigMenu'
 export * from './Icon'
 export * from './IconButton'
 export * from './Layout'

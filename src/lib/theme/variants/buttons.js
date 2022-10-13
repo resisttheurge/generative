@@ -1,5 +1,3 @@
-import chroma from 'chroma-js'
-
 export const primary = {
   variant: 'text.body',
   p: 1,
@@ -39,12 +37,12 @@ export const muted = {
 export const icon = {
   fill: 'text',
   bg: 'background',
-  borderRadius: 16,
-  transitionProprty: 'background-color',
-  transitionTimingFunction: 'ease-out',
-  transitionDuration: '.2s',
+  borderRadius: '16px',
+  p: 1,
+  transitionProperty: 'background-color',
+  transitionTimingFunction: 'ease-in-out',
+  transitionDuration: '.25s',
   '&:hover': {
-    bg: t => chroma(t.rawColors.background).darken().hex()
-
+    bg: 'darkBackground'
   }
 }

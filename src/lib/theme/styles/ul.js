@@ -1,5 +1,5 @@
 export const ul = {
-  mx: 3,
+  mx: 2,
   listStyleType: 'none',
   paddingInlineStart: 0
 }

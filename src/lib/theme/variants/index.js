@@ -1,4 +1,6 @@
 export * as buttons from './buttons'
 export * as forms from './forms'
+export * as images from './images'
+export * as layout from './layout'
 export * as links from './links'
 export * as text from './text'

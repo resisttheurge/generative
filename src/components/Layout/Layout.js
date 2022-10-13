@@ -1,80 +1,38 @@
 import Head from 'next/head'
-import { Box, Heading, useColorMode } from 'theme-ui'
-import { useState } from 'react'
+import { Box, Heading, useColorMode, useThemeUI } from 'theme-ui'
+import { useCallback, useState } from 'react'
 
 import { IconButton } from '../IconButton'
 import SideNav from '../SideNav'
 import links from './links'
 
 export const Layout = ({ meta, ...props }) => {
+  const { theme } = useThemeUI()
+
   const [navOpen, setNavOpen] = useState(false)
+  const toggleNav = useCallback(() => setNavOpen(!navOpen), [navOpen, setNavOpen])
+  const closeNav = useCallback(() => setNavOpen(false), [setNavOpen])
+
   const [colorMode, setColorMode] = useColorMode()
+  const toggleColorMode = useCallback(() => setColorMode(colorMode === 'default' ? 'dark' : 'default'), [colorMode, setColorMode])
+
   return (
     <>
       <Head>
         <title>{meta.title}</title>
+        <meta name='theme-color' content={theme.colors.background} />
       </Head>
-      <Box
-        {...props}
-        sx={{
-          display: 'grid',
-          gridGap: 0,
-          gridTemplateRows: 'min-content 1fr',
-          gridTemplateColumns: 'min-content 1fr min-content',
-          gridTemplateAreas: `
-          "leftMenu title rightMenu"
-          "content content content"
-        `,
-          overflow: 'clip',
-          width: '100vw',
-          height: '100vh'
-        }}
-      >
-        <IconButton
-          icon={navOpen ? 'close' : 'menu'}
-          onClick={() => setNavOpen(!navOpen)}
-          sx={{
-            gridArea: 'leftMenu',
-            m: 2
-          }}
-        />
-        <Heading
-          variant='display'
-          sx={{
-            gridArea: 'title',
-            justifySelf: 'center',
-            alignSelf: 'center'
-          }}
-        >
+      <Box variant='layout.mobile' {...props}>
+        <Box variant='layout.mobile.headerBar' />
+        <IconButton variant='layout.mobile.leftMenu' icon={navOpen ? 'close' : 'menu'} onClick={toggleNav} />
+        <Heading variant='layout.mobile.heading'>
           {meta.title}
         </Heading>
-        <IconButton
-          icon='color-mode'
-          onClick={() => setColorMode(colorMode === 'default' ? 'dark' : 'default')}
-          sx={{
-            gridArea: 'rightMenu',
-            m: 2
-          }}
-        />
-        <Box
-          as='main'
-          onClick={() => setNavOpen(false)}
-          sx={{
-            position: 'relative',
-            gridArea: 'content',
-            justifySelf: 'stretch',
-            alignSelf: 'stretch',
-            bg: 'background',
-            overflowY: 'auto'
-          }}
-        >
+        <IconButton variant='layout.mobile.rightMenu' icon='color-mode' onClick={toggleColorMode} />
+        <Box as='main' variant='layout.mobile.content' onClick={closeNav}>
           {props.children}
         </Box>
-        <SideNav
-          open={navOpen}
-          links={links}
-          sx={{ gridArea: 'content' }}
-        />
+        <SideNav variant='layout.mobile.sideNav' open={navOpen} links={links} />
       </Box>
     </>
   )

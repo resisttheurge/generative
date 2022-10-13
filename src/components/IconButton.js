@@ -4,12 +4,6 @@ import Icon from './Icon'
 export const IconButton = ({ icon, ...props }) => (
   <OgIconButton
     {...props}
-    sx={{
-      p: 1,
-      m: 2,
-      justifyContent: 'center',
-      alignItems: 'center'
-    }}
   >
     <Icon noun={icon} />
   </OgIconButton>

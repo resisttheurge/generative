@@ -1,8 +1,8 @@
 export const body = {
-  fontSize: [1],
+  fontSize: 1,
   fontFamily: 'body',
   fontWeight: 'body',
-  fontLineHeight: 'body'
+  lineHeight: 'body'
 }
 
 export const bold = {
@@ -21,26 +21,25 @@ export const boldItalic = {
 }
 
 export const display = {
-  fontSize: [4],
+  fontSize: 4,
   fontFamily: 'display',
   fontWeight: 'display',
-  fontLineHeight: 'display',
-  m: 2
+  lineHeight: 'display',
+  my: 1
 }
 
 export const heading = {
-  fontSize: [2],
+  fontSize: 2,
   fontFamily: 'heading',
   fontWeight: 'heading',
-  fontLineHeight: 'heading',
-  m: 2
+  lineHeight: 'heading'
 }
 
 export const monospace = {
-  fontSize: [1],
+  fontSize: 1,
   fontFamily: 'monospace',
   fontWeight: 'monospace',
-  fontLineHeight: 'monospace',
+  lineHeight: 'monospace',
   p: 1
 }
 

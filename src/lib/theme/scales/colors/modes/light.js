@@ -11,6 +11,12 @@ export const textInverse = chroma('#FFF').alpha(0.75).hex()
 /** Body background color */
 export const background = palette.background
 
+/** Dark background for hover */
+export const darkBackground = chroma(background).darken().hex()
+
+/** Bright background for fields */
+export const brightBackground = chroma(background).brighten().hex()
+
 /** Primary brand color for links, buttons, etc. */
 export const primary = palette.colors[0]
 
