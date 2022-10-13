@@ -3,7 +3,7 @@ import React from 'react'
 import { Link, ThemeProvider } from 'theme-ui'
 import Prism from '@theme-ui/prism'
 
-import * as theme from '../lib/theme'
+import * as theme from '../theme'
 
 import GlobalStyle from '../components/GlobalStyle'
 
