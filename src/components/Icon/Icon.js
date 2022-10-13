@@ -82,8 +82,8 @@ export const nouns = [
   trash
 ]
 
-export const Icon = ({ noun, ...props }) => {
-  invariant(nouns.includes(noun), `Cannot create Icon with noun '${noun}' because is is not one of [${nouns.join()}]`)
+export const Icon = ({ noun, size = 0, ...props }) => {
+  invariant(nouns.includes(noun), `Cannot create Icon with noun '${noun}' because is is not one of [${nouns.join(', ')}]`)
   const Svg = useMemo(() => {
     switch (noun) {
       case arrowDown:
@@ -141,14 +141,10 @@ export const Icon = ({ noun, ...props }) => {
 
   return (
     <Svg
-      {...props}
       sx={{
-        fill: 'text',
-        width: '24px',
-        height: '24px'
+        variant: 'images.icon'
       }}
-      width='24px'
-      height='24px'
+      {...props}
     />
   )
 }
