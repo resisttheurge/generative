@@ -7,8 +7,8 @@ import chroma from 'chroma-js'
 import { useState } from 'react'
 import { saveAs } from 'file-saver'
 import { Box, Button, Field, Select } from 'theme-ui'
-import { IconButton, Layout } from '../../components'
-import usePaper from '../../lib/usePaper'
+import { ConfigField, ConfigMenu, IconButton, Layout } from '../../components'
+import { usePaper } from '../../effects'
 
 const Palettes = () => {
   const [configOpen, setConfigOpen] = useState(false)
@@ -79,51 +79,23 @@ const Palettes = () => {
 
   const onResize = setup
 
-  const { canvasRef } = usePaper(() => {}, { setup, onResize })
+  const { canvasRef } = usePaper({ setup, onResize })
 
   return (
     <Layout meta={{ title: 'Palettes' }}>
       <Box sx={{ position: 'relative', width: '100%', height: '100%' }}>
         <canvas ref={canvasRef} sx={{ width: '100%', height: '100%' }} />
-        <Box
-          as='form'
-          sx={{
-            variant: 'forms.form',
-            top: 0,
-            right: 0,
-            position: 'absolute',
-            opacity: configOpen ? 1 : 0,
-            transition: 'opacity .25s ease-in-out'
-
-          }}
+        <ConfigMenu
           onSubmit={event => event.preventDefault()}
-        >
-          <Field label={`Palette: ${palette.name}`} as={Select} name='palette' defaultValue={palette.name} onChange={R.compose(setPalette, tome.get, R.prop('value'), R.prop('target'))}>
-            {tome.getNames().map(name => <option key={name}>{name}</option>)}
-          </Field>
-          <Button
-            variant='primary'
-            sx={{
-              justifySelf: 'stretch'
-            }}
-            onClick={() => {
-              const data = new Blob([paper.project.exportSVG({ asString: true })], { type: 'image/svg+xml;charset=utf-8' })
-              saveAs(data, 'Poisson Disk Sampling')
-            }}
-          >
-            Save SVG
-          </Button>
-        </Box>
-        <IconButton
-          icon='gear'
-          sx={{
-            position: 'absolute',
-            top: 0,
-            right: 0,
-            opacity: 1
+          onClickDownload={() => {
+            const data = new Blob([paper.project.exportSVG({ asString: true })], { type: 'image/svg+xml;charset=utf-8' })
+            saveAs(data, 'Poisson Disk Sampling')
           }}
-          onClick={() => setConfigOpen(!configOpen)}
-        />
+        >
+          <ConfigField label={`Palette: ${palette.name}`} as={Select} name='palette' defaultValue={palette.name} onChange={R.compose(setPalette, tome.get, R.prop('value'), R.prop('target'))}>
+            {tome.getNames().map(name => <option key={name}>{name}</option>)}
+          </ConfigField>
+        </ConfigMenu>
       </Box>
     </Layout>
   )

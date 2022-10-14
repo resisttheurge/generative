@@ -27,13 +27,14 @@ export const menu = {
 }
 
 export const label = {
-  mx: 2
+  mx: 2,
+  width: 'max-content'
 }
 
 export const select = {
   variant: 'text.monospace',
-  mx: 2,
-  width: 'inherit',
+  m: 2,
+  width: 'fill-available',
   borderColor: 'gray',
   '&:focus': {
     borderColor: 'primary',
@@ -44,8 +45,8 @@ export const select = {
 
 export const input = {
   variant: 'text.monospace',
-  mx: 2,
-  width: 'inherit',
+  m: 2,
+  width: 'fill-available',
   borderColor: 'gray',
   '&:focus': {
     borderColor: 'primary',
@@ -56,5 +57,5 @@ export const input = {
 
 export const slider = {
   mx: 2,
-  width: 'inherit'
+  width: 'fill-available'
 }

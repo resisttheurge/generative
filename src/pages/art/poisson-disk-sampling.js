@@ -5,26 +5,27 @@ import * as tome from 'chromotome'
 import chroma from 'chroma-js'
 import * as R from 'ramda'
 import { saveAs } from 'file-saver'
-import * as g from '../../lib/generator'
+import { useCallback, useMemo, useState } from 'react'
+import { Box, Select, Slider } from 'theme-ui'
 import { Layout, ConfigMenu, ConfigField } from '../../components'
-import { useMemo, useState } from 'react'
-import { Box, Button, Field, Select, Slider } from 'theme-ui'
-import usePaper from '../../lib/usePaper'
+import { usePaper } from '../../effects'
+import { generator as g } from '../../lib'
+import { useGenerators } from '../../effects/useGenerators'
 
 const PDS = () => {
-  const [seedStr, setSeedStr] = useState('Hello world!')
+  const [seed, setSeed] = useState('Hello world!')
   const [palette, setPalette] = useState(tome.getRandom())
   const [multiplier, setMultiplier] = useState(1)
-  const [buffer, setBuffer] = useState(150)
+  const [buffer, setBuffer] = useState(125)
   const [samples, setSamples] = useState(30)
   const [noiseZoom, setNoiseZoom] = useState(1200)
 
-  const seed = g.seed(seedStr)
+  const { generate } = useGenerators({ seed })
 
   const radius = (multiplier * buffer) / 2
   const offset = radius / 5 + 2
 
-  const config = useMemo(() => (width, height) =>
+  const config = useCallback((width, height) =>
     g.map(
       (config) => {
         const {
@@ -63,46 +64,33 @@ const PDS = () => {
         samples,
         radius,
         noiseZoom,
-        palette: true ? palette : g.chooseFrom(tome.getAll()),
+        palette: palette || g.chooseFrom(tome.getAll()),
         noises: {
           vectorNoise: g.simplexNoise2d({ zoom: noiseZoom * multiplier }),
           offsetVectorNoise: g.simplexNoise2d({ zoom: noiseZoom * multiplier }),
           colorNoise: g.simplexNoise2d({ zoom: noiseZoom * multiplier })
         },
-        pds: g.blueNoise(g.blueNoiseLib({ samples, dimensions: [width, height], radius: multiplier * buffer }))
+        pds: g.blueNoise(g.blueNoiseLib({ samples, dimensions: [width, height], radius: radius * 2, offset: radius * 2 }))
       })
     ), [palette, offset, radius, seed, multiplier, buffer, samples, noiseZoom])
 
-  const { canvasRef } = usePaper(() => {}, {
-    setup: () => {
-      const bounds = paper.project.view.bounds
-      const { width, height } = bounds
-      const [lib] = config(width, height)(seed)
-      const bg = new Shape.Rectangle(
-        new Rectangle(new Point(0, 0), new Size(width, height))
-      )
-      bg.fillColor = lib.palette.background
-      for (const [x, y] of lib.pds) {
-        if (x >= 0 + radius && x <= width + radius && y >= 0 + radius && y <= height - radius) {
-          lib.genRectangles([x, y])
-        }
-      }
-    },
-    onResize: () => {
-      const bounds = paper.project.view.bounds
-      const { width, height } = bounds
-      const [lib] = config(width, height)(seed)
-      const bg = new Shape.Rectangle(
-        new Rectangle(new Point(0, 0), new Size(width, height))
-      )
-      bg.fillColor = lib.palette.background
-      for (const [x, y] of lib.pds) {
-        if (x >= 0 + radius && x <= width + radius && y >= 0 + radius && y <= height - radius) {
-          lib.genRectangles([x, y])
-        }
-      }
+  const setup = useCallback(({ project, state }) => {
+    const bounds = project.view.bounds
+    const { width, height } = bounds
+    const lib = generate(config(width, height))
+    const bg = new Shape.Rectangle(
+      new Rectangle(new Point(0, 0), new Size(width, height))
+    )
+    bg.fillColor = lib.palette.background
+    for (const [x, y] of lib.pds) {
+      lib.genRectangles([x, y])
     }
-  }, [seedStr, multiplier, samples, noiseZoom])
+  }, [generate, config])
+
+  const { canvasRef } = usePaper({
+    setup,
+    onResize: setup
+  })
 
   return (
     <Layout meta={{ title: 'Poisson Disk Sampling' }}>
@@ -115,7 +103,7 @@ const PDS = () => {
             saveAs(data, 'Poisson Disk Sampling')
           }}
         >
-          <ConfigField label='Seed' name='seed' value={seedStr} onChange={R.compose(setSeedStr, R.prop('value'), R.prop('target'))} />
+          <ConfigField label='Seed' name='seed' value={seed} onChange={R.compose(setSeed, R.prop('value'), R.prop('target'))} />
           <ConfigField randomizable label={`Palette: ${palette.name}`} as={Select} name='palette' defaultValue={palette.name} onChange={R.compose(setPalette, tome.get, R.prop('value'), R.prop('target'))}>
             {tome.getNames().map(name => <option key={name}>{name}</option>)}
           </ConfigField>

@@ -3,26 +3,26 @@
 import chroma from 'chroma-js'
 import * as tome from 'chromotome'
 import paper, { Point, Shape } from 'paper'
-import { useState } from 'react'
+import { useCallback, useState } from 'react'
 import * as R from 'ramda'
 import { saveAs } from 'file-saver'
-import { Box, Button, Field, Select, Slider } from 'theme-ui'
-import { IconButton, Layout } from '../../components'
+import { Box, Select, Slider } from 'theme-ui'
+import { ConfigField, ConfigMenu, Layout } from '../../components'
 import { chooseFrom, ofShape, seed, simplexNoise2d } from '../../lib/generator'
-import usePaper from '../../lib/usePaper'
+import { useGenerators, usePaper } from '../../effects'
 
 const DotNoise = () => {
-  const [configOpen, setConfigOpen] = useState(false)
-
-  const [seedStr, setSeedStr] = useState('Blips and blops!')
+  const [seed, setSeed] = useState('Blips and blops!')
   const [noiseZoom, setNoiseZoom] = useState(150)
+  const { generate } = useGenerators({ seed })
 
-  const [{ initPalette, noise }] = ofShape({
+  const { initPalette, noise } = generate(ofShape({
     initPalette: chooseFrom(tome.getAll()),
     noise: simplexNoise2d({ zoom: noiseZoom })
-  })(seed(seedStr))
+  }))
 
   const [palette, setPalette] = useState(initPalette)
+  const [q, setQ] = useState(5)
 
   const colors = chroma
     .scale(palette.colors)
@@ -35,75 +35,45 @@ const DotNoise = () => {
     .mode('lab')
     .domain([-1, 1])
 
-  const background = palette.background
-
-  const setup = () => {
-    const bounds = paper.view.bounds
+  const setup = useCallback(({ project }) => {
+    const bounds = project.view.bounds
     const { width, height } = bounds
-    const q = 0.1 * noiseZoom
     const bg = new Shape.Rectangle(bounds)
-    bg.fillColor = background
-
-    for (let x = q / 2; x < width + q; x += q) {
-      for (let y = q / 2; y < height + q; y += q) {
+    bg.fillColor = palette.background
+    const qFactor = Math.floor(width / q)
+    for (let x = qFactor / 2; x < width + qFactor; x += qFactor) {
+      for (let y = qFactor / 2; y < height + qFactor; y += qFactor) {
         const pos = new Point(x, y)
         const n = noise(x, y)
         const nn = Math.abs(n)
-        const square = new Shape.Circle(pos, (nn * q + q / 2) / Math.PI)
-        square.fillColor = scale(n).name()
+        const square = new Shape.Circle(pos, (nn * qFactor + qFactor / 2) / Math.PI)
+        square.fillColor = scale(n).hex()
       }
     }
-  }
+  }, [palette, q, scale, noise])
 
   const onResize = setup
 
-  const { canvasRef } = usePaper(() => {}, { setup, onResize })
+  const { canvasRef } = usePaper({ setup, onResize })
 
   return (
     <Layout meta={{ title: 'Dot Noise' }}>
       <Box sx={{ position: 'relative', width: '100%', height: '100%' }}>
         <canvas ref={canvasRef} sx={{ width: '100%', height: '100%' }} />
-        <Box
-          as='form'
-          sx={{
-            variant: 'forms.form',
-            top: 0,
-            right: 0,
-            position: 'absolute',
-            opacity: configOpen ? 1 : 0,
-            transition: 'opacity .25s ease-in-out'
-
-          }}
+        <ConfigMenu
           onSubmit={event => event.preventDefault()}
-        >
-          <Field label='Seed' name='seed' value={seedStr} onChange={R.compose(setSeedStr, R.prop('value'), R.prop('target'))} />
-          <Field label={`Palette: ${palette.name}`} as={Select} name='palette' defaultValue={palette.name} onChange={R.compose(setPalette, tome.get, R.prop('value'), R.prop('target'))}>
-            {tome.getNames().map(name => <option key={name}>{name}</option>)}
-          </Field>
-          <Field label={`Noise Zoom: ${noiseZoom}`} as={Slider} name='noiseZoom' min={1} max={1200} defaultValue={noiseZoom} onChange={R.compose(setNoiseZoom, Number.parseInt, R.prop('value'), R.prop('target'))} />
-          <Button
-            variant='primary'
-            sx={{
-              justifySelf: 'stretch'
-            }}
-            onClick={() => {
-              const data = new Blob([paper.project.exportSVG({ asString: true })], { type: 'image/svg+xml;charset=utf-8' })
-              saveAs(data, 'Dot Noise')
-            }}
-          >
-            Save SVG
-          </Button>
-        </Box>
-        <IconButton
-          icon='gear'
-          sx={{
-            position: 'absolute',
-            top: 0,
-            right: 0,
-            opacity: 1
+          onClickDownload={() => {
+            const data = new Blob([paper.project.exportSVG({ asString: true })], { type: 'image/svg+xml;charset=utf-8' })
+            saveAs(data, 'Dot Noise')
           }}
-          onClick={() => setConfigOpen(!configOpen)}
-        />
+        >
+          <ConfigField label='Seed' name='seed' value={seed} onChange={R.compose(setSeed, R.prop('value'), R.prop('target'))} />
+          <ConfigField label={`Palette: ${palette.name}`} as={Select} name='palette' defaultValue={palette.name} onChange={R.compose(setPalette, tome.get, R.prop('value'), R.prop('target'))}>
+            {tome.getNames().map(name => <option key={name}>{name}</option>)}
+          </ConfigField>
+          <ConfigField label={`Noise Zoom: ${noiseZoom}`} as={Slider} name='noiseZoom' min={1} max={1200} defaultValue={noiseZoom} onChange={R.compose(setNoiseZoom, Number.parseInt, R.prop('value'), R.prop('target'))} />
+          <ConfigField label={`Q: ${q}`} as={Slider} name='q' min={1} max={200} defaultValue={q} onChange={R.compose(setQ, Number.parseInt, R.prop('value'), R.prop('target'))} />
+        </ConfigMenu>
       </Box>
     </Layout>
   )

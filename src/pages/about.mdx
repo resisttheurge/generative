@@ -1,4 +1,4 @@
-import { Flex, Button } from 'theme-ui'
+import { Box, Flex, Button } from 'theme-ui'
 import * as R from 'ramda'
 import { Layout } from '../components'
 import strategies from '../lib/strategies'
@@ -54,4 +54,4 @@ _let me in let me in_
 
 _**yiiiiiiikes**_
 
-export default ({ children }) => <Layout meta={meta}>{children}</Layout>
+export default ({ children }) => <Layout meta={meta}><Box sx={{ width: '100%', height: '100%', overflowY: 'auto' }}>{children}</Box></Layout>

@@ -5,7 +5,7 @@ import IconButton from '../IconButton'
 export const ConfigField = forwardRef(({ as: Control = Input, randomizable = false, label, name, ...props }, ref) => {
   return (
     <Flex variant='forms.menu.field'>
-      <Flex>
+      <Flex sx={{ justifyContent: 'space-between', alignItems: 'baseline' }}>
         <Label htmlFor={name}>{label}</Label>
         {randomizable ? <IconButton icon='dice' /> : undefined}
       </Flex>
@@ -13,5 +13,7 @@ export const ConfigField = forwardRef(({ as: Control = Input, randomizable = fal
     </Flex>
   )
 })
+
+ConfigField.displayName = 'ConfigField'
 
 export default ConfigField

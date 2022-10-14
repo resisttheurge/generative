@@ -15,6 +15,7 @@ export const fontWeights = {
 }
 
 export const lineHeights = {
+  monospace: 1.2,
   body: 1.5,
   heading: 1.125,
   display: 1.0

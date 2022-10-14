@@ -2,93 +2,66 @@
 
 import paper, { Path, Point } from 'paper'
 import { map, range, chain } from 'ramda'
-import { IconButton, Layout } from '../../components'
+import { ConfigField, ConfigMenu, Layout } from '../../components'
 import { saveAs } from 'file-saver'
-import usePaper from '../../lib/usePaper'
-import { useMemo, useState } from 'react'
+import { usePaper } from '../../effects'
+import { useState } from 'react'
 import * as tome from 'chromotome'
-import { Box, Button, Field, Select } from 'theme-ui'
+import { Box, Select, Slider } from 'theme-ui'
 import * as R from 'ramda'
 
 const RainbowClouds = () => {
-  const [configOpen, setConfigOpen] = useState(false)
   const [palette, setPalette] = useState(tome.getRandom())
+  const [radius, setRadius] = useState(50)
 
-  const setup = useMemo(() => () => {
-    const { x: width, y: height } = paper.view.bounds.bottomRight
-    console.log(width, height)
-    const xs = map(x => Math.floor(x * 50), range(0, (width + 0) / 50))
-    const ys = map(y => Math.floor(y * 50), range(0, (height + 0) / 50))
+  const setup = ({ project, state }) => {
+    const { width, height } = project.view.bounds
 
-    const circles = chain(
+    const xs = map(x => Math.floor(x * radius), range(0, (width + 0) / radius))
+    const ys = map(y => Math.floor(y * radius), range(0, (height + 0) / radius))
+
+    return chain(
       x =>
         map(y => {
           const point = new Point(x, y)
-          const circle = new Path.Circle(point, 50)
-          circle.fillColor = palette.colors[(x / 50 + y / 50) % palette.colors.length]
-          return [point.clone(), circle]
+          const circle = new Path.Circle(point, radius)
+          circle.fillColor = palette.colors[Math.floor(x / radius + y / radius) % palette.colors.length]
+          return [point, circle]
         }, ys),
       xs
     )
+  }
 
-    paper.view.onFrame = event => {
-      circles.forEach(([center, circle], i) => {
-        const cosinus = Math.cos(event.time * 3 + i)
-        const sinus = Math.sin(event.time * 3 + i)
-        circle.position.x = cosinus * (width / 50) + center.x
-        circle.position.y = sinus * (height / 50) + center.y
-      })
-    }
-    paper.view.update()
-  }, [palette])
+  const onFrame = ({ project, event, state }) => {
+    const { width, height } = project.view.bounds
+    state.forEach(([center, circle], i) => {
+      const cosinus = Math.cos(event.time * 3 + i)
+      const sinus = Math.sin(event.time * 3 + i)
+      circle.position.x = cosinus * (width / radius) + center.x
+      circle.position.y = sinus * (height / radius) + center.y
+      return [center, circle]
+    })
+    return state
+  }
 
-  const onResize = setup
-
-  const { canvasRef } = usePaper(() => {}, { setup, onResize })
+  const { canvasRef } = usePaper({ setup, onFrame })
 
   return (
     <Layout meta={{ title: 'Rainbow Clouds ' }}>
       <Box sx={{ position: 'relative', width: '100%', height: '100%' }}>
         <canvas ref={canvasRef} sx={{ width: '100%', height: '100%' }} />
-        <Box
-          as='form'
-          sx={{
-            variant: 'forms.form',
-            top: 0,
-            right: 0,
-            position: 'absolute',
-            opacity: configOpen ? 1 : 0,
-            transition: 'opacity .25s ease-in-out'
-
-          }}
+        <ConfigMenu
           onSubmit={event => event.preventDefault()}
-        >
-          <Field label={`Palette: ${palette.name}`} as={Select} name='palette' defaultValue={palette.name} onChange={R.compose(setPalette, tome.get, R.prop('value'), R.prop('target'))}>
-            {tome.getNames().map(name => <option key={name}>{name}</option>)}
-          </Field>
-          <Button
-            variant='primary'
-            sx={{
-              justifySelf: 'stretch'
-            }}
-            onClick={() => {
-              const data = new Blob([paper.project.exportSVG({ asString: true })], { type: 'image/svg+xml;charset=utf-8' })
-              saveAs(data, 'Rainbow Clouds')
-            }}
-          >
-            Save SVG
-          </Button>
-        </Box>
-        <IconButton
-          icon='gear'
-          sx={{
-            position: 'absolute',
-            top: 0,
-            right: 0,
-            opacity: 1
+          onClickDownload={() => {
+            const data = new Blob([paper.project.exportSVG({ asString: true })], { type: 'image/svg+xml;charset=utf-8' })
+            saveAs(data, 'Rainbow Clouds')
           }}
-          onClick={() => setConfigOpen(!configOpen)}
-        />
+        >
+          <ConfigField label={`Palette: ${palette.name}`} as={Select} name='palette' defaultValue={palette.name} onChange={R.compose(setPalette, tome.get, R.prop('value'), R.prop('target'))}>
+            {tome.getNames().map(name => <option key={name}>{name}</option>)}
+          </ConfigField>
+          <ConfigField label={`Radius: ${radius}`} as={Slider} name='radius' defaultValue={radius} onChange={R.compose(setRadius, Number.parseInt, R.prop('value'), R.prop('target'))} />
+        </ConfigMenu>
       </Box>
     </Layout>
   )

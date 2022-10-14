@@ -8,7 +8,7 @@ import { sphericalAnnulus } from './sphericalAnnulus'
 
 // adapted from https://www.cs.ubc.ca/~rbridson/docs/bridson-siggraph07-poissondisk.pdf
 
-export const blueNoiseLib = ({ dimensions, radius, samples }) => {
+export const blueNoiseLib = ({ dimensions, offset = 0, radius, samples }) => {
   const n = dimensions.length
   const radius2 = radius * radius
   const sqrtN = Math.sqrt(n)
@@ -21,10 +21,10 @@ export const blueNoiseLib = ({ dimensions, radius, samples }) => {
 
   const inBounds =
     pos =>
-      pos.every((n, i) => n >= 0 && n <= dimensions[i])
+      pos.every((n, i) => n >= 0 + offset && n <= dimensions[i] - offset)
 
   const initPos =
-    tuple(dimensions.map(n => number({ min: 0, max: n })))
+    tuple(dimensions.map(n => number({ min: 0 + offset, max: n - offset })))
 
   const initState =
     pos => ({

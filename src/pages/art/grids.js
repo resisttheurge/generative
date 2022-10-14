@@ -6,9 +6,9 @@ import { blueNoiseLib, blueNoise, number, chooseFrom, int, bool, simplexNoise2d,
 import * as R from 'ramda'
 import { fromJS } from 'immutable'
 import { useState } from 'react'
-import { IconButton, Layout } from '../../components'
-import { Box, Button, Field } from 'theme-ui'
-import usePaper from '../../lib/usePaper'
+import { ConfigField, ConfigMenu, Layout } from '../../components'
+import { Box } from 'theme-ui'
+import { useGenerators, usePaper } from '../../effects'
 import { saveAs } from 'file-saver'
 
 // State
@@ -101,7 +101,7 @@ const curveConfig = ({ resolution, palette, backgroundColor }) =>
       return ofShape({
         miterLimit,
         segmentLength,
-        numSegments: int({ min: 10, max: 40 }),
+        numSegments: int({ min: 1, max: 30 }),
         strokeColor: safeStrokeColor({ palette, backgroundColor }),
         opacity: number({ min: 0.1, max: 1 }),
         strokeWidth: int({ min: 1, max: resolution }),
@@ -171,7 +171,7 @@ const config = ({ position = { x: 0, y: 0 }, width, height }) =>
     record({
       curveGenOptions,
       palette: chooseFrom(tome.getAll()),
-      resolutionFactor: number({ min: 5, max: 50 }),
+      resolutionFactor: number({ min: 2, max: 10 }),
       noiseComponent: uniform,
       piDivisions: chooseFrom([2, 3, 5, 7, 11]),
       poissonSamples: int({ min: 5, max: 10 }),
@@ -213,20 +213,13 @@ const data = ({ position, width, height }) =>
   )
 
 const Grids = () => {
-  const [configOpen, setConfigOpen] = useState(false)
-  const [seedStr, setSeedStr] = useState('Griidsss')
+  const [seed, setSeed] = useState('Big and ')
+  const { generate } = useGenerators({ seed })
 
-  let curSeed = seed(seedStr)
+  const setup = ({ project }) => {
+    const { lib, grid, samples, config } = generate(data(paper.view.size))
 
-  const setup = () => {
-    const [{ lib, grid, samples, config }, setupSeed] = data(paper.view.size)(curSeed)
-    curSeed = setupSeed
-
-    // console.groupCollapsed('Data')
-    // console.dir({ lib, grid, samples, config })
-    // console.groupEnd()
-
-    const background = new Path.Rectangle(paper.view.bounds)
+    const background = new Path.Rectangle(project.view.bounds)
     background.fillColor = config.backgroundColor
 
     const options = config.curveGenOptions
@@ -263,49 +256,21 @@ const Grids = () => {
 
   const onResize = setup
 
-  const { canvasRef } = usePaper(() => {}, { setup, onResize })
+  const { canvasRef } = usePaper({ setup, onResize })
 
   return (
     <Layout meta={{ title: 'Grids' }}>
       <Box sx={{ position: 'relative', width: '100%', height: '100%' }}>
         <canvas ref={canvasRef} sx={{ width: '100%', height: '100%' }} />
-        <Box
-          as='form'
-          sx={{
-            variant: 'forms.form',
-            top: 0,
-            right: 0,
-            position: 'absolute',
-            opacity: configOpen ? 1 : 0,
-            transition: 'opacity .25s ease-in-out'
-
-          }}
+        <ConfigMenu
           onSubmit={event => event.preventDefault()}
-        >
-          <Field label='Seed' name='seed' value={seedStr} onChange={R.compose(setSeedStr, R.prop('value'), R.prop('target'))} />
-          <Button
-            variant='primary'
-            sx={{
-              justifySelf: 'stretch'
-            }}
-            onClick={() => {
-              const data = new Blob([paper.project.exportSVG({ asString: true })], { type: 'image/svg+xml;charset=utf-8' })
-              saveAs(data, 'Grids')
-            }}
-          >
-            Save SVG
-          </Button>
-        </Box>
-        <IconButton
-          icon='gear'
-          sx={{
-            position: 'absolute',
-            top: 0,
-            right: 0,
-            opacity: 1
+          onClickDownload={() => {
+            const data = new Blob([paper.project.exportSVG({ asString: true })], { type: 'image/svg+xml;charset=utf-8' })
+            saveAs(data, 'Grids')
           }}
-          onClick={() => setConfigOpen(!configOpen)}
-        />
+        >
+          <ConfigField label='Seed' name='seed' value={seed} onChange={R.compose(setSeed, R.prop('value'), R.prop('target'))} />
+        </ConfigMenu>
       </Box>
     </Layout>
   )
