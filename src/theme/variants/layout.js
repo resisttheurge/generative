@@ -1,4 +1,5 @@
 export const mobile = {
+  position: 'fixed',
   display: 'grid',
   gridGap: 0,
   gridTemplateRows: 'min-content 1fr',
