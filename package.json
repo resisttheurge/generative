@@ -23,6 +23,7 @@
     "chroma-js": "^2.1.0",
     "chromotome": "^1.16.1",
     "file-saver": "^2.0.2",
+    "fscreen": "^1.2.0",
     "gl-matrix": "^3.3.0",
     "immutable": "^4.1.0",
     "material-icons": "^0.3.1",

@@ -15,6 +15,7 @@ import ColorMode from './svg/noun-color-mode.svg'
 import Dice from './svg/noun-dice.svg'
 import Download from './svg/noun-download.svg'
 import Edit from './svg/noun-edit.svg'
+import Expand from './svg/noun-expand.svg'
 import EyeClosed from './svg/noun-eye-closed.svg'
 import Eye from './svg/noun-eye.svg'
 import Gear from './svg/noun-gear.svg'
@@ -41,6 +42,7 @@ const colorMode = 'color-mode'
 const dice = 'dice'
 const download = 'download'
 const edit = 'edit'
+const expand = 'expand'
 const eyeClosed = 'eye-closed'
 const eye = 'eye'
 const gear = 'gear'
@@ -68,6 +70,7 @@ export const nouns = [
   dice,
   download,
   edit,
+  expand,
   eyeClosed,
   eye,
   gear,
@@ -112,6 +115,8 @@ export const Icon = ({ noun, size = 0, ...props }) => {
         return Download
       case edit:
         return Edit
+      case expand:
+        return Expand
       case eyeClosed:
         return EyeClosed
       case eye:

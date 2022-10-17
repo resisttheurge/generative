@@ -1,5 +1,6 @@
 export const mobile = {
   position: 'fixed',
+  bg: 'background',
   display: 'grid',
   gridGap: 0,
   gridTemplateRows: 'min-content 1fr',
@@ -19,13 +20,15 @@ export const mobile = {
     zIndex: 'header'
   },
 
+  iconButton: {
+    variant: 'buttons.icon'
+
+  },
+
   leftMenu: {
-    variant: 'buttons.icon',
     gridArea: 'leftMenu',
-    m: 2,
-    justifySelf: 'center',
-    alignSelf: 'center',
-    zIndex: 'header'
+    zIndex: 'header',
+    m: 2
   },
 
   heading: {
@@ -37,12 +40,9 @@ export const mobile = {
   },
 
   rightMenu: {
-    variant: 'buttons.icon',
     gridArea: 'rightMenu',
-    m: 2,
-    justifySelf: 'center',
-    alignSelf: 'center',
-    zIndex: 'header'
+    zIndex: 'header',
+    m: 2
   },
 
   content: {

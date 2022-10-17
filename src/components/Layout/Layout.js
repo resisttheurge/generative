@@ -1,10 +1,12 @@
 import Head from 'next/head'
-import { Box, Heading, useColorMode, useThemeUI } from 'theme-ui'
+import { Box, Flex, Heading, useColorMode, useThemeUI } from 'theme-ui'
 import { useCallback, useState } from 'react'
 
 import { IconButton } from '../IconButton'
 import SideNav from '../SideNav'
 import links from './links'
+import { useFullscreen } from '../../effects'
+import fscreen from 'fscreen'
 
 export const Layout = ({ meta, ...props }) => {
   const { theme } = useThemeUI()
@@ -16,19 +18,31 @@ export const Layout = ({ meta, ...props }) => {
   const [colorMode, setColorMode] = useColorMode()
   const toggleColorMode = useCallback(() => setColorMode(colorMode === 'default' ? 'dark' : 'default'), [colorMode, setColorMode])
 
+  const { active, enter, exit, node } = useFullscreen()
+  const toggleFullscreen = useCallback(() => active ? exit() : enter(), [active, enter, exit])
+
   return (
     <>
       <Head>
         <title>{meta.title}</title>
         <meta name='theme-color' content={theme.colors.background} />
       </Head>
-      <Box variant='layout.mobile' {...props}>
+      <Box ref={node} variant='layout.mobile' {...props}>
         <Box variant='layout.mobile.headerBar' />
-        <IconButton variant='layout.mobile.leftMenu' icon={navOpen ? 'close' : 'menu'} onClick={toggleNav} />
+        <Flex variant='layout.mobile.leftMenu'>
+          <IconButton variant='layout.mobile.iconButton' icon={navOpen ? 'close' : 'menu'} onClick={toggleNav} />
+        </Flex>
         <Heading variant='layout.mobile.heading'>
           {meta.title}
         </Heading>
-        <IconButton variant='layout.mobile.rightMenu' icon='color-mode' onClick={toggleColorMode} />
+        <Flex variant='layout.mobile.rightMenu'>
+          {
+            fscreen.fullscreenEnabled
+              ? <IconButton variant='layout.mobile.iconButton' icon='expand' onClick={toggleFullscreen} />
+              : undefined
+          }
+          <IconButton variant='layout.mobile.iconButton' icon='color-mode' onClick={toggleColorMode} />
+        </Flex>
         <Box as='main' variant='layout.mobile.content' onClick={closeNav}>
           {props.children}
         </Box>

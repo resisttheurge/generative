@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg
+   width="700pt"
+   height="700pt"
+   version="1.1"
+   viewBox="0 0 700 700"
+   id="svg140"
+   sodipodi:docname="noun-expand-5223473.svg"
+   inkscape:version="1.2.1 (9c6d41e4, 2022-07-14)"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg">
+  <sodipodi:namedview
+     id="namedview142"
+     pagecolor="#ffffff"
+     bordercolor="#000000"
+     borderopacity="0.25"
+     inkscape:showpageshadow="2"
+     inkscape:pageopacity="0.0"
+     inkscape:pagecheckerboard="0"
+     inkscape:deskcolor="#d1d1d1"
+     inkscape:document-units="pt"
+     showgrid="false"
+     inkscape:zoom="0.66642857"
+     inkscape:cx="430.6538"
+     inkscape:cy="427.65273"
+     inkscape:window-width="1390"
+     inkscape:window-height="772"
+     inkscape:window-x="0"
+     inkscape:window-y="0"
+     inkscape:window-maximized="0"
+     inkscape:current-layer="svg140" />
+  <defs
+     id="defs68" />
+  <g
+     id="g138"
+     transform="matrix(1.3639254,0,0,1.3639254,-127.37383,-31.900467)">
+    <path
+       d="m 536.67,23.332 h -70 c -12.887,0 -23.332,10.449 -23.332,23.332 C 443.33409,59.551 453.783,70 466.67,70 h 70 c 12.891,0 23.332,10.449 23.332,23.332 v 70 c 0,12.887 10.449,23.332 23.332,23.332 12.887,0 23.332,-10.449 23.332,-23.332 l 0.004,-70 c 0,-38.656 -31.344,-70 -70,-70 z m -303.34,0 h -70 c -38.656,0 -70,31.344 -70,70 v 70 c 0,12.887 10.449,23.332 23.332,23.332 12.887,0.004 23.336,-10.445 23.336,-23.332 v -70 C 139.998,80.445 150.447,70 163.33,70 h 70 c 12.887,0 23.332,-10.449 23.332,-23.328 0.004,-12.891 -10.445,-23.34 -23.332,-23.34 z m 350,350 c -12.887,0 -23.332,10.449 -23.332,23.332 v 70 c 0,12.891 -10.441,23.332 -23.332,23.332 l -70,0.004 c -12.887,0 -23.332,10.449 -23.332,23.332 0,12.887 10.449,23.332 23.332,23.332 h 70 c 38.656,0 70,-31.344 70,-70 v -69.996 c 0,-12.887 -10.449,-23.336 -23.336,-23.336 z m -350,116.67 h -70 c -12.887,0 -23.332,-10.441 -23.332,-23.332 v -70 c 0,-12.887 -10.449,-23.332 -23.328,-23.332 -12.891,0 -23.332,10.449 -23.332,23.332 v 70 c 0,38.656 31.344,70 70,70 h 70 c 12.887,0 23.332,-10.449 23.332,-23.332 0,-12.887 -10.453,-23.336 -23.34,-23.336 z"
+       id="path70" />
+  </g>
+</svg>
