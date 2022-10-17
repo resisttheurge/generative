@@ -1,12 +1,13 @@
 export const mobile = {
+  position: 'fixed',
   display: 'grid',
   gridGap: 0,
   gridTemplateRows: 'min-content 1fr',
   gridTemplateColumns: 'min-content 1fr min-content',
   gridTemplateAreas: '"leftMenu title rightMenu" "content content content"',
   overflow: 'clip',
-  width: '100vw',
-  height: '100vh',
+  width: '100%',
+  height: '100%',
 
   headerBar: {
     gridColumnStart: 1,
