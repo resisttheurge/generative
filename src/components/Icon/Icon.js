@@ -1,32 +1,41 @@
 import propTypes from 'prop-types'
 import { useMemo } from 'react'
 import invariant from 'tiny-invariant'
+import dynamic from 'next/dynamic'
+import { keyframes } from '@emotion/react'
 
-import ArrowDown from './svg/noun-arrow-down.svg'
-import ArrowUp from './svg/noun-arrow-up.svg'
-import BookmarkFilled from './svg/noun-bookmark-filled.svg'
-import Bookmark from './svg/noun-bookmark.svg'
-import Check from './svg/noun-check.svg'
-import CheckboxChecked from './svg/noun-checkbox-checked.svg'
-import CheckboxIndeterminate from './svg/noun-checkbox-indeterminate.svg'
-import Checkbox from './svg/noun-checkbox.svg'
-import Close from './svg/noun-close.svg'
-import ColorMode from './svg/noun-color-mode.svg'
-import Dice from './svg/noun-dice.svg'
-import Download from './svg/noun-download.svg'
-import Edit from './svg/noun-edit.svg'
-import EyeClosed from './svg/noun-eye-closed.svg'
-import Eye from './svg/noun-eye.svg'
-import Gear from './svg/noun-gear.svg'
-import LockOpen from './svg/noun-lock-open.svg'
-import Lock from './svg/noun-lock.svg'
-import Menu from './svg/noun-menu.svg'
-import More from './svg/noun-more.svg'
-import RadioButtonOff from './svg/noun-radio-button-off.svg'
-import RadioButtonOn from './svg/noun-radio-button-on.svg'
-import Random from './svg/noun-random.svg'
-import Refresh from './svg/noun-refresh.svg'
-import Trash from './svg/noun-trash.svg'
+import Loading from './svg/noun-loading.svg'
+
+const load = keyframes({ to: { transform: 'rotate(1turn)' } })
+
+const Fallback = () => <Loading sx={{ variant: 'images.icon', animation: `${load} 0.5s steps(7) infinite` }} />
+
+const ArrowDown = dynamic(() => import('./svg/noun-arrow-down.svg'), { ssr: false, loading: Fallback })
+const ArrowUp = dynamic(() => import('./svg/noun-arrow-up.svg'), { ssr: false, loading: Fallback })
+const BookmarkFilled = dynamic(() => import('./svg/noun-bookmark-filled.svg'), { ssr: false, loading: Fallback })
+const Bookmark = dynamic(() => import('./svg/noun-bookmark.svg'), { ssr: false, loading: Fallback })
+const Check = dynamic(() => import('./svg/noun-check.svg'), { ssr: false, loading: Fallback })
+const CheckboxChecked = dynamic(() => import('./svg/noun-checkbox-checked.svg'), { ssr: false, loading: Fallback })
+const CheckboxIndeterminate = dynamic(() => import('./svg/noun-checkbox-indeterminate.svg'), { ssr: false, loading: Fallback })
+const Checkbox = dynamic(() => import('./svg/noun-checkbox.svg'), { ssr: false, loading: Fallback })
+const Close = dynamic(() => import('./svg/noun-close.svg'), { ssr: false, loading: Fallback })
+const ColorMode = dynamic(() => import('./svg/noun-color-mode.svg'), { ssr: false, loading: Fallback })
+const Dice = dynamic(() => import('./svg/noun-dice.svg'), { ssr: false, loading: Fallback })
+const Download = dynamic(() => import('./svg/noun-download.svg'), { ssr: false, loading: Fallback })
+const Edit = dynamic(() => import('./svg/noun-edit.svg'), { ssr: false, loading: Fallback })
+const Expand = dynamic(() => import('./svg/noun-expand.svg'), { ssr: false, loading: Fallback })
+const EyeClosed = dynamic(() => import('./svg/noun-eye-closed.svg'), { ssr: false, loading: Fallback })
+const Eye = dynamic(() => import('./svg/noun-eye.svg'), { ssr: false, loading: Fallback })
+const Gear = dynamic(() => import('./svg/noun-gear.svg'), { ssr: false, loading: Fallback })
+const LockOpen = dynamic(() => import('./svg/noun-lock-open.svg'), { ssr: false, loading: Fallback })
+const Lock = dynamic(() => import('./svg/noun-lock.svg'), { ssr: false, loading: Fallback })
+const Menu = dynamic(() => import('./svg/noun-menu.svg'), { ssr: false, loading: Fallback })
+const More = dynamic(() => import('./svg/noun-more.svg'), { ssr: false, loading: Fallback })
+const RadioButtonOff = dynamic(() => import('./svg/noun-radio-button-off.svg'), { ssr: false, loading: Fallback })
+const RadioButtonOn = dynamic(() => import('./svg/noun-radio-button-on.svg'), { ssr: false, loading: Fallback })
+const Random = dynamic(() => import('./svg/noun-random.svg'), { ssr: false, loading: Fallback })
+const Refresh = dynamic(() => import('./svg/noun-refresh.svg'), { ssr: false, loading: Fallback })
+const Trash = dynamic(() => import('./svg/noun-trash.svg'), { ssr: false, loading: Fallback })
 
 const arrowDown = 'arrow-down'
 const arrowUp = 'arrow-up'
@@ -41,9 +50,11 @@ const colorMode = 'color-mode'
 const dice = 'dice'
 const download = 'download'
 const edit = 'edit'
+const expand = 'expand'
 const eyeClosed = 'eye-closed'
 const eye = 'eye'
 const gear = 'gear'
+const loading = 'loading'
 const lockOpen = 'lock-open'
 const lock = 'lock'
 const menu = 'menu'
@@ -68,9 +79,11 @@ export const nouns = [
   dice,
   download,
   edit,
+  expand,
   eyeClosed,
   eye,
   gear,
+  loading,
   lockOpen,
   lock,
   menu,
@@ -112,12 +125,16 @@ export const Icon = ({ noun, size = 0, ...props }) => {
         return Download
       case edit:
         return Edit
+      case expand:
+        return Expand
       case eyeClosed:
         return EyeClosed
       case eye:
         return Eye
       case gear:
         return Gear
+      case loading:
+        return Loading
       case lockOpen:
         return LockOpen
       case lock:

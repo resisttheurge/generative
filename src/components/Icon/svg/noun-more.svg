@@ -4,7 +4,7 @@
    height="700pt"
    version="1.1"
    viewBox="0 0 700 700"
-   id="svg10"
+   id="svg369"
    sodipodi:docname="noun-more.svg"
    inkscape:version="1.2.1 (9c6d41e4, 2022-07-14)"
    xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
@@ -12,9 +12,9 @@
    xmlns="http://www.w3.org/2000/svg"
    xmlns:svg="http://www.w3.org/2000/svg">
   <defs
-     id="defs14" />
+     id="defs373" />
   <sodipodi:namedview
-     id="namedview12"
+     id="namedview371"
      pagecolor="#ffffff"
      bordercolor="#000000"
      borderopacity="0.25"
@@ -24,26 +24,26 @@
      inkscape:deskcolor="#d1d1d1"
      inkscape:document-units="pt"
      showgrid="false"
-     inkscape:zoom="1.3459661"
-     inkscape:cx="845.48932"
-     inkscape:cy="474.75191"
-     inkscape:window-width="1309"
-     inkscape:window-height="456"
+     inkscape:zoom="0.66642857"
+     inkscape:cx="430.6538"
+     inkscape:cy="7.5026795"
+     inkscape:window-width="1390"
+     inkscape:window-height="772"
      inkscape:window-x="0"
      inkscape:window-y="0"
      inkscape:window-maximized="0"
-     inkscape:current-layer="svg10" />
+     inkscape:current-layer="svg369" />
   <g
-     id="g8"
-     transform="matrix(1.3884181,0,0,1.3884181,-135.94633,-38.757063)">
+     id="g367"
+     transform="matrix(1.3885316,0,0,1.3885316,-135.98607,-38.788853)">
     <path
-       d="m 602,280 c 0,42.527 -34.473,77 -77,77 -42.527,0 -77,-34.473 -77,-77 0,-42.527 34.473,-77 77,-77 42.527,0 77,34.473 77,77 z"
-       id="path2" />
+       d="m 427,105 c 0,42.527 -34.473,77 -77,77 -42.527,0 -77,-34.473 -77,-77 0,-42.527 34.473,-77 77,-77 42.527,0 77,34.473 77,77 z"
+       id="path361" />
     <path
-       d="m 406,280 c 0,38.66 -31.34,70 -70,70 -38.66,0 -70,-31.34 -70,-70 0,-38.66 31.34,-70 70,-70 38.66,0 70,31.34 70,70 z"
-       id="path4" />
+       d="m 420,294 c 0,38.66 -31.34,70 -70,70 -38.66,0 -70,-31.34 -70,-70 0,-38.66 31.34,-70 70,-70 38.66,0 70,31.34 70,70 z"
+       id="path363" />
     <path
-       d="m 161,343 c 34.793,0 63,-28.207 63,-63 0,-34.793 -28.207,-63 -63,-63 -34.793,0 -63,28.207 -63,63 0,34.793 28.207,63 63,63 z"
-       id="path6" />
+       d="m 350,532 c 34.793,0 63,-28.207 63,-63 0,-34.793 -28.207,-63 -63,-63 -34.793,0 -63,28.207 -63,63 0,34.793 28.207,63 63,63 z"
+       id="path365" />
   </g>
 </svg>

@@ -1,5 +1,8 @@
+import { normalizeRepeatedSlashes } from 'next/dist/shared/lib/utils'
+
 export const mobile = {
   position: 'fixed',
+  bg: 'background',
   display: 'grid',
   gridGap: 0,
   gridTemplateRows: 'min-content 1fr',
@@ -19,12 +22,13 @@ export const mobile = {
     zIndex: 'header'
   },
 
-  leftMenu: {
+  iconButton: {
     variant: 'buttons.icon',
+    m: 2
+  },
+
+  leftMenu: {
     gridArea: 'leftMenu',
-    m: 2,
-    justifySelf: 'center',
-    alignSelf: 'center',
     zIndex: 'header'
   },
 
@@ -37,11 +41,7 @@ export const mobile = {
   },
 
   rightMenu: {
-    variant: 'buttons.icon',
     gridArea: 'rightMenu',
-    m: 2,
-    justifySelf: 'center',
-    alignSelf: 'center',
     zIndex: 'header'
   },
 
@@ -52,6 +52,18 @@ export const mobile = {
     alignSelf: 'stretch',
     overflow: 'hidden',
     zIndex: 'content'
+  },
+
+  moreMenu: {
+    gridArea: 'content',
+    justifySelf: 'right',
+    alignSelf: 'top',
+    zIndex: 'header',
+
+    flexDirection: 'column',
+    '& > *': {
+      boxShadow: 'card'
+    }
   },
 
   sideNav: {
