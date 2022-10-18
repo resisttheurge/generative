@@ -6,7 +6,6 @@ import { IconButton } from '../IconButton'
 import SideNav from '../SideNav'
 import links from './links'
 import { useFullscreen } from '../../effects'
-import fscreen from 'fscreen'
 
 export const Layout = ({ meta, ...props }) => {
   const { theme } = useThemeUI()
@@ -15,11 +14,31 @@ export const Layout = ({ meta, ...props }) => {
   const toggleNav = useCallback(() => setNavOpen(!navOpen), [navOpen, setNavOpen])
   const closeNav = useCallback(() => setNavOpen(false), [setNavOpen])
 
+  const [moreOpen, setMoreOpen] = useState(false)
+  const toggleMore = useCallback(() => setMoreOpen(!moreOpen), [moreOpen, setMoreOpen])
+  const closeMore = useCallback(() => setMoreOpen(false), [setMoreOpen])
+
+  const closeMenus = useCallback(() => {
+    closeNav()
+    closeMore()
+  }, [closeNav, closeMore])
+
   const [colorMode, setColorMode] = useColorMode()
   const toggleColorMode = useCallback(() => setColorMode(colorMode === 'default' ? 'dark' : 'default'), [colorMode, setColorMode])
 
   const { active, enter, exit, node } = useFullscreen()
   const toggleFullscreen = useCallback(() => active ? exit() : enter(), [active, enter, exit])
+
+  const MoreMenu = ({ open }) => (
+    open
+      ? (
+        <Flex variant='layout.mobile.moreMenu'>
+          <IconButton variant='layout.mobile.iconButton' icon='color-mode' onClick={toggleColorMode} />
+          <IconButton variant='layout.mobile.iconButton' icon='expand' onClick={toggleFullscreen} />
+        </Flex>
+        )
+      : null
+  )
 
   return (
     <>
@@ -36,16 +55,12 @@ export const Layout = ({ meta, ...props }) => {
           {meta.title}
         </Heading>
         <Flex variant='layout.mobile.rightMenu'>
-          {
-            fscreen.fullscreenEnabled
-              ? <IconButton variant='layout.mobile.iconButton' icon='expand' onClick={toggleFullscreen} />
-              : undefined
-          }
-          <IconButton variant='layout.mobile.iconButton' icon='color-mode' onClick={toggleColorMode} />
+          <IconButton variant='layout.mobile.iconButton' icon='more' onClick={toggleMore} />
         </Flex>
-        <Box as='main' variant='layout.mobile.content' onClick={closeNav}>
+        <Box as='main' variant='layout.mobile.content' onClick={closeMenus}>
           {props.children}
         </Box>
+        <MoreMenu open={moreOpen} />
         <SideNav variant='layout.mobile.sideNav' open={navOpen} links={links} />
       </Box>
     </>

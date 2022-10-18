@@ -9864,6 +9864,7 @@ resolve@^2.0.0-next.3:
     standard: ^16.0.3
     theme-ui: ^0.14.7
     tiny-invariant: ^1.3.1
+    uuid: ^9.0.0
   languageName: unknown
   linkType: soft
 
@@ -11075,6 +11076,15 @@ resolve@^2.0.0-next.3:
   bin:
     uuid: dist/bin/uuid
   checksum: aed2bcef341f95635f308fea8831fb9038b18c485fe7e71feb89d2e05602dfecad0cb6f2246fae096d4da425cca6e8a71056f28abd97ad98cf770a2018853248
+  languageName: node
+  linkType: hard
+
+"uuid@npm:^9.0.0":
+  version: 9.0.0
+  resolution: "uuid@npm:9.0.0"
+  bin:
+    uuid: dist/bin/uuid
+  checksum: 5a7f936a25dad15398521ae14412d70b278e1187f108f5c68c5af97138e61cc4c80dbb61ee194756f825e2f1e70d37095b9239b3fdf78f9d892b93ad30085e6a
   languageName: node
   linkType: hard
 
