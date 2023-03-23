@@ -6,7 +6,9 @@ const withMDX = require('@next/mdx')({
   }
 })
 module.exports = withMDX({
-
+  compiler: {
+    emotion: true
+  },
   // Append the default value with md extensions
   pageExtensions: ['js', 'mdx'],
   webpack (config) {
