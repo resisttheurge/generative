@@ -1,6 +1,7 @@
 
 import Link from 'next/link'
-import { NavLink, Text, Themed } from 'theme-ui'
+import { NavLink, Text } from 'theme-ui'
+import { Themed } from '@theme-ui/mdx'
 
 const { ul: Ul, li: Li } = Themed
 
