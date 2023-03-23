@@ -8,7 +8,7 @@ import { sphericalAnnulus } from './sphericalAnnulus'
 
 // adapted from https://www.cs.ubc.ca/~rbridson/docs/bridson-siggraph07-poissondisk.pdf
 
-export const blueNoiseLib = ({ dimensions, offset = 0, radius, samples }) => {
+export const blueNoiseLib = ({ dimensions, padding = 0, radius, samples }) => {
   const n = dimensions.length
   const radius2 = radius * radius
   const sqrtN = Math.sqrt(n)
@@ -21,10 +21,10 @@ export const blueNoiseLib = ({ dimensions, offset = 0, radius, samples }) => {
 
   const inBounds =
     pos =>
-      pos.every((n, i) => n >= 0 + offset && n <= dimensions[i] - offset)
+      pos.every((n, i) => n >= 0 + padding && n <= dimensions[i] - padding)
 
   const initPos =
-    tuple(dimensions.map(n => number({ min: 0 + offset, max: n - offset })))
+    tuple(dimensions.map(n => number({ min: 0 + padding, max: n - padding })))
 
   const initState =
     pos => ({
@@ -147,7 +147,7 @@ export const blueNoiseLib = ({ dimensions, offset = 0, radius, samples }) => {
 }
 
 /** const poisson: config => State RNG [[x, y]] */
-export const blueNoise = (blueNoiseLib) => {
+export const blueNoise = (config) => {
   const {
     samples,
     inBounds,
@@ -158,7 +158,7 @@ export const blueNoise = (blueNoiseLib) => {
     near,
     emitSample,
     removeActiveIndex
-  } = blueNoiseLib
+  } = blueNoiseLib(config)
 
   return flatMap(
     (state) => Generator(
@@ -181,7 +181,7 @@ export const blueNoise = (blueNoiseLib) => {
             currentState = removeActiveIndex(currentState)(curIdx)
           }
         }
-        return [currentState.samples, currentSeed]
+        return [currentState.samples.toJS(), currentSeed]
       }
     ),
     map(initState, initPos)

@@ -2,232 +2,166 @@
 
 import * as tome from 'chromotome'
 import paper, { Point, Path } from 'paper'
-import { blueNoiseLib, blueNoise, number, chooseFrom, int, bool, simplexNoise2d, flatMap, record, repeat, ofShape, uniform, map, tuple, seed } from '../../lib/generator'
+import { blueNoise, number, chooseFrom, int, bool, simplexNoise2d, flatMap, record, repeat, ofShape, map, flowField, constant } from '../../lib/generator'
 import * as R from 'ramda'
-import { fromJS } from 'immutable'
-import { useState } from 'react'
+import { useCallback, useMemo, useState } from 'react'
 import { ConfigField, ConfigMenu, Layout } from '../../components'
-import { Box } from 'theme-ui'
+import { Box, Checkbox, Select, Slider, useThemeUI } from 'theme-ui'
 import { useGenerators, usePaper } from '../../effects'
 import { saveAs } from 'file-saver'
+import { Shape } from 'paper/dist/paper-core'
 
-// State
-const initGrid = ({ position, width, height, resolution, noise, thetaGen }) => {
-  const [numCols, numRows] = [width / resolution, height / resolution].map(Math.floor)
-
-  const generator = map(
-    fromJS,
-    tuple(
-      R.range(0, numCols)
-        .map(col =>
-          tuple(
-            R.range(0, numRows)
-              .map(row => {
-                const x = position.x + (col * resolution)
-                const y = position.y + (row * resolution)
-                const theta = thetaGen({ x, y, col, row, numCols, numRows })
-                return ofShape({ x, y, theta })
-              })
-          )
-        )
-    )
-  )
-
-  const gridCoordinates = ({ x, y }) =>
-    [
-      (x - position.x) / resolution,
-      (y - position.y) / resolution
-    ].map(Math.floor)
-
-  const inBounds = (position) => {
-    // console.log(position)
-    const [col, row] = gridCoordinates(position)
-    // console.log(col, row)
-    return col >= 0 && col < numCols && row >= 0 && row < numRows
-  }
-
-  const createCurve = (grid, start, stepLength = resolution, numSteps = 1) => {
-    const curve = new Path()
-    curve.moveTo(start)
-    let cur = start
-    for (let n = 0; n < numSteps; n++) {
-      if (inBounds(cur)) {
-        const cell = grid.getIn(gridCoordinates(cur))
-        const { theta } = cell.toJS()
-        const vector = new Point(stepLength, 0)
-        vector.angleInRadians = theta
-        cur = cur.add(vector)
-        curve.lineTo(cur)
-      } else {
-        break
-      }
+const drawCurve = (field, start, stepLength = field.resolution, numSteps = 1) => {
+  const curve = new Path()
+  curve.moveTo(start)
+  let cur = start
+  for (let n = 0; n < numSteps; n++) {
+    if (field.inBounds(cur)) {
+      const { theta } = field.cellContaining(cur)
+      const vector = new Point(stepLength, 0)
+      vector.angleInRadians = theta
+      cur = cur.add(vector)
+      curve.lineTo(cur)
+    } else {
+      break
     }
-    return curve
   }
-
-  return {
-    position,
-    width,
-    height,
-    resolution,
-    numCols,
-    numRows,
-    generator,
-    gridCoordinates,
-    inBounds,
-    createCurve
-  }
+  return curve
 }
 
-// Random Generators
-const dashArray = segmentLength =>
-  flatMap(
-    numDashPairs =>
-      repeat(numDashPairs * 2, number({ min: 0, max: segmentLength })),
-    int({ min: 0, max: 0 })
-  )
+const Grids = () => {
+  const [seed, setSeed] = useState('Big and')
+  const [palette, setPalette] = useState(tome.getRandom())
+  const [resolutionFactor, setResolutionFactor] = useState(5)
+  const [density, setDensity] = useState(100)
+  const [noiseZoom, setNoiseZoom] = useState(100)
+  const [minSegments, setMinSegments] = useState(2)
+  const [maxSegments, setMaxSegments] = useState(30)
+  const [shouldDrawGrid, setShouldDrawGrid] = useState(false)
+  const [gridOnTop, setGridOnTop] = useState(false)
+  const { generate } = useGenerators({ seed })
+  const { theme } = useThemeUI()
+  const backgroundColor = useMemo(() => palette.background || theme.rawColors.background, [palette, theme])
 
-const safeStrokeColor = ({ palette, backgroundColor }) =>
-  chooseFrom(
+  const resolution = useCallback(({ width, height }) => Math.max(width, height) / resolutionFactor, [resolutionFactor])
+
+  const drawGrid = useCallback((field) => {
+    const grid = []
+    for (const col of field) {
+      const column = []
+      for (const { center, bounds: { min, max }, theta } of col) {
+        const [width, height] = [max.x - min.x, max.y - min.y]
+        const background = new Path.Rectangle(min, { width, height })
+        background.fillColor = theme.rawColors.background
+        background.strokeColor = theme.rawColors.text
+        const point = new Point(Math.max(width, height) / 2, 0)
+        point.angleInRadians = theta
+        const arrow = new Path(center, point.add(center))
+        arrow.strokeColor = theme.rawColors.text
+        column.push({
+          background,
+          arrow
+        })
+      }
+      grid.push(column)
+    }
+  }, [theme])
+
+  const genDashArray = useCallback((segmentLength) => flatMap(
+    numDashPairs => repeat(numDashPairs * 2, number({ min: 0, max: segmentLength })),
+    int({ min: 0, max: 0 })
+  ), [])
+
+  const genSafeStrokeColor = useMemo(() => chooseFrom(
     palette.colors
       .filter(color => color !== backgroundColor)
-  )
+  ), [palette, backgroundColor])
 
-const curveConfig = ({ resolution, palette, backgroundColor }) =>
-  flatMap(
-    ({ segmentLengthFactor, genDashArray, miterLimitFactor }) => {
-      const segmentLength = resolution / segmentLengthFactor
-      const miterLimit = segmentLength / miterLimitFactor
-      return ofShape({
-        miterLimit,
-        segmentLength,
-        numSegments: int({ min: 1, max: 30 }),
-        strokeColor: safeStrokeColor({ palette, backgroundColor }),
-        opacity: number({ min: 0.1, max: 1 }),
-        strokeWidth: int({ min: 1, max: resolution }),
-        strokeCap: chooseFrom(['butt', 'round', 'square']),
-        strokeJoin: chooseFrom(['miter', 'round', 'bevel']),
-        smooth: bool(),
-        simplify: bool(),
-        dashArray: genDashArray ? dashArray(segmentLength) : []
-      })
-    },
-    record({
-      segmentLengthFactor: number({ min: 1, max: 4 }),
-      genDashArray: bool(),
-      miterLimitFactor: number({ min: 1, max: 4 })
+  const genCurveProps = useCallback((size) => flatMap(
+    segmentLength => ofShape({
+      segmentLength,
+      miterLimit: map(factor => segmentLength / factor, number({ min: 1, max: 4 })),
+      numSegments: int({ min: minSegments, max: maxSegments }),
+      strokeColor: genSafeStrokeColor,
+      opacity: number({ min: 0.1, max: 1 }),
+      strokeWidth: int({ min: 1, max: resolution(size) }),
+      strokeCap: chooseFrom(['butt', 'round', 'square']),
+      strokeJoin: chooseFrom(['miter', 'round', 'bevel']),
+      smooth: bool(),
+      simplify: bool(),
+      dashArray: flatMap(dashArray => dashArray ? genDashArray(segmentLength) : constant([]), bool())
+    }),
+    map(factor => resolution(size) / factor, number({ min: 1, max: 4 }))
+  ), [minSegments, maxSegments, resolution, genDashArray, genSafeStrokeColor])
+
+  const genGlobalCurveSwitches = useMemo(() => record({
+    segmentLengthPerCurve: bool(),
+    numSegmentsPerCurve: bool(),
+    colorPerCurve: bool(),
+    opacityPerCurve: bool(),
+    widthPerCurve: bool(),
+    capPerCurve: bool(),
+    joinPerCurve: bool(),
+    dashArrayPerCurve: bool(),
+    smoothPerCurve: bool(),
+    simplifyPerCurve: bool()
+  }), [])
+
+  const genNoise = useMemo(() => simplexNoise2d({ zoom: noiseZoom }), [noiseZoom])
+
+  const genThetaGen = useMemo(() => map(
+    noise =>
+      ({ center: { x, y } }) => map(
+        jitter =>
+          Math.PI *
+            (
+              Math.cos(x) +
+              Math.sin(y) +
+              (jitter * noise(x, y))
+            ),
+        number(({ min: 0, max: 0.25 }))
+      ),
+    genNoise
+  ), [genNoise])
+
+  const genField = useCallback(({ width, height }) => flatMap(
+    thetaGen =>
+      flowField({
+        thetaGen,
+        resolution: resolution({ width, height }),
+        offset: { x: -0.5 * width, y: -0.5 * height },
+        dimensions: { width: 2 * width, height: 2 * height }
+      }),
+    genThetaGen
+  ), [resolution, genThetaGen])
+
+  const genStartingPoints = useCallback(({ width, height }) => flatMap(
+    noiseSamples => ofShape(noiseSamples.map(([x, y]) => ({ x, y, curveProps: genCurveProps }))),
+    blueNoise({
+      dimensions: [width, height],
+      radius: Math.sqrt(width * height / density),
+      samples: 10
     })
-  )
+  ), [genCurveProps, density])
 
-const curveGenOptions = record({
-  segmentLengthPerCurve: bool(),
-  numSegmentsPerCurve: bool(),
-  colorPerCurve: bool(),
-  opacityPerCurve: bool(),
-  widthPerCurve: bool(),
-  capPerCurve: bool(),
-  joinPerCurve: bool(),
-  dashArrayPerCurve: bool(),
-  smoothPerCurve: bool(),
-  simplifyPerCurve: bool()
-})
-
-const config = ({ position = { x: 0, y: 0 }, width, height }) =>
-  flatMap(
-    ({ palette, resolutionFactor, noiseComponent, piDivisions, noise, ...config }) => {
-      const backgroundColor = palette.background || 0xffffffff
-      const resolution = width / resolutionFactor
-      return ofShape({
-        ...config,
-        position,
-        width,
-        height,
-        palette,
-        backgroundColor,
-        resolutionFactor,
-        resolution,
-        noiseComponent,
-        piDivisions,
-        noise,
-        thetaGen: ({ x, y, col, row, numCols, numRows }) =>
-          map(
-            jitter =>
-              Math.PI *
-              (
-                Math.cos(x) +
-                Math.sin(y) +
-                (jitter * noise(x, y))
-              ),
-            number(({ min: 0, max: 0.25 }))
-          ),
-        poissonRadius: map(
-          resolutionFactorNumerator =>
-            resolution * resolutionFactorNumerator / resolutionFactor,
-          int({ min: 1, max: resolutionFactor })
-        ),
-        globalCurveProperties: curveConfig({ resolution, palette, backgroundColor })
-      })
-    },
-    record({
-      curveGenOptions,
-      palette: chooseFrom(tome.getAll()),
-      resolutionFactor: number({ min: 2, max: 10 }),
-      noiseComponent: uniform,
-      piDivisions: chooseFrom([2, 3, 5, 7, 11]),
-      poissonSamples: int({ min: 5, max: 10 }),
-      noise: flatMap(zoom => simplexNoise2d({ zoom }), number({ min: 10, max: 1000 }))
-    })
-  )
-
-const data = ({ position, width, height }) =>
-  flatMap(
-    conf => {
-      const lib = initGrid({ position: { x: -0.5 * width, y: -0.5 * height }, width: 2 * width, height: 2 * height, ...conf })
-      const curveConfigGen = curveConfig({ resolution: lib.resolution, palette: conf.palette, backgroundColor: conf.backgroundColor })
-      const sampler = flatMap(
-        noiseSamples => {
-          // console.dir(noiseSamples)
-          const result = noiseSamples.map(([x, y]) => ofShape({ x, y, curveConfig: curveConfigGen }))
-          // console.dir(result)
-          return tuple(result.toJS())
-        },
-        blueNoise(blueNoiseLib({
-          dimensions: [width, height],
-          radius: conf.poissonRadius,
-          samples: conf.poissonSamples
-        }))
-      )
-      return map(
-        ({ grid, samples }) => ({
-          lib,
-          grid,
-          samples,
-          config: conf
-        }),
-        ofShape({
-          grid: lib.generator,
-          samples: sampler
-        }))
-    },
-    config({ position, width, height })
-  )
-
-const Grids = () => {
-  const [seed, setSeed] = useState('Big and ')
-  const { generate } = useGenerators({ seed })
-
-  const setup = ({ project }) => {
-    const { lib, grid, samples, config } = generate(data(paper.view.size))
+  const setup = useCallback(({ project }) => {
+    const { size } = project.view
+    const options = generate(genGlobalCurveSwitches)
+    const global = generate(genCurveProps(size))
+    const field = generate(genField(size))
+    const samples = generate(genStartingPoints(size))
 
     const background = new Path.Rectangle(project.view.bounds)
-    background.fillColor = config.backgroundColor
+    background.fillColor = backgroundColor
 
-    const options = config.curveGenOptions
-    const global = config.globalCurveProperties
-    for (const { x, y, curveConfig: local } of samples) {
+    if (shouldDrawGrid && !gridOnTop) {
+      drawGrid(field)
+    }
+
+    for (const { x, y, curveProps: local } of samples) {
       const segmentLength = (options.segmentLengthPerCurve ? local : global).segmentLength
       const numSegments = (options.numSegmentsPerCurve ? local : global).numSegments
-      const curve = lib.createCurve(grid, new Point(x, y), segmentLength, numSegments)
+      const curve = drawCurve(field, new Point(x, y), segmentLength, numSegments)
 
       curve.strokeColor = (options.colorPerCurve ? local : global).strokeColor
       curve.opacity = (options.opacityPerCurve ? local : global).opacity
@@ -252,7 +186,11 @@ const Grids = () => {
         curve.simplify()
       }
     }
-  }
+
+    if (shouldDrawGrid && gridOnTop) {
+      drawGrid(field)
+    }
+  }, [drawGrid, gridOnTop, shouldDrawGrid, generate, genGlobalCurveSwitches, genCurveProps, genField, genStartingPoints, backgroundColor])
 
   const onResize = setup
 
@@ -261,7 +199,7 @@ const Grids = () => {
   return (
     <Layout meta={{ title: 'Grids' }}>
       <Box sx={{ position: 'relative', width: '100%', height: '100%' }}>
-        <canvas ref={canvasRef} sx={{ width: '100%', height: '100%' }} />
+        <canvas ref={canvasRef} />
         <ConfigMenu
           onSubmit={event => event.preventDefault()}
           onClickDownload={() => {
@@ -270,6 +208,16 @@ const Grids = () => {
           }}
         >
           <ConfigField label='Seed' name='seed' value={seed} onChange={R.compose(setSeed, R.prop('value'), R.prop('target'))} />
+          <ConfigField label={`Palette: ${palette.name}`} as={Select} name='palette' defaultValue={palette.name} onChange={R.compose(setPalette, tome.get, R.prop('value'), R.prop('target'))}>
+            {tome.getNames().map(name => <option key={name}>{name}</option>)}
+          </ConfigField>
+          <ConfigField label={`Resolution Factor: ${resolutionFactor}`} as={Slider} name='multiplier' min={2} max={100} step={0.1} defaultValue={resolutionFactor} onChange={R.compose(setResolutionFactor, Number.parseFloat, R.prop('value'), R.prop('target'))} />
+          <ConfigField label={`Density: ${density}`} as={Slider} name='samples' min={10} max={1000} defaultValue={density} onChange={R.compose(setDensity, Number.parseInt, R.prop('value'), R.prop('target'))} />
+          <ConfigField label={`Noise Zoom: ${noiseZoom}`} as={Slider} name='noiseZoom' min={1} max={1200} defaultValue={noiseZoom} onChange={R.compose(setNoiseZoom, Number.parseInt, R.prop('value'), R.prop('target'))} />
+          <ConfigField label={`Min Segments: ${minSegments}`} as={Slider} name='minSegments' min={1} max={60} defaultValue={minSegments} onChange={R.compose(setMinSegments, Number.parseInt, R.prop('value'), R.prop('target'))} />
+          <ConfigField label={`Max Segments: ${maxSegments}`} as={Slider} name='maxSegments' min={1} max={60} defaultValue={maxSegments} onChange={R.compose(setMaxSegments, Number.parseInt, R.prop('value'), R.prop('target'))} />
+          <ConfigField label={`Draw Grid: ${shouldDrawGrid}`} as={Checkbox} name='shouldDrawGrid' checked={shouldDrawGrid} onChange={() => setShouldDrawGrid(!shouldDrawGrid)} />
+          <ConfigField label={`Grid On Top: ${gridOnTop}`} as={Checkbox} name='gridOnTop' checked={gridOnTop} onChange={() => setGridOnTop(!gridOnTop)} />
         </ConfigMenu>
       </Box>
     </Layout>

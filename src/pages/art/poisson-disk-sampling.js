@@ -5,7 +5,7 @@ import * as tome from 'chromotome'
 import chroma from 'chroma-js'
 import * as R from 'ramda'
 import { saveAs } from 'file-saver'
-import { useCallback, useMemo, useState } from 'react'
+import { useCallback, useState } from 'react'
 import { Box, Select, Slider } from 'theme-ui'
 import { Layout, ConfigMenu, ConfigField } from '../../components'
 import { usePaper } from '../../effects'
@@ -70,7 +70,7 @@ const PDS = () => {
           offsetVectorNoise: g.simplexNoise2d({ zoom: noiseZoom * multiplier }),
           colorNoise: g.simplexNoise2d({ zoom: noiseZoom * multiplier })
         },
-        pds: g.blueNoise(g.blueNoiseLib({ samples, dimensions: [width, height], radius: radius * 2, offset: radius * 2 }))
+        pds: g.blueNoise({ samples, dimensions: [width, height], radius: radius * 2, padding: radius * 2 })
       })
     ), [palette, offset, radius, seed, multiplier, buffer, samples, noiseZoom])
 
@@ -104,7 +104,7 @@ const PDS = () => {
           }}
         >
           <ConfigField label='Seed' name='seed' value={seed} onChange={R.compose(setSeed, R.prop('value'), R.prop('target'))} />
-          <ConfigField randomizable label={`Palette: ${palette.name}`} as={Select} name='palette' defaultValue={palette.name} onChange={R.compose(setPalette, tome.get, R.prop('value'), R.prop('target'))}>
+          <ConfigField label={`Palette: ${palette.name}`} as={Select} name='palette' defaultValue={palette.name} onChange={R.compose(setPalette, tome.get, R.prop('value'), R.prop('target'))}>
             {tome.getNames().map(name => <option key={name}>{name}</option>)}
           </ConfigField>
           <ConfigField label={`Multiplier: ${multiplier}`} as={Slider} name='multiplier' min={0.05} max={1.5} step={0.05} defaultValue={multiplier} onChange={R.compose(setMultiplier, R.prop('value'), R.prop('target'))} />

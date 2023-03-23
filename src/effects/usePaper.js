@@ -27,13 +27,14 @@ export const usePaper = ({
 
       const { project } = paper
       projectRef.current = project
-
+      project.activate()
       stateRef.current = setup({
         project,
         state: stateRef.current
       })
 
       return () => {
+        project.activate()
         stateRef.current = teardown({ project, state: stateRef.current })
         project.remove()
         projectRef.current = null
@@ -45,6 +46,7 @@ export const usePaper = ({
     const project = projectRef.current
     if (project) {
       project.view.onResize = () => {
+        project.activate()
         stateRef.current = onResize({
           project,
           state: stateRef.current
@@ -57,6 +59,7 @@ export const usePaper = ({
     const project = projectRef.current
     if (project) {
       project.view.onFrame = event => {
+        project.activate()
         stateRef.current = onFrame({
           project,
           event,
