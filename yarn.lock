@@ -2804,14 +2804,15 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@theme-ui/prism@npm:^0.14.7":
-  version: 0.14.7
-  resolution: "@theme-ui/prism@npm:0.14.7"
+"@theme-ui/prism@npm:^0.15.7":
+  version: 0.15.7
+  resolution: "@theme-ui/prism@npm:0.15.7"
   dependencies:
     prism-react-renderer: ^1.1.1
   peerDependencies:
-    theme-ui: ^0.14.5
-  checksum: f266fdee1952ef85ed97423ff174ac7553a307ca6477e9b7ab932dda8d68f282e6113a4e01437efbc88d68d154ae5fe616e0e4190b6065765a4e3d0d1b881556
+    "@theme-ui/mdx": ^0.15.7
+    theme-ui: ^0.15.7
+  checksum: ef2b2726144a00e58f6a7c983707bd40c7b6cd32936ec1df15c5bca37b4711d094af5989e41c0747e36484f59f35510ea51e421807ddaa07836fd01b1e1cef0a
   languageName: node
   linkType: hard
 
@@ -9830,7 +9831,7 @@ resolve@^2.0.0-next.3:
     "@testing-library/jest-dom": ^5.16.5
     "@testing-library/react": ^13.4.0
     "@theme-ui/match-media": ^0.14.7
-    "@theme-ui/prism": ^0.14.7
+    "@theme-ui/prism": ^0.15.7
     "@theme-ui/sidenav": ^0.14.7
     "@theme-ui/style-guide": ^0.14.7
     "@theme-ui/typography": ^0.14.7

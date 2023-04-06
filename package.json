@@ -16,7 +16,7 @@
     "@mdx-js/react": "^1.0.0",
     "@next/mdx": "^12.3.0",
     "@theme-ui/match-media": "^0.14.7",
-    "@theme-ui/prism": "^0.14.7",
+    "@theme-ui/prism": "^0.15.7",
     "@theme-ui/sidenav": "^0.14.7",
     "@theme-ui/style-guide": "^0.14.7",
     "@theme-ui/typography": "^0.14.7",
