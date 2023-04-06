@@ -1977,15 +1977,15 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@mdx-js/loader@npm:^2.1.3":
-  version: 2.1.3
-  resolution: "@mdx-js/loader@npm:2.1.3"
+"@mdx-js/loader@npm:^2.3.0":
+  version: 2.3.0
+  resolution: "@mdx-js/loader@npm:2.3.0"
   dependencies:
     "@mdx-js/mdx": ^2.0.0
     source-map: ^0.7.0
   peerDependencies:
     webpack: ">=4"
-  checksum: a4419c734452d26bf8f26c27c5c11922733ea149ba7fe67eb6e1acef2f877bd6a737630e99e3c10ebc974167339fe7d8c09a40691d1b3f69649b230529907f83
+  checksum: 5f602141c8d2147ebbe392e58d4d08f956208d78921cb694c86e60f41d5f5830864d329c58c3c595554460fac3cc58fc243e592988b4a34b6fd506f24b48448f
   languageName: node
   linkType: hard
 
@@ -9823,7 +9823,7 @@ resolve@^2.0.0-next.3:
   resolution: "root-workspace-0b6124@workspace:."
   dependencies:
     "@emotion/react": ^11.10.4
-    "@mdx-js/loader": ^2.1.3
+    "@mdx-js/loader": ^2.3.0
     "@mdx-js/react": ^1.0.0
     "@next/mdx": ^12.3.0
     "@svgr/webpack": ^6.3.1
