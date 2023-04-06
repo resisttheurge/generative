@@ -9381,10 +9381,10 @@ fsevents@^2.3.2:
   languageName: node
   linkType: hard
 
-"ramda@npm:^0.26.1":
-  version: 0.26.1
-  resolution: "ramda@npm:0.26.1"
-  checksum: 22e3fbfabdf45d7f7e8e0ff198be6c1f94d1cc16dd68f4c1786436b4583f8f1ef610a3bf0e8e8984c11346791da6ebadbe5b63dd29f2939bdfed7362d277c07b
+"ramda@npm:^0.29.0":
+  version: 0.29.0
+  resolution: "ramda@npm:0.29.0"
+  checksum: 8913ea9c21591313b341ba68f7d86066e4a330588ea29826cf2845ed40a5f8ba70cf0484f65e59b071b3ae33939bdbba63b24ee0fedfa3b7a4d723369afdc91e
   languageName: node
   linkType: hard
 
@@ -9857,7 +9857,7 @@ resolve@^2.0.0-next.3:
     p5: ^1.4.2
     paper: ^0.12.4
     prop-types: ^15.8.1
-    ramda: ^0.26.1
+    ramda: ^0.29.0
     react: ^17.0.0
     react-dom: latest
     react-resize-detector: ^7.1.2

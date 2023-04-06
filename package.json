@@ -34,7 +34,7 @@
     "p5": "^1.4.2",
     "paper": "^0.12.4",
     "prop-types": "^15.8.1",
-    "ramda": "^0.26.1",
+    "ramda": "^0.29.0",
     "react": "^17.0.0",
     "react-dom": "latest",
     "react-resize-detector": "^7.1.2",
