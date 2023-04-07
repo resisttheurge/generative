@@ -10,7 +10,7 @@ module.exports = withMDX({
     emotion: true
   },
   // Append the default value with md extensions
-  pageExtensions: ['js', 'mdx'],
+  pageExtensions: ['tsx', 'mdx'],
   webpack (config) {
     config.module.rules.push({
       test: /\.svg$/,

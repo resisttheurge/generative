@@ -1,8 +1,11 @@
 import fscreen from 'fscreen'
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import { MutableRefObject, useCallback, useEffect, useMemo, useRef, useState } from 'react'
 
-export const useFullscreen = ({ targetRef: externalRef } = {}) => {
-  const localRef = useRef(null)
+export type UseFullscreenConfig<FullscreenElementType> = { targetRef?: MutableRefObject<FullscreenElementType>}
+export type UseFullscreenHandle<FullscreenElementType> = { active: boolean, enter: () => Promise<void>, exit: () => Promise<void>, node: MutableRefObject<FullscreenElementType>}
+
+export function useFullscreen<T>({ targetRef: externalRef }: UseFullscreenConfig<T> = {}): UseFullscreenHandle<T> {
+  const localRef = useRef(null as T)
   const targetRef = externalRef || localRef
 
   const [fullscreenActive, setFullscreenActive] = useState(false)

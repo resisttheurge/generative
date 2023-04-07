@@ -1,5 +1,9 @@
 import { forwardRef } from 'react'
-import { Flex, Input, Label } from 'theme-ui'
+import {
+  Flex,
+  Input,
+  Label
+} from 'theme-ui'
 import IconButton from '../IconButton'
 
 export const ConfigField = forwardRef(({ as: Control = Input, randomizable = false, label, name, ...props }, ref) => {
