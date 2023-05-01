@@ -1,17 +1,17 @@
 import fscreen from 'fscreen'
 import { MutableRefObject, useCallback, useEffect, useMemo, useRef, useState } from 'react'
 
-export type UseFullscreenConfig<FullscreenElementType> = { targetRef?: MutableRefObject<FullscreenElementType>}
-export type UseFullscreenHandle<FullscreenElementType> = { active: boolean, enter: () => Promise<void>, exit: () => Promise<void>, node: MutableRefObject<FullscreenElementType>}
+export interface UseFullscreenConfig<T extends Element> { targetRef?: MutableRefObject<T> }
+export interface UseFullscreenHandle<T extends Element> { active: boolean, enter: () => Promise<void>, exit: () => Promise<void>, node: MutableRefObject<T | null> }
 
-export function useFullscreen<T>({ targetRef: externalRef }: UseFullscreenConfig<T> = {}): UseFullscreenHandle<T> {
-  const localRef = useRef(null as T)
-  const targetRef = externalRef || localRef
+export function useFullscreen<T extends Element> ({ targetRef: externalRef }: UseFullscreenConfig<T> = {}): UseFullscreenHandle<T> {
+  const localRef = useRef(null)
+  const targetRef = (externalRef != null) ? externalRef : localRef
 
   const [fullscreenActive, setFullscreenActive] = useState(false)
 
   const onFullscreenChange = useCallback(() => {
-    setFullscreenActive(fscreen.fullscreenElement && fscreen.fullscreenElement === targetRef.current)
+    setFullscreenActive(fscreen.fullscreenElement === targetRef.current)
   }, [targetRef])
 
   useEffect(() => {
@@ -21,27 +21,27 @@ export function useFullscreen<T>({ targetRef: externalRef }: UseFullscreenConfig
     }
   }, [onFullscreenChange])
 
-  const enterFullscreen = useCallback(() => (
-    targetRef.current
-      ? fscreen.fullscreenElement
-          ? fscreen.fullscreenElement !== targetRef.current
-              ? fscreen.exitFullscreen()
-                  .then(() =>
-                    targetRef.current
-                      ? fscreen.requestFullscreen(targetRef.current)
-                      : Promise.reject(new Error('The ref for which a fullscreen request was made no longer exists'))
-                  )
-              : Promise.resolve()
-          : fscreen.requestFullscreen(targetRef.current)
-      : Promise.reject(new Error('The ref for which a fullscreen request was made does not exist.'))
+  const enterFullscreen = useCallback(async () => (
+    targetRef.current != null
+      ? fscreen.fullscreenElement != null
+        ? fscreen.fullscreenElement !== targetRef.current
+          ? await fscreen.exitFullscreen()
+            .then(async () =>
+              (targetRef.current != null)
+                ? await fscreen.requestFullscreen(targetRef.current)
+                : await Promise.reject(new Error('The ref for which a fullscreen request was made no longer exists'))
+            )
+          : await Promise.resolve()
+        : await fscreen.requestFullscreen(targetRef.current)
+      : await Promise.reject(new Error('The ref for which a fullscreen request was made does not exist.'))
   ), [targetRef])
 
-  const exitFullscreen = useCallback(() => (
-    targetRef.current
-      ? fscreen.fullscreenElement && fscreen.fullscreenElement === targetRef.current
-          ? fscreen.exitFullscreen()
-          : Promise.resolve()
-      : Promise.reject(new Error('The ref for which an exitFullscreen request was made does not exist.'))
+  const exitFullscreen = useCallback(async () => (
+    (targetRef.current != null)
+      ? fscreen.fullscreenElement != null && fscreen.fullscreenElement === targetRef.current
+        ? await fscreen.exitFullscreen()
+        : await Promise.resolve()
+      : await Promise.reject(new Error('The ref for which an exitFullscreen request was made does not exist.'))
 
   ), [targetRef])
 

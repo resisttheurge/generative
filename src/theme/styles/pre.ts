@@ -1,6 +1,7 @@
+import { ThemeUIStyleObject } from 'theme-ui'
 import { code } from './code'
 
-export const pre = {
+export const pre: ThemeUIStyleObject = {
   borderRadius: '4px',
   fontFamily: 'monospace',
   overflowX: 'auto',

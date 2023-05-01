@@ -1,4 +1,6 @@
-export const hr = {
+import { ThemeUIStyleObject } from 'theme-ui'
+
+export const hr: ThemeUIStyleObject = {
   borderColor: 'muted',
   m: 2
 }

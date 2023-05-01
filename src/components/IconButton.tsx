@@ -1,7 +1,11 @@
-import { IconButton as OgIconButton } from 'theme-ui'
+import { IconButton as OgIconButton, IconButtonProps as OgIconButtonProps } from 'theme-ui'
 import Icon from './Icon'
 
-export const IconButton = ({ icon, ...props }) => (
+export interface IconButtonProps extends OgIconButtonProps {
+  icon: string
+}
+
+export const IconButton = ({ icon, ...props }: IconButtonProps): JSX.Element => (
   <OgIconButton
     {...props}
   >

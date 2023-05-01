@@ -1,7 +1,7 @@
 import { TypeScale, TypeStyle, ColorPalette } from '@theme-ui/style-guide'
 import { Layout } from '../../components'
 
-const StyleGuide = (props) => (
+const StyleGuide: React.FC = () => (
   <Layout meta={{ title: 'Style Guide' }}>
     <TypeStyle fontFamily='display' fontWeight='display' lineHeight='display' sx={{ fontSize: 4 }}>Display (Crayonette DJR)</TypeStyle>
     <TypeScale fontFamily='display' fontWeight='display' lineHeight='display' />

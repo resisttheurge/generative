@@ -1,9 +1,11 @@
-export const form = {
+import { get, ThemeUIStyleObject } from 'theme-ui'
+
+export const form: ThemeUIStyleObject = {
   variant: 'text.body',
   backgroundColor: 'background'
 }
 
-export const menu = {
+export const menu: ThemeUIStyleObject = {
   variant: 'forms.form',
 
   position: 'absolute',
@@ -26,36 +28,46 @@ export const menu = {
   }
 }
 
-export const label = {
+export const label: ThemeUIStyleObject = {
   mx: 2,
   width: 'max-content'
 }
 
-export const select = {
+export const select: ThemeUIStyleObject = {
   variant: 'text.monospace',
   m: 2,
   width: 'fill-available',
   borderColor: 'gray',
   '&:focus': {
     borderColor: 'primary',
-    boxShadow: t => `0 0 0 2px ${t.colors.primary}`,
+    boxShadow: t => {
+      const color = get(t, 'colors.primary')
+      if (typeof color === 'string') {
+        return `0 0 0 2px ${color}`
+      }
+    },
     outline: 'none'
   }
 }
 
-export const input = {
+export const input: ThemeUIStyleObject = {
   variant: 'text.monospace',
   m: 2,
   width: 'fill-available',
   borderColor: 'gray',
   '&:focus': {
     borderColor: 'primary',
-    boxShadow: t => `0 0 0 2px ${t.colors.highlight}`,
+    boxShadow: t => {
+      const color = get(t, 'colors.highlight')
+      if (typeof color === 'string') {
+        return `0 0 0 2px ${color}`
+      }
+    },
     outline: 'none'
   }
 }
 
-export const slider = {
+export const slider: ThemeUIStyleObject = {
   mx: 2,
   width: 'fill-available'
 }

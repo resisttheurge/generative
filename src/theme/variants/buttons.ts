@@ -1,4 +1,6 @@
-export const primary = {
+import { ThemeUIStyleObject } from 'theme-ui'
+
+export const primary: ThemeUIStyleObject = {
   variant: 'text.body',
   p: 1,
   my: 2,
@@ -13,7 +15,7 @@ export const primary = {
   }
 }
 
-export const secondary = {
+export const secondary: ThemeUIStyleObject = {
   ...primary,
   color: 'secondary',
   borderColor: 'secondary',
@@ -23,7 +25,7 @@ export const secondary = {
   }
 }
 
-export const muted = {
+export const muted: ThemeUIStyleObject = {
   ...primary,
   color: 'gray',
   borderColor: 'gray',
@@ -34,7 +36,7 @@ export const muted = {
   }
 }
 
-export const icon = {
+export const icon: ThemeUIStyleObject = {
   fill: 'text',
   bg: 'background',
   borderRadius: '16px',

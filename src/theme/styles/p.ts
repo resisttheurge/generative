@@ -1,4 +1,6 @@
-export const p = {
+import { ThemeUIStyleObject } from 'theme-ui'
+
+export const p: ThemeUIStyleObject = {
   pre: {
     m: 0
   },

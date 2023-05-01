@@ -1,8 +1,13 @@
-import { Box } from 'theme-ui'
+import { Box, BoxProps } from 'theme-ui'
 
-import NavLinks from './NavLinks'
+import NavLinks, { LinkConfig } from './NavLinks'
 
-export const SideNav = ({ open, links, ...props }) => {
+export interface SideNavProps {
+  open: boolean
+  links: LinkConfig
+}
+
+export const SideNav = ({ open, links, ...props }: SideNavProps & BoxProps): JSX.Element => {
   return (
     <Box
       variant='layout.sidenav'

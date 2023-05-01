@@ -1,4 +1,6 @@
-export const blockquote = {
+import { ThemeUIStyleObject } from 'theme-ui'
+
+export const blockquote: ThemeUIStyleObject = {
   borderLeftStyle: 'solid',
   borderLeftWidth: '4px',
   borderLeftColor: 'gray',

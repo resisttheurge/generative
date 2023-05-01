@@ -6,34 +6,30 @@ import * as tome from 'chromotome'
 import chroma from 'chroma-js'
 import { useState } from 'react'
 import { saveAs } from 'file-saver'
-import { Box, Button, Field, Select } from 'theme-ui'
-import { ConfigField, ConfigMenu, IconButton, Layout } from '../../components'
-import { usePaper } from '../../effects'
+import { Box, Select } from 'theme-ui'
+import { ConfigField, ConfigMenu, Layout } from '../../components'
+import { PaperSetup, usePaper } from '../../effects'
 
-const Palettes = () => {
-  const [configOpen, setConfigOpen] = useState(false)
-
+const Palettes: React.FC = () => {
   const [palette, setPalette] = useState(tome.getRandom())
 
-  const setup = () => {
-    const bounds = paper.view.bounds
-    const { width, height } = bounds
-    const colorWidth = colors => width / colors.length
+  const setup: PaperSetup = ({ project: { view: { bounds: { width, height } } } }) => {
+    const colorWidth = (colors: string[]): number => width / colors.length
     const colorHeight = height / 6
-    const colorX = (colors, x) => x * colorWidth(colors)
-    const colorY = y => y * colorHeight
+    const colorX = (colors: string[], x: number): number => x * colorWidth(colors)
+    const colorY = (y: number): number => y * colorHeight
 
     let y = 0
     let colors = chroma
       .scale(palette.colors)
       .mode('lab')
       .colors(palette.colors.length)
-    const makeRectangles = (colors, y) => (color, i) => {
+    const makeRectangles = (colors: string[], y: number) => (color: string, i: number) => {
       const pos = new Point(colorX(colors, i), colorY(y))
       const size = new Size(colorWidth(colors), colorHeight)
       const bounds = new Rectangle(pos, size)
       const rect = new Shape.Rectangle(bounds)
-      rect.fillColor = color
+      rect.fillColor = new paper.Color(color)
       return rect
     }
 
@@ -86,13 +82,13 @@ const Palettes = () => {
       <Box sx={{ position: 'relative', width: '100%', height: '100%' }}>
         <canvas ref={canvasRef} sx={{ width: '100%', height: '100%' }} />
         <ConfigMenu
-          onSubmit={event => event.preventDefault()}
+          onSubmit={(event: React.FormEvent) => event.preventDefault()}
           onClickDownload={() => {
-            const data = new Blob([paper.project.exportSVG({ asString: true })], { type: 'image/svg+xml;charset=utf-8' })
+            const data = new Blob([paper.project.exportSVG({ asString: true }) as string], { type: 'image/svg+xml;charset=utf-8' })
             saveAs(data, 'Poisson Disk Sampling')
           }}
         >
-          <ConfigField label={`Palette: ${palette.name}`} as={Select} name='palette' defaultValue={palette.name} onChange={R.compose(setPalette, tome.get, R.prop('value'), R.prop('target'))}>
+          <ConfigField label={`Palette: ${palette.name}`} as={Select} name='palette' defaultValue={palette.name} onChange={R.compose(setPalette, tome.get, R.prop<tome.PaletteName>('value'), R.prop<HTMLSelectElement>('target'))}>
             {tome.getNames().map(name => <option key={name}>{name}</option>)}
           </ConfigField>
         </ConfigMenu>

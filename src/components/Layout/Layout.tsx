@@ -1,15 +1,24 @@
 import Head from 'next/head'
-import { Box, Flex, Heading, useColorMode, useThemeUI } from 'theme-ui'
+import { Box, BoxProps, Flex, Heading, useColorMode } from 'theme-ui'
 import { useCallback, useState } from 'react'
 
 import { IconButton } from '../IconButton'
 import SideNav from '../SideNav'
 import links from './links'
 import { useFullscreen } from '../../effects'
+import { useTheme } from '../../effects/useTheme'
 
-export const Layout = ({ meta, ...props }) => {
-  const { theme } = useThemeUI()
+export interface MetaProps {
+  title: string
+}
 
+export interface LayoutProps extends BoxProps {
+  meta: MetaProps
+
+}
+
+export const Layout = ({ meta, ...props }: LayoutProps): JSX.Element => {
+  const { theme } = useTheme()
   const [navOpen, setNavOpen] = useState(false)
   const toggleNav = useCallback(() => setNavOpen(!navOpen), [navOpen, setNavOpen])
   const closeNav = useCallback(() => setNavOpen(false), [setNavOpen])
@@ -27,41 +36,53 @@ export const Layout = ({ meta, ...props }) => {
   const toggleColorMode = useCallback(() => setColorMode(colorMode === 'default' ? 'dark' : 'default'), [colorMode, setColorMode])
 
   const { active, enter, exit, node } = useFullscreen()
-  const toggleFullscreen = useCallback(() => active ? exit() : enter(), [active, enter, exit])
+  const toggleFullscreen = useCallback(
+    () => {
+      (active ? exit() : enter())
+        .catch((reason: Error) => {
+          console.error(`Promise rejected while ${active ? 'exiting' : 'entering'} fullscreen with reason: ${reason.message}`)
+          console.error(reason)
+        })
+    },
+    [active, enter, exit]
+  )
 
-  const MoreMenu = ({ open }) => (
+  interface MoreMenuProps {
+    open: boolean
+  }
+
+  const MoreMenu = ({ open }: MoreMenuProps): JSX.Element | null => (
     open
       ? (
-        <Flex variant='layout.mobile.moreMenu'>
-          <IconButton variant='layout.mobile.iconButton' icon='color-mode' onClick={toggleColorMode} />
-          <IconButton variant='layout.mobile.iconButton' icon='expand' onClick={toggleFullscreen} />
+        <Flex variant='layout.moreMenu'>
+          <IconButton variant='layout.iconButton' icon='color-mode' onClick={toggleColorMode} />
+          <IconButton variant='layout.iconButton' icon='expand' onClick={toggleFullscreen} />
         </Flex>
         )
       : null
   )
-
   return (
     <>
       <Head>
         <title>{meta.title}</title>
         <meta name='theme-color' content={theme.colors.background} />
       </Head>
-      <Box ref={node} variant='layout.mobile' {...props}>
-        <Box variant='layout.mobile.headerBar' />
-        <Flex variant='layout.mobile.leftMenu'>
-          <IconButton variant='layout.mobile.iconButton' icon={navOpen ? 'close' : 'menu'} onClick={toggleNav} />
+      <Box ref={node} variant='layout.container' {...props}>
+        <Box variant='layout.headerBar' />
+        <Flex variant='layout.leftMenu'>
+          <IconButton variant='layout.iconButton' icon={navOpen ? 'close' : 'menu'} onClick={toggleNav} />
         </Flex>
-        <Heading variant='layout.mobile.heading'>
+        <Heading variant='layout.heading'>
           {meta.title}
         </Heading>
-        <Flex variant='layout.mobile.rightMenu'>
-          <IconButton variant='layout.mobile.iconButton' icon='more' onClick={toggleMore} />
+        <Flex variant='layout.rightMenu'>
+          <IconButton variant='layout.iconButton' icon='more' onClick={toggleMore} />
         </Flex>
-        <Box as='main' variant='layout.mobile.content' onClick={closeMenus}>
+        <Box as='main' variant='layout.content' onClick={closeMenus}>
           {props.children}
         </Box>
         <MoreMenu open={moreOpen} />
-        <SideNav variant='layout.mobile.sideNav' open={navOpen} links={links} />
+        <SideNav variant='layout.sideNav' open={navOpen} links={links} />
       </Box>
     </>
   )

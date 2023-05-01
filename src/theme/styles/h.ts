@@ -1,4 +1,6 @@
-export const h1 = {
+import { ThemeUIStyleObject } from 'theme-ui'
+
+export const h1: ThemeUIStyleObject = {
   fontFamily: 'display',
   lineHeight: 'display',
   fontWeight: 'display',
@@ -9,7 +11,7 @@ export const h1 = {
   mr: [1, 2, 3]
 }
 
-export const h2 = {
+export const h2: ThemeUIStyleObject = {
   fontFamily: 'heading',
   lineHeight: 'heading',
   fontWeight: 'heading',
@@ -20,7 +22,7 @@ export const h2 = {
   mr: [1, 2, 3]
 }
 
-export const h3 = {
+export const h3: ThemeUIStyleObject = {
   fontFamily: 'heading',
   lineHeight: 'heading',
   fontWeight: 'heading',
@@ -31,7 +33,7 @@ export const h3 = {
   mr: [1, 2, 3]
 }
 
-export const h4 = {
+export const h4: ThemeUIStyleObject = {
   fontFamily: 'heading',
   lineHeight: 'heading',
   fontWeight: 'heading',
@@ -42,7 +44,7 @@ export const h4 = {
   mr: [1, 2, 3]
 }
 
-export const h5 = {
+export const h5: ThemeUIStyleObject = {
   fontFamily: 'heading',
   lineHeight: 'heading',
   fontWeight: 'heading',
@@ -53,7 +55,7 @@ export const h5 = {
   mr: [1, 2, 3]
 }
 
-export const h6 = {
+export const h6: ThemeUIStyleObject = {
   fontFamily: 'heading',
   lineHeight: 'heading',
   fontWeight: 'heading',

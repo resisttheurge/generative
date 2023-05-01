@@ -8,13 +8,22 @@ import {
 } from '@mdx-js/react'
 import { useThemedStylesWithMdx } from '@theme-ui/mdx'
 
-import * as theme from '../theme'
+import theme from '../theme'
 
 import GlobalStyle from '../components/GlobalStyle'
+import { JSX } from 'theme-ui/jsx-runtime'
 
-const Pre = (props) => <code {...props} />
+type PreProps = JSX.IntrinsicElements['code']
 
-const AppProvider = ({ theme, components, children }) => {
+const Pre = (props: PreProps): JSX.Element => <code {...props} />
+
+interface AppProviderProps {
+  theme: Parameters<typeof ThemeProvider>[0]['theme']
+  components: Parameters<typeof MDXProvider>[0]['components']
+  children: React.ReactNode
+}
+
+const AppProvider: React.FC<AppProviderProps> = ({ theme, components, children }) => {
   const componentsWithStyles = useThemedStylesWithMdx(useMDXComponents(components))
   return (
     <ThemeProvider theme={theme}>
@@ -26,7 +35,7 @@ const AppProvider = ({ theme, components, children }) => {
 }
 
 export class MyApp extends App {
-  render () {
+  render (): JSX.Element {
     const { Component, pageProps } = this.props
     const components = {
       a: Link,
@@ -34,7 +43,7 @@ export class MyApp extends App {
       code: Prism
     }
     return (
-      <AppProvider theme={theme} components={components}>
+      <AppProvider theme={theme} components={components as AppProviderProps['components']}>
         <GlobalStyle />
         <Component {...pageProps} />
       </AppProvider>

@@ -1,4 +1,6 @@
-export const code = {
+import { ThemeUIStyleObject } from 'theme-ui'
+
+export const code: ThemeUIStyleObject = {
   bg: 'muted',
   fontFamily: 'monospace',
   fontSize: 'inherit',

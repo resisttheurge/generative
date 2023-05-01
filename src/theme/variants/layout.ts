@@ -1,6 +1,6 @@
-import { normalizeRepeatedSlashes } from 'next/dist/shared/lib/utils'
+import { ThemeUIStyleObject } from 'theme-ui'
 
-export const mobile = {
+export const container: ThemeUIStyleObject = {
   position: 'fixed',
   bg: 'background',
   display: 'grid',
@@ -10,71 +10,71 @@ export const mobile = {
   gridTemplateAreas: '"leftMenu title rightMenu" "content content content"',
   overflow: 'clip',
   width: '100%',
-  height: '100%',
+  height: '100%'
+}
 
-  headerBar: {
-    gridColumnStart: 1,
-    gridColumnEnd: -1,
-    gridRowStart: 1,
-    gridRowEnd: 1,
-    bg: 'background',
-    boxShadow: 'card',
-    zIndex: 'header'
-  },
+export const headerBar: ThemeUIStyleObject = {
+  gridColumnStart: 1,
+  gridColumnEnd: -1,
+  gridRowStart: 1,
+  gridRowEnd: 1,
+  bg: 'background',
+  boxShadow: 'card',
+  zIndex: 'header'
+}
 
-  iconButton: {
-    variant: 'buttons.icon',
-    m: 2
-  },
+export const iconButton: ThemeUIStyleObject = {
+  variant: 'buttons.icon',
+  m: 2
+}
 
-  leftMenu: {
-    gridArea: 'leftMenu',
-    zIndex: 'header'
-  },
+export const leftMenu: ThemeUIStyleObject = {
+  gridArea: 'leftMenu',
+  zIndex: 'header'
+}
 
-  heading: {
-    variant: 'text.display',
-    gridArea: 'title',
-    justifySelf: 'center',
-    alignSelf: 'center',
-    zIndex: 'header'
-  },
+export const heading: ThemeUIStyleObject = {
+  variant: 'text.display',
+  gridArea: 'title',
+  justifySelf: 'center',
+  alignSelf: 'center',
+  zIndex: 'header'
+}
 
-  rightMenu: {
-    gridArea: 'rightMenu',
-    zIndex: 'header'
-  },
+export const rightMenu: ThemeUIStyleObject = {
+  gridArea: 'rightMenu',
+  zIndex: 'header'
+}
 
-  content: {
-    position: 'relative',
-    gridArea: 'content',
-    justifySelf: 'stretch',
-    alignSelf: 'stretch',
-    overflow: 'hidden',
-    zIndex: 'content'
-  },
+export const content: ThemeUIStyleObject = {
+  position: 'relative',
+  gridArea: 'content',
+  justifySelf: 'stretch',
+  alignSelf: 'stretch',
+  overflow: 'hidden',
+  zIndex: 'content'
+}
 
-  moreMenu: {
-    gridArea: 'content',
-    justifySelf: 'right',
-    alignSelf: 'top',
-    zIndex: 'header',
+export const moreMenu: ThemeUIStyleObject = {
+  gridArea: 'content',
+  justifySelf: 'right',
+  alignSelf: 'top',
+  zIndex: 'header',
 
-    flexDirection: 'column',
-    '& > *': {
-      boxShadow: 'card'
-    }
-  },
-
-  sideNav: {
-    position: 'relative', /* or choose `absolute` depending on desired behavior */
-    gridArea: 'content',
-    top: 0,
-    bottom: 0,
-    left: '-100vw',
-    maxWidth: 'sidenav',
-    zIndex: 'sidenav',
-    bg: 'background',
-    boxShadow: 'sidenav'
+  flexDirection: 'column',
+  '& > *': {
+    boxShadow: 'card'
   }
+}
+
+export const sideNav: ThemeUIStyleObject = {
+  position: 'relative', /* or choose `absolute` depending on desired behavior */
+  gridArea: 'content',
+  top: 0,
+  bottom: 0,
+  left: '-100vw',
+  maxWidth: 'sidenav',
+  zIndex: 'sidenav',
+  bg: 'background',
+  boxShadow: 'sidenav'
 }
