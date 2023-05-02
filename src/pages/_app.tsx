@@ -1,6 +1,6 @@
 import App from 'next/app'
 import React from 'react'
-import { Link, ThemeProvider } from 'theme-ui'
+import { NavLink, ThemeProvider } from 'theme-ui'
 import Prism from '@theme-ui/prism'
 import {
   MDXProvider,
@@ -12,10 +12,11 @@ import theme from '../theme'
 
 import GlobalStyle from '../components/GlobalStyle'
 import { JSX } from 'theme-ui/jsx-runtime'
+import Link from 'next/link'
 
-type PreProps = JSX.IntrinsicElements['code']
-
-const Pre = (props: PreProps): JSX.Element => <code {...props} />
+const Anchor: React.FC<JSX.IntrinsicElements['a']> = ({ href = '#', target, children }) => {
+  return <Link href={href} target={target} passHref legacyBehavior><NavLink>{children}</NavLink></Link>
+}
 
 interface AppProviderProps {
   theme: Parameters<typeof ThemeProvider>[0]['theme']
@@ -38,8 +39,7 @@ export class MyApp extends App {
   render (): JSX.Element {
     const { Component, pageProps } = this.props
     const components = {
-      a: Link,
-      pre: Pre,
+      a: Anchor,
       code: Prism
     }
     return (

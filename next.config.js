@@ -1,6 +1,8 @@
 const withMDX = require('@next/mdx')({
   extension: /\.mdx?$/,
   options: {
+    jsxImportSource: 'theme-ui',
+    providerImportSource: '@mdx-js/react',
     remarkPlugins: [],
     rehypePlugins: []
   }
