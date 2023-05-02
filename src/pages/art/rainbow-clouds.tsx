@@ -46,7 +46,7 @@ const RainbowClouds: React.FC = () => {
     return state
   }
 
-  const { canvasRef } = usePaper({ setup, onFrame })
+  const { canvasRef } = usePaper(setup, { onFrame })
 
   return (
     <Layout meta={{ title: 'Rainbow Clouds ' }}>

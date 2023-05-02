@@ -73,9 +73,7 @@ const Palettes: React.FC = () => {
     colors.map(makeRectangles(colors, y++))
   }
 
-  const onResize = setup
-
-  const { canvasRef } = usePaper({ setup, onResize })
+  const { canvasRef } = usePaper(setup)
 
   return (
     <Layout meta={{ title: 'Palettes' }}>

@@ -88,10 +88,7 @@ const PDS: React.FC = () => {
     }
   }, [generate, config])
 
-  const { canvasRef } = usePaper({
-    setup,
-    onResize: setup
-  })
+  const { canvasRef } = usePaper(setup)
 
   return (
     <Layout meta={{ title: 'Poisson Disk Sampling' }}>

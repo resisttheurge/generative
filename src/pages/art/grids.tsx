@@ -8,7 +8,7 @@ import * as R from 'ramda'
 import { useCallback, useMemo, useState } from 'react'
 import { ConfigField, ConfigMenu, Layout } from '../../components'
 import { Box, Checkbox, Select, Slider, useThemeUI } from 'theme-ui'
-import { LifecycleContext, useGenerators, usePaper, UsePaperConfig } from '../../effects'
+import { PaperSetup, useGenerators, usePaper } from '../../effects'
 import { saveAs } from 'file-saver'
 import { GridField } from '../../lib/math/2d/fields/GridField'
 import { translate } from '../../lib/math/vectors'
@@ -163,7 +163,7 @@ const Grids: React.FC = () => {
     [density, genCurveProps]
   )
 
-  const setup: UsePaperConfig['setup'] = useCallback(({ project: { view: { size, bounds } } }: LifecycleContext) => {
+  const setup: PaperSetup = useCallback(({ project: { view: { size, bounds } } }) => {
     const options = generate(genGlobalCurveSwitches)
     const field = generate(genField(size))
     const global = generate(genCurveProps(field.cellSize))
@@ -214,9 +214,7 @@ const Grids: React.FC = () => {
     }
   }, [drawGrid, gridOnTop, shouldDrawGrid, generate, genGlobalCurveSwitches, genCurveProps, genField, genStartingPoints, backgroundColor])
 
-  const onResize = setup
-
-  const { canvasRef } = usePaper({ setup, onResize })
+  const { canvasRef } = usePaper(setup)
 
   return (
     <Layout meta={{ title: 'Grids' }}>

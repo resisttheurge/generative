@@ -9,7 +9,7 @@ import { saveAs } from 'file-saver'
 import { Box, Select, Slider } from 'theme-ui'
 import { ConfigField, ConfigMenu, Layout } from '../../components'
 import { noise2D } from '../../lib/generators/simplex-noise'
-import { LifecycleContext, useGenerators, usePaper } from '../../effects'
+import { PaperSetup, useGenerators, usePaper } from '../../effects'
 
 const DotNoise = (): JSX.Element => {
   const [seed, setSeed] = useState('Blips and blops!')
@@ -32,7 +32,7 @@ const DotNoise = (): JSX.Element => {
     .mode('lab')
     .domain([-1, 1])
 
-  const setup = useCallback(({ project }: LifecycleContext) => {
+  const setup: PaperSetup = useCallback(({ project }) => {
     const bounds = project.view.bounds
     const { width, height } = bounds
     const bg = new Shape.Rectangle(bounds)
@@ -49,9 +49,7 @@ const DotNoise = (): JSX.Element => {
     }
   }, [palette, q, scale, noise])
 
-  const onResize = setup
-
-  const { canvasRef } = usePaper({ setup, onResize })
+  const { canvasRef } = usePaper(setup)
 
   return (
     <Layout meta={{ title: 'Dot Noise' }}>

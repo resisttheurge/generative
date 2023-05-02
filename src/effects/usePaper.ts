@@ -1,22 +1,32 @@
 import paper from 'paper'
 import { useEffect, useRef } from 'react'
+import invariant from 'tiny-invariant'
 import useCanvas from './useCanvas'
 
 type Ref<T> = React.RefObject<T>
 type Project = paper.Project
+type Size = paper.Size
+interface OnResizeEvent { size: Size, delta: Size }
 interface OnFrameEvent { count: number, time: number, delta: number }
 
-export interface LifecycleContext<T = void> {
+export interface InitialContext<T = void> {
   project: Project
+  state?: T
+}
+
+export interface LifecycleContext<T = void> extends InitialContext<T> {
   state: T
 }
 
+export interface OnResizeContext<T = void> extends LifecycleContext<T> {
+  event: OnResizeEvent
+}
 export interface OnFrameEventContext<T = void> extends LifecycleContext<T> {
   event: OnFrameEvent
 }
 
-export type PaperSetup<T = void> = (context: LifecycleContext<T>) => T
-export type PaperOnResize<T = void> = (context: LifecycleContext<T>) => T
+export type PaperSetup<T = void> = (context: InitialContext<T>) => T
+export type PaperOnResize<T = void> = (context: OnResizeContext<T>) => T
 export type PaperOnFrame<T = void> = (context: OnFrameEventContext<T>) => T
 export type PaperTeardown<T = void> = (context: LifecycleContext<T>) => T
 
@@ -37,19 +47,18 @@ export interface UsePaperHandle <T> {
 const preserveState = <T> ({ state }: { state: T }): T => state
 
 export function usePaper <T> (
+  setup: PaperSetup<T>,
   {
     canvasRef: externalCanvasRef,
-    setup = preserveState,
-    onResize = preserveState,
+    onResize = setup,
     onFrame = preserveState,
     teardown = preserveState
-  }: UsePaperConfig<T> = {},
-  initState?: T
+  }: UsePaperConfig<T> = {}
 ): UsePaperHandle<T> {
   const localCanvasRef = useRef<HTMLCanvasElement | null>(null)
   const canvasRef = externalCanvasRef ?? localCanvasRef
-  const projectRef = useRef<paper.Project | null>(null)
-  const stateRef = useRef<T>(initState ?? null)
+  const projectRef = useRef<Project | null>(null)
+  const stateRef = useRef<T | null>(null)
 
   useCanvas({ canvasRef, onResize: () => {} })
 
@@ -66,12 +75,14 @@ export function usePaper <T> (
       project.activate()
       stateRef.current = setup({
         project,
-        state: stateRef.current
+        state: stateRef.current ?? undefined
       })
 
       return () => {
+        const state = stateRef.current
+        invariant(state !== null, 'state should not be null')
         project.activate()
-        stateRef.current = teardown({ project, state: stateRef.current })
+        stateRef.current = teardown({ project, state })
         project.remove()
         projectRef.current = null
       }
@@ -81,12 +92,11 @@ export function usePaper <T> (
   useEffect(() => {
     const project = projectRef.current
     if (project !== null) {
-      project.view.onResize = () => {
+      project.view.onResize = (event: OnResizeEvent) => {
+        const state = stateRef.current
+        invariant(state !== null, 'state should not be null')
         project.activate()
-        stateRef.current = onResize({
-          project,
-          state: stateRef.current
-        })
+        stateRef.current = onResize({ project, state, event })
       }
     }
   }, [onResize])
@@ -95,12 +105,10 @@ export function usePaper <T> (
     const project = projectRef.current
     if (project !== null) {
       project.view.onFrame = (event: OnFrameEvent) => {
+        const state = stateRef.current
+        invariant(state !== null, 'state should not be null')
         project.activate()
-        stateRef.current = onFrame({
-          project,
-          event,
-          state: stateRef.current
-        })
+        stateRef.current = onFrame({ project, state, event })
       }
     }
   }, [onFrame])

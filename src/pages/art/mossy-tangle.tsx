@@ -60,9 +60,7 @@ const MossyTangle: React.FC = () => {
     points.forEach(calculateNoiseFlow(palette, scale, noiseZoom))
   }, [palette, scale, noiseZoom])
 
-  const onResize = setup
-
-  const { canvasRef } = usePaper({ setup, onResize })
+  const { canvasRef } = usePaper(setup)
 
   return (
     <Layout meta={{ title: 'Mossy Tangle' }}>

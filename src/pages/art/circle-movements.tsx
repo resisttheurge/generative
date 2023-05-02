@@ -1,7 +1,7 @@
 /* global Blob */
 
 import { ConfigField, ConfigMenu, Layout } from '../../components'
-import { OnFrameEventContext, LifecycleContext, usePaper } from '../../effects'
+import { usePaper, PaperSetup, PaperOnResize, PaperOnFrame } from '../../effects'
 import paper, { Point, Path } from 'paper'
 import * as tome from 'chromotome'
 import chroma from 'chroma-js'
@@ -81,8 +81,8 @@ const Scratch = (): JSX.Element => {
   [palette.colors, radiusFactor, randomPointGen, randomVelocityGen]
   )
 
-  const setup = useCallback(
-    ({ project, state }: LifecycleContext<CircleMovementsState>): CircleMovementsState => {
+  const setup: PaperSetup<CircleMovementsState> = useCallback(
+    ({ project, state }) => {
       const { width, height } = project.view.bounds
       const randomCircle = randomCircleGen(width, height)
 
@@ -99,11 +99,11 @@ const Scratch = (): JSX.Element => {
     [circleCount, randomCircleGen, generate]
   )
 
-  const onResize = useCallback(
+  const onResize: PaperOnResize<CircleMovementsState> = useCallback(
     ({
       project: { view: { bounds: { width, height } } },
       state: { randomCircle, circles, lastId }
-    }: LifecycleContext<CircleMovementsState>): CircleMovementsState =>
+    }) =>
       ({
         circles,
         lastId,
@@ -112,12 +112,12 @@ const Scratch = (): JSX.Element => {
     [randomCircleGen]
   )
 
-  const onFrame = useCallback(
+  const onFrame: PaperOnFrame<CircleMovementsState> = useCallback(
     ({
       project: { view: { bounds } },
       state: { randomCircle, circles, lastId },
       event
-    }: OnFrameEventContext<CircleMovementsState>): CircleMovementsState => {
+    }) => {
       const { width } = bounds
       circles = R.map(data => {
         if (
@@ -141,7 +141,7 @@ const Scratch = (): JSX.Element => {
       return { randomCircle, circles, lastId }
     }, [radiusFactor, randomVelocityGen, velocityFactor, generate])
 
-  const { canvasRef } = usePaper({ setup, onResize, onFrame })
+  const { canvasRef } = usePaper(setup, { onResize, onFrame })
 
   return (
     <Layout meta={{ title: 'Circle Movements' }}>
