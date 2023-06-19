@@ -2598,6 +2598,19 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@theme-ui/core@npm:^0.16.0":
+  version: 0.16.0
+  resolution: "@theme-ui/core@npm:0.16.0"
+  dependencies:
+    "@theme-ui/css": ^0.16.0
+    deepmerge: ^4.2.2
+  peerDependencies:
+    "@emotion/react": ^11.11.1
+    react: ">=18"
+  checksum: f46b2af5a99a97654d33abff93e3e74af298b24ec3f254d2caecd438a28736d45e6304e78d937f4b7c8918a9c1fd16d8889395ebab5ef06c56c5e8ae8d8642a0
+  languageName: node
+  linkType: hard
+
 "@theme-ui/css@npm:0.14.7":
   version: 0.14.7
   resolution: "@theme-ui/css@npm:0.14.7"
@@ -2606,6 +2619,17 @@ __metadata:
   peerDependencies:
     "@emotion/react": ^11
   checksum: 0d3ce166a4c95bc44bfbe6f139e29fd8e46b358734da61e85d15b641db478fcfdcd4a46689efdcd10c041aab4b927314be932579ad505949e7e4bcade2ad7014
+  languageName: node
+  linkType: hard
+
+"@theme-ui/css@npm:^0.16.0":
+  version: 0.16.0
+  resolution: "@theme-ui/css@npm:0.16.0"
+  dependencies:
+    csstype: ^3.0.10
+  peerDependencies:
+    "@emotion/react": ^11.11.1
+  checksum: b015fb2a87c117a8cc79d2bb4302e33d1b2e99b9997f5b981050764008696ce783c5f41b619e04d376aab91d1aa205f9e5ecc1602e544d0b7b38ef9facb844c5
   languageName: node
   linkType: hard
 
@@ -2804,14 +2828,16 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@theme-ui/prism@npm:^0.14.7":
-  version: 0.14.7
-  resolution: "@theme-ui/prism@npm:0.14.7"
+"@theme-ui/prism@npm:^0.16.0":
+  version: 0.16.0
+  resolution: "@theme-ui/prism@npm:0.16.0"
   dependencies:
+    "@theme-ui/core": ^0.16.0
     prism-react-renderer: ^1.1.1
   peerDependencies:
-    theme-ui: ^0.14.5
-  checksum: f266fdee1952ef85ed97423ff174ac7553a307ca6477e9b7ab932dda8d68f282e6113a4e01437efbc88d68d154ae5fe616e0e4190b6065765a4e3d0d1b881556
+    "@theme-ui/mdx": ^0.16.0
+    theme-ui: ^0.16.0
+  checksum: 5dc74201349be6d62591a1cc720ea421ed6a1269572018bcd9d1029b6b2c3a3f216ac53d7979a5b05423557db7a56fac195146625a769c93efb58878e3888e7f
   languageName: node
   linkType: hard
 
@@ -9830,7 +9856,7 @@ resolve@^2.0.0-next.3:
     "@testing-library/jest-dom": ^5.16.5
     "@testing-library/react": ^13.4.0
     "@theme-ui/match-media": ^0.14.7
-    "@theme-ui/prism": ^0.14.7
+    "@theme-ui/prism": ^0.16.0
     "@theme-ui/sidenav": ^0.14.7
     "@theme-ui/style-guide": ^0.14.7
     "@theme-ui/typography": ^0.14.7
