@@ -1,23 +1,24 @@
 import { mapAccum } from 'ramda'
-import * as mulberry32 from '../math/mulberry32'
+import * as splitmix32 from '../math/splitmix32'
 import { Range } from '../math/ranges'
 import * as xmur3a from '../math/xmur3a'
 import { SizedTuple } from '../data-structures/sized-tuples'
 import { OneOf } from '../data-structures/tuples'
+import { List, Map } from 'immutable'
 
-interface BooleanConfig {
+export interface BooleanGeneratorConfig {
   threshold: number
   distribution: Generator<number>
 }
 
-interface NumericConfig extends Range {
+export interface NumericGeneratorConfig extends Range {
   distribution: Generator<number>
 }
 
-type Flatten<T> = T extends Generator<infer U> ? Flatten<U> : T
+export type Flatten<T> = T extends Generator<infer U> ? Flatten<U> : T
 
-type RewrapGenerator<T> = Generator<UnwrapGenerator<T>>
-type UnwrapGenerator<T> =
+export type RewrapGenerator<T> = Generator<UnwrapGenerator<T>>
+export type UnwrapGenerator<T> =
   T extends Generator<infer U>
     ? U
     : T extends [...any]
@@ -26,8 +27,8 @@ type UnwrapGenerator<T> =
         ? UnwrapGeneratorRecord<T>
         : T
 
-type RewrapGeneratorTuple<T extends [...any]> = Generator<UnwrapGeneratorTuple<T>>
-type UnwrapGeneratorTuple<T extends [...any]> =
+export type RewrapGeneratorTuple<T extends [...any]> = Generator<UnwrapGeneratorTuple<T>>
+export type UnwrapGeneratorTuple<T extends [...any]> =
   T extends [infer A, ...infer B]
     ? [UnwrapGenerator<A>, ...UnwrapGeneratorTuple<B>]
     : T extends [infer A]
@@ -36,20 +37,20 @@ type UnwrapGeneratorTuple<T extends [...any]> =
         ? Array<UnwrapGenerator<A>>
         : []
 
-type RewrapGeneratorRecord<T extends { [K in keyof T]: T[K] }> = Generator<UnwrapGeneratorRecord<T>>
-type UnwrapGeneratorRecord<T extends { [K in keyof T]: T[K] }> =
+export type RewrapGeneratorRecord<T extends { [K in keyof T]: T[K] }> = Generator<UnwrapGeneratorRecord<T>>
+export type UnwrapGeneratorRecord<T extends { [K in keyof T]: T[K] }> =
   T extends { [K in keyof T]: T[K] }
     ? { [K in keyof T]: UnwrapGenerator<T[K]> }
     : {}
 
-export type GeneratorFn<T> = (state: number) => [T, number]
+export type GeneratorFn<T> = (state: number) => [number, T]
 
 export class Generator<T> {
-  static initSeed: (initSeed: string) => number = xmur3a.hashString
+  static initSeed: (seedString: string) => number = xmur3a.hashString
 
   static hashState: (state: number) => number = xmur3a.hashState
 
-  static uniform: Generator<number> = new Generator(mulberry32.nextState)
+  static uniform: Generator<number> = new Generator(splitmix32.next)
 
   readonly run: GeneratorFn<T>
 
@@ -57,41 +58,41 @@ export class Generator<T> {
     this.run = run
   }
 
-  static safeRun <T> (generator: T | Generator<T>, state: number): [T, number] {
+  static run <T> (generator: T | Generator<T>, state: number): [number, T] {
     return generator instanceof Generator
       ? generator.run(state)
-      : [generator, state]
+      : [state, generator]
   }
 
   static sequence <T> (structure: T): RewrapGenerator<T> {
     return new Generator(state => {
-      const [nextValue] =
+      const [,nextValue] =
       structure instanceof Generator
         ? structure.run(state)
         : structure instanceof Array
           ? Generator.tuple(structure).run(state)
           : structure instanceof Object
             ? Generator.record(structure).run(state)
-            : [structure]
-      return [nextValue, Generator.hashState(state)]
+            : [state, structure]
+      return [Generator.hashState(state), nextValue]
     })
   }
 
   static constant <T> (value: T): Generator<T> {
-    return new Generator(seed => [value, seed])
+    return new Generator(state => [state, value])
   }
 
-  static bool (config: Partial<BooleanConfig> = {}): Generator<boolean> {
+  static bool (config: Partial<BooleanGeneratorConfig> = {}): Generator<boolean> {
     const { threshold = 0.5, distribution = Generator.uniform } = config
     return distribution.map(n => n >= (1 - threshold))
   }
 
-  static number (config: Partial<NumericConfig> = {}): Generator<number> {
+  static number (config: Partial<NumericGeneratorConfig> = {}): Generator<number> {
     const { min = -2147483648, max = 2147483648, distribution = Generator.uniform } = config
     return distribution.map(n => min + (n * (max - min)))
   }
 
-  static int (config: Partial<NumericConfig> = {}): Generator<number> {
+  static int (config: Partial<NumericGeneratorConfig> = {}): Generator<number> {
     const { min = -2147483648, max = 2147483648, distribution } = config
     return Generator.number({ min, max, distribution }).map(Math.floor)
   }
@@ -107,27 +108,25 @@ export class Generator<T> {
   static tuple <T extends [...any]> (values: [...T]): RewrapGeneratorTuple<T> {
     return new Generator(state =>
       mapAccum(
-        (currentState, nextGenerator) => {
-          const [value, nextState] = Generator.sequence(nextGenerator).run(currentState)
-          return [nextState, value]
-        },
+        (currentState, nextGenerator) =>
+          Generator.sequence(nextGenerator).run(currentState),
         state,
         values
-      ).reverse() as [UnwrapGeneratorTuple<T>, number]
+      ) as [number, UnwrapGeneratorTuple<T>]
     )
   }
 
   static record <T extends Record<string, any>> (values: T): RewrapGeneratorRecord<T> {
     return new Generator(state => {
-      const [finalSeed, entries] = mapAccum(
+      const [finalState, entries] = mapAccum(
         (currentState, [nextKey, nextGenerator]) => {
-          const [value, nextState] = Generator.sequence(nextGenerator).run(currentState)
+          const [nextState, value] = Generator.sequence(nextGenerator).run(currentState)
           return [nextState, [nextKey, value]]
         },
         state,
         Object.entries(values)
       )
-      return [Object.fromEntries(entries), finalSeed]
+      return [finalState, Object.fromEntries(entries)]
     })
   }
 
@@ -139,75 +138,91 @@ export class Generator<T> {
     let extra: Array<OneOf<T>> = []
     return new Generator(state => {
       if (extra.length === 0 || state !== lastState) {
-        const [[nextValue, ...rest], nextState] = generator.run(state)
+        const [nextState, [nextValue, ...rest]] = generator.run(state)
         lastState = nextState
         extra = rest
-        return [nextValue, nextState]
+        return [nextState, nextValue]
       } else {
         const [nextValue, ...rest] = extra
         extra = rest
-        return [nextValue, state]
+        return [state, nextValue]
       }
     })
   }
 
   chain <U> (chainFn: (generated: T) => U | Generator<U>): Generator<U> {
-    return new Generator(seed => {
-      const [value, nextState] = this.run(seed)
-      const maybeGenerator = chainFn(value)
-      return Generator.safeRun(maybeGenerator, nextState)
+    return new Generator(state => {
+      const [nextState, nextValue] = this.run(state)
+      const maybeGenerator = chainFn(nextValue)
+      return Generator.run(maybeGenerator, nextState)
     })
   }
 
+  collect <Key> (classifier: (generated: T) => Key | Key[], count: number): Generator<Map<Key, List<T>>> {
+    return this.repeat(count).map(samples =>
+      samples.reduce<Map<Key, List<T>>>(
+        (acc, next) => {
+          const keyOrKeys = classifier(next)
+          for (const key of keyOrKeys instanceof Array ? keyOrKeys : [keyOrKeys]) {
+            const list = acc.get(key) ?? List()
+            acc = acc.set(key, list.push(next))
+          }
+          return acc
+        },
+        Map()
+      )
+    )
+  }
+
   filter (predicate: (generated: T) => boolean): Generator<T> {
-    return new Generator(seed => {
-      let [acc, currentSeed] = this.run(seed)
+    return new Generator(state => {
+      let [currentState, acc] = this.run(state)
       while (!predicate(acc)) {
-        const [next, nextSeed] = this.run(currentSeed)
-        acc = next
-        currentSeed = nextSeed
+        const [nextState, nextValue] = this.run(currentState)
+        acc = nextValue
+        currentState = nextState
       }
-      return [acc, currentSeed]
+      return [currentState, acc]
     })
   }
 
   flatMap <U> (generatorFn: (generated: T) => Generator<U>): Generator<U> {
     return new Generator(state => {
-      const [value, nextState] = this.run(state)
+      const [nextState, value] = this.run(state)
       const nextGenerator = generatorFn(value)
       return nextGenerator.run(nextState)
     })
   }
 
   flatten (): Generator<Flatten<T>> {
-    return new Generator(seed => {
-      let [value, currentSeed] = this.run(seed) as [Flatten<T>, number]
-      while (value instanceof Generator) {
-        const [nextValue, nextSeed] = value.run(currentSeed)
-        value = nextValue
-        currentSeed = nextSeed
+    return new Generator(state => {
+      let [currentState, currentValue] = this.run(state) as [number, Flatten<T>]
+      while (currentValue instanceof Generator) {
+        const [nextState, nextValue] = currentValue.run(currentState)
+        currentValue = nextValue
+        currentState = nextState
       }
-      return [value, currentSeed]
+      return [currentState, currentValue]
     })
   }
 
   map <U> (mapper: (generated: T) => U): Generator<U> {
     return new Generator(state => {
-      const [value, nextState] = this.run(state)
-      return [mapper(value), nextState]
+      const [nextState, value] = this.run(state)
+      return [nextState, mapper(value)]
     })
   }
 
   repeat <N extends number> (count: N): Generator<SizedTuple<T, N>> {
-    return new Generator(seed => {
+    return new Generator(state => {
       const generator = Generator.sequence(this as Generator<T>)
-      let [result, currentSeed] = [[] as SizedTuple<T, N>, seed]
+      let [result, currentState] = [[] as SizedTuple<T, N>, state]
       for (let i = 0; i < count; i++) {
-        const [nextValue, nextSeed] = generator.run(currentSeed)
+        const [nextState, nextValue] = generator.run(currentState)
         result.push(nextValue)
-        currentSeed = nextSeed
+        currentState = nextState
       }
-      return [result, currentSeed]
+      return [currentState, result]
     })
   }
 
@@ -215,11 +230,11 @@ export class Generator<T> {
     return new Generator(state => {
       let [acc, currentState] = [initial, state]
       while (true) {
-        const [value, nextState] = this.run(currentState)
-        if (!predicate(acc, value)) {
-          return [acc, currentState]
+        const [nextState, nextValue] = this.run(currentState)
+        if (!predicate(acc, nextValue)) {
+          return [currentState, acc]
         }
-        acc = reducer(acc, value)
+        acc = reducer(acc, nextValue)
         currentState = nextState
       }
     })

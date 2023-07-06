@@ -20,7 +20,7 @@ export const useGenerators = ({
 
   const generate =
     <T> (generator: Generator<T>): T => {
-      const [value, nextState] = generator.run(currentState)
+      const [nextState, value] = generator.run(currentState)
       currentState = nextState
       return value
     }

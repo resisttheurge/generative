@@ -1,14 +1,14 @@
 import { List, Range } from 'immutable'
 import invariant from 'tiny-invariant'
-import { Vector, size, translate, distanceSquared } from '../math/vectors'
-import { setIn, getIn, hasIn, NDimensionalList, fill, fromJS } from '../data-structures/n-arrays'
+import { Vector, size, translate, printVector, distance } from '../math/vectors'
+import { setIn, getIn, NDimensionalList, fill, fromJS, toJS } from '../data-structures/nd-arrays'
 import { SizedTuple, map } from '../data-structures/sized-tuples'
 import { Generator } from './Generator'
 import { nShell } from './n-shell'
 import { gaussian } from './gaussians'
 
 // TODO: find a better home for this, maybe
-function variations <Dimensions extends number> (optionLists: SizedTuple<number[], Dimensions>): Array<Vector<Dimensions>> {
+export function variations <Dimensions extends number> (optionLists: SizedTuple<number[], Dimensions>): Array<Vector<Dimensions>> {
   return optionLists.reduce<Array<Vector<Dimensions>>>(
     (lastVariations, nextOptionList) => {
       const nextVariations = [] as Array<Vector<Dimensions>>
@@ -59,7 +59,7 @@ export class BlueNoiseLibrary <Dimensions extends number> {
 
       constructor (initialValue: Vector<Dimensions> | BlueNoiseStateProperties<Dimensions>) {
         if (Array.isArray(initialValue)) {
-          invariant(library.inBounds(initialValue), () => `initial position ([${initialValue.join(', ')}]) must be in bounds`)
+          invariant(library.inBounds(initialValue), () => `initial position ([${printVector(initialValue)}]) must be in bounds`)
           this.samples = List([initialValue])
           this.active = List([0])
           this.grid = setIn(library.emptyGrid, library.gridCoordinates(initialValue), 0)
@@ -89,20 +89,28 @@ export class BlueNoiseLibrary <Dimensions extends number> {
           .filter(idx => idx !== -1)
           .map(idx => {
             const neighbor = samples.get(idx)
-            invariant(neighbor !== undefined, `neighbor ${idx} not found in sample list ([${samples.toJS().join(', ')}])`)
+            invariant(neighbor !== undefined, () => `neighbor ${idx} not found in sample list ([${samples.toJS().join(', ')}])`)
             return neighbor
           })
       }
 
       canEmit (sample: Vector<Dimensions>): boolean {
         const { grid } = this
-        const { gridCoordinates, radiusSquared } = library
-        const gridIndex = gridCoordinates(sample)
-        return (
-          !hasIn(grid, gridIndex) &&
-          this.neighbors(gridIndex)
-            .every(sample => distanceSquared(sample, sample) >= radiusSquared)
-        )
+        const { radius } = library
+        const gridIndex = library.gridCoordinates(sample)
+        const canEmit =
+          getIn(grid, gridIndex) === -1 &&
+          this.neighbors(sample).filter(neighbor => distance(sample, neighbor) < radius).length === 0
+        if (canEmit) {
+          console.log({
+            sample,
+            coordinates: gridIndex,
+            grid: toJS(grid),
+            neighbors: this.neighbors(sample),
+            tooClose: this.neighbors(sample)
+          })
+        }
+        return canEmit
       }
 
       emitSample (sample: Vector<Dimensions>): BlueNoiseState<Dimensions> {
@@ -174,7 +182,7 @@ export class BlueNoiseLibrary <Dimensions extends number> {
   }
 
   gridCoordinates (position: Vector<Dimensions>): Vector<Dimensions> {
-    return map(position, num => Math.floor(num / this.cellSize))
+    return map(position, (num, i) => Math.floor(num / this.cellSize))
   }
 
   inBounds (position: Vector<Dimensions>): boolean {
@@ -204,11 +212,11 @@ export class BlueNoiseLibrary <Dimensions extends number> {
         let currentRngState = rngState
         let currentNoiseState = new this.State(initialPosition)
         while (currentNoiseState.active.size > 0) {
-          const [{ activeIndex, sample }, idxRngState] = currentNoiseState.generateActiveSample.run(currentRngState)
+          const [idxRngState, { activeIndex, sample }] = currentNoiseState.generateActiveSample.run(currentRngState)
           currentRngState = idxRngState
           let count
           for (count = 0; count < this.candidateLimit; count++) {
-            const [nextCandidate, nextCandidateRngState] = this.generateCandidateAround(sample).run(currentRngState)
+            const [nextCandidateRngState, nextCandidate] = this.generateCandidateAround(sample).run(currentRngState)
             currentRngState = nextCandidateRngState
             if (this.inBounds(nextCandidate) && currentNoiseState.canEmit(nextCandidate)) {
               currentNoiseState = currentNoiseState.emitSample(nextCandidate)
@@ -219,7 +227,7 @@ export class BlueNoiseLibrary <Dimensions extends number> {
             currentNoiseState = currentNoiseState.removeActiveIndex(activeIndex)
           }
         }
-        return [currentNoiseState.samples.toArray(), currentRngState]
+        return [currentRngState, currentNoiseState.samples.toArray()]
       }
     )
   }

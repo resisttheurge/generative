@@ -26,7 +26,7 @@ const PDS: React.FC = () => {
   const { generate } = useGenerators({ seed })
 
   const radius = (multiplier * buffer) / 2
-  const offset = radius / 5 + 2
+  const offset = radius / 5
 
   const config = useCallback((width: number, height: number) =>
     Generator.record({
@@ -35,7 +35,7 @@ const PDS: React.FC = () => {
         shadowNoise: noise2D({ zoom: noiseZoom * multiplier }),
         colorNoise: noise2D({ zoom: noiseZoom * multiplier })
       },
-      pds: blueNoise({ dimensions: [width, height], radius: radius * 2, padding: radius * 2, candidateLimit })
+      pds: blueNoise({ dimensions: [width, height], radius: 2 * (radius + offset), padding: radius + offset, candidateLimit })
     }).map(({
       noises: {
         frameNoise,
@@ -83,6 +83,7 @@ const PDS: React.FC = () => {
       new Rectangle(new Point(0, 0), new Size(width, height))
     )
     bg.fillColor = new paper.Color(palette.background ?? '#fff')
+    console.log(lib)
     for (const [x, y] of lib.pds) {
       lib.drawRectangles([x, y])
     }

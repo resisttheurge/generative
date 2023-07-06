@@ -18,8 +18,8 @@ export interface NormalConfig {
  */
 export const boxMullerTransform: Generator<Vector<2>> =
   Generator.tuple([
-    Generator.number({ min: Number.EPSILON, max: 1 }),
-    Generator.uniform
+    Generator.uniform.filter(n => n > 0),
+    Generator.uniform.filter(n => n > 0)
   ]).map(([u1, u2]) => {
     const mag = Math.sqrt(-2.0 * Math.log(u1))
     const z0 = mag * Math.cos(TWO_PI * u2)
@@ -96,6 +96,6 @@ export function gaussian (config: Partial<NormalConfig> = {}): Generator<number>
 export function gaussianVector <N extends number> (count: N, config: Partial<NormalConfig> = {}): Generator<Vector<N>> {
   const { extras = 'discard' } = config
   return extras === 'discard'
-    ? gaussianPair(config).repeat(Math.ceil(count / 2)).map(([pair, ...pairs]) => pair.concat(...pairs).slice(count) as Vector<N>)
+    ? gaussianPair(config).repeat(Math.ceil(count / 2)).map(([pair, ...pairs]) => pair.concat(...pairs).slice(0, count) as Vector<N>)
     : gaussian(config).repeat(count)
 }
