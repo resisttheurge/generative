@@ -60,7 +60,7 @@ const genDashArray = (segmentLength: number): Generator<number[]> => {
 const Grids: React.FC = () => {
   const [seed, setSeed] = useState('Help me out here')
   const [palette, setPalette] = useState(tome.getRandom())
-  const [resolution, setResolution] = useState(5)
+  const [resolution, setResolution] = useState(15)
   const [density, setDensity] = useState(100)
   const [noiseZoom, setNoiseZoom] = useState(100)
   const [maxSegments, setMaxSegments] = useState(30)
@@ -219,7 +219,7 @@ const Grids: React.FC = () => {
   return (
     <Layout meta={{ title: 'Grids' }}>
       <Box sx={{ position: 'relative', width: '100%', height: '100%' }}>
-        <canvas ref={canvasRef} />
+        <canvas ref={canvasRef} sx={{ width: '100%', height: '100%' }} />
         <ConfigMenu
           onSubmit={(event: React.FormEvent) => event.preventDefault()}
           onClickDownload={() => {
