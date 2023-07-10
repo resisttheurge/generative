@@ -31,3 +31,18 @@ export function zip2 <A, B, N extends number> (a: SizedTuple<A, N>, b: SizedTupl
 export function zip2With <A, B, C, N extends number> (a: SizedTuple<A, N>, b: SizedTuple<B, N>, f: (a: A, b: B) => C): SizedTuple<C, N> {
   return map(a, (elem, idx) => f(elem, b[idx]))
 }
+
+export function cartesianProduct <T, Dimensions extends number> (sets: SizedTuple<T[], Dimensions>): Array<SizedTuple<T, Dimensions>> {
+  return sets.reduce<Array<SizedTuple<T, Dimensions>>>(
+    (lastVariations, nextOptionList) => {
+      const nextVariations = [] as Array<SizedTuple<T, Dimensions>>
+      for (const variation of lastVariations) {
+        for (const option of nextOptionList) {
+          nextVariations.push([...variation, option] as SizedTuple<T, Dimensions>)
+        }
+      }
+      return nextVariations
+    },
+    [[] as SizedTuple<T, Dimensions>]
+  )
+}

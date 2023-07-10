@@ -2,26 +2,10 @@ import { List, Range } from 'immutable'
 import invariant from 'tiny-invariant'
 import { Vector, size, translate, printVector, distance } from '../math/vectors'
 import { setIn, getIn, NDimensionalList, fill, fromJS, toJS } from '../data-structures/nd-arrays'
-import { SizedTuple, map } from '../data-structures/sized-tuples'
+import { map, cartesianProduct } from '../data-structures/sized-tuples'
 import { Generator } from './Generator'
 import { nShell } from './n-shell'
 import { gaussian } from './gaussians'
-
-// TODO: find a better home for this, maybe
-export function variations <Dimensions extends number> (optionLists: SizedTuple<number[], Dimensions>): Array<Vector<Dimensions>> {
-  return optionLists.reduce<Array<Vector<Dimensions>>>(
-    (lastVariations, nextOptionList) => {
-      const nextVariations = [] as Array<Vector<Dimensions>>
-      for (const variation of lastVariations) {
-        for (const option of nextOptionList) {
-          nextVariations.push([...variation, option] as Vector<Dimensions>)
-        }
-      }
-      return nextVariations
-    },
-    [[] as Vector<Dimensions>]
-  )
-}
 
 export type BlueNoiseGenerator<Dimensions extends number> =
   Generator<Array<Vector<Dimensions>>>
@@ -195,11 +179,12 @@ export class BlueNoiseLibrary <Dimensions extends number> {
 
   neighborAddresses (position: Vector<Dimensions>): Array<Vector<Dimensions>> {
     invariant(this.inBounds(position), () => `position ([${position.join(', ')}]) not in bounds`)
-    return variations(
+    return cartesianProduct(
       map(this.gridCoordinates(position), (coordinate, i) =>
         Range(
           Math.max(coordinate - 1, 0),
-          Math.min(coordinate + 1, this.gridDimensions[i])
+          Math.min(coordinate + 1, this.gridDimensions[i]) + 1,
+          1
         ).toJS()
       )
     )

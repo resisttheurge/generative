@@ -1,9 +1,7 @@
 import fc from 'fast-check'
-import { BlueNoiseConfig, blueNoise, variations } from './blue-noise'
+import { BlueNoiseConfig, blueNoise } from './blue-noise'
 import { goodSeed, sizedTuple } from '../../__tests__/__utils__/arbitraries'
-import { distance, distanceSquared } from '../math/vectors'
-
-const optionLists: () => fc.Arbitrary<number[][]> = () => fc.array(fc.array(fc.integer(), { minLength: 1, maxLength: 3 }), { minLength: 1, maxLength: 10 })
+import { distance } from '../math/vectors'
 
 const blueNoiseConfig: <Dimensions extends number> (dimensions: Dimensions) => fc.Arbitrary<BlueNoiseConfig<Dimensions>> =
   <Dimensions extends number> (dimensions: Dimensions) => fc.record({
@@ -12,22 +10,6 @@ const blueNoiseConfig: <Dimensions extends number> (dimensions: Dimensions) => f
   })
 
 describe('module lib/generators/blue-noise.ts', () => {
-  describe('variations <Dimensions extends number> (optionLists: SizedTuple<number[], Dimensions>): Array<Vector<Dimensions>>', () => {
-    it('should generate a valid list of variations', () => {
-      fc.assert(fc.property(optionLists(), (optionLists) => {
-        const varied = variations(optionLists)
-        expect(varied).toBeInstanceOf(Array)
-        expect(varied.length).toBe(optionLists.reduce((acc, optionList) => acc * optionList.length, 1))
-        expect(varied.every((vector) => vector.length === optionLists.length)).toBe(true)
-        optionLists.forEach((optionList, i) => {
-          optionList.forEach((option, j) => {
-            expect(varied.some((vector) => vector[i] === option)).toBeTruthy()
-          })
-        })
-      }))
-    })
-  })
-
   describe('blueNoise <Dimensions extends number> (config: BlueNoiseConfig<Dimensions>, initialPosition?: Vector<Dimensions>): Generator<Array<Vector<Dimensions>>>', () => {
     it('should always return a generator of points which are always at least config.radius apart from one another', () => {
       fc.assert(fc.property(blueNoiseConfig(2), goodSeed(), (config, seed) => {
