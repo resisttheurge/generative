@@ -1,8 +1,6 @@
 import { Box, Flex, Button } from 'theme-ui'
 import * as R from 'ramda'
 import { Layout } from '../components'
-import strategies from '../lib/strategies'
-import * as g from '../lib/generator'
 
 export const meta = {
   title: 'About'
@@ -36,13 +34,15 @@ An important journey.
 - Why not you?
 1. Why not all of us?
 
-What I would have said was `() => 'I've been ready'`, but I didn't think it through.
+What I would have said was 
+```
+() => 'I've been ready'
+```
+, but I didn't think it through.
 
 ---
 
 Let's test out some generators!
-
-export const seed = g.seed('Oh no!')
 
 <ul>
   
