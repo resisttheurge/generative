@@ -50,7 +50,7 @@
     "@types/chroma-js": "^2.4.0",
     "@types/file-saver": "^2.0.5",
     "@types/fscreen": "^1.0.1",
-    "@types/jest": "^29.5.2",
+    "@types/jest": "^29.5.3",
     "@types/ramda": "^0.29.3",
     "cypress": "^12.17.0",
     "eslint-config-next": "^13.4.9",
