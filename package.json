@@ -14,7 +14,7 @@
     "@emotion/react": "^11.11.1",
     "@mdx-js/loader": "^2.3.0",
     "@mdx-js/react": "^2.3.0",
-    "@next/mdx": "^13.4.9",
+    "@next/mdx": "^13.4.19",
     "@theme-ui/match-media": "^0.16.0",
     "@theme-ui/prism": "^0.16.0",
     "@theme-ui/style-guide": "^0.16.0",
