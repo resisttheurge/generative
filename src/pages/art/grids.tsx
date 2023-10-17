@@ -4,7 +4,6 @@ import * as tome from 'chromotome'
 import paper, { Path, Color } from 'paper'
 import { Generator } from '../../lib/generators/Generator'
 import { flowGrid, makePath, Flow, defaultFlowMapper, FlowGenerator } from '../../lib/generators/flow-fields'
-import * as R from 'ramda'
 import { useCallback, useMemo, useState } from 'react'
 import { ConfigField, ConfigMenu, Layout } from '../../components'
 import { Box, Checkbox, Select, Slider, useThemeUI } from 'theme-ui'
@@ -227,14 +226,14 @@ const Grids: React.FC = () => {
             saveAs(data, 'Grids')
           }}
         >
-          <ConfigField label='Seed' name='seed' value={seed} onChange={R.compose(setSeed, R.prop('value'), R.prop<HTMLInputElement>('target'))} />
-          <ConfigField label={`Palette: ${palette.name}`} as={Select} name='palette' defaultValue={palette.name} onChange={R.compose(setPalette, tome.get, R.prop<tome.PaletteName>('value'), R.prop<HTMLSelectElement>('target'))}>
+          <ConfigField label='Seed' name='seed' value={seed} onChange={({ target: { value } }) => setSeed(value)} />
+          <ConfigField label={`Palette: ${palette.name}`} as={Select} name='palette' defaultValue={palette.name} onChange={({ target: { value } }) => setPalette(tome.get(value as tome.PaletteName))}>
             {tome.getNames().map(name => <option key={name}>{name}</option>)}
           </ConfigField>
-          <ConfigField label={`Resolution: ${resolution}`} as={Slider} name='resolution' min={10} max={50} step={1} defaultValue={resolution} onChange={R.compose(setResolution, Number.parseFloat, R.prop('value'), R.prop<HTMLInputElement>('target'))} />
-          <ConfigField label={`Density: ${density}`} as={Slider} name='density' min={10} max={1000} defaultValue={density} onChange={R.compose(setDensity, Number.parseInt, R.prop('value'), R.prop<HTMLInputElement>('target'))} />
-          <ConfigField label={`Noise Zoom: ${noiseZoom}`} as={Slider} name='noiseZoom' min={1} max={1200} defaultValue={noiseZoom} onChange={R.compose(setNoiseZoom, Number.parseInt, R.prop('value'), R.prop<HTMLInputElement>('target'))} />
-          <ConfigField label={`Max Segments: ${maxSegments}`} as={Slider} name='maxSegments' min={1} max={60} defaultValue={maxSegments} onChange={R.compose(setMaxSegments, Number.parseInt, R.prop('value'), R.prop<HTMLInputElement>('target'))} />
+          <ConfigField label={`Resolution: ${resolution}`} as={Slider} name='resolution' min={10} max={50} step={1} defaultValue={resolution} onChange={({ target: { value } }) => setResolution(Number.parseFloat(value))} />
+          <ConfigField label={`Density: ${density}`} as={Slider} name='density' min={10} max={1000} defaultValue={density} onChange={({ target: { value } }) => setDensity(Number.parseInt(value))} />
+          <ConfigField label={`Noise Zoom: ${noiseZoom}`} as={Slider} name='noiseZoom' min={1} max={1200} defaultValue={noiseZoom} onChange={({ target: { value } }) => setNoiseZoom(Number.parseInt(value))} />
+          <ConfigField label={`Max Segments: ${maxSegments}`} as={Slider} name='maxSegments' min={1} max={60} defaultValue={maxSegments} onChange={({ target: { value } }) => setMaxSegments(Number.parseInt(value))} />
           <ConfigField label={`Draw Grid: ${shouldDrawGrid ? 'true' : 'false'}`} as={Checkbox} name='shouldDrawGrid' checked={shouldDrawGrid} onChange={() => setShouldDrawGrid(!shouldDrawGrid)} />
           <ConfigField label={`Grid On Top: ${gridOnTop ? 'true' : 'false'}`} as={Checkbox} name='gridOnTop' checked={gridOnTop} onChange={() => setGridOnTop(!gridOnTop)} />
         </ConfigMenu>

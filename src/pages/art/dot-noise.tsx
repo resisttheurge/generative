@@ -4,7 +4,6 @@ import chroma from 'chroma-js'
 import * as tome from 'chromotome'
 import paper, { Point, Shape } from 'paper'
 import { useCallback, useMemo, useState } from 'react'
-import * as R from 'ramda'
 import { saveAs } from 'file-saver'
 import { Box, Select, Slider } from 'theme-ui'
 import { ConfigField, ConfigMenu, Layout } from '../../components'
@@ -62,12 +61,12 @@ const DotNoise = (): JSX.Element => {
             saveAs(data, 'Dot Noise')
           }}
         >
-          <ConfigField label='Seed' name='seed' value={seed} onChange={R.compose(setSeed, R.prop('value'), R.prop<HTMLInputElement>('target'))} />
-          <ConfigField label={`Palette: ${palette.name}`} as={Select} name='palette' defaultValue={palette.name} onChange={R.compose(setPalette, tome.get, R.prop<tome.PaletteName>('value'), R.prop<HTMLSelectElement>('target'))}>
+          <ConfigField label='Seed' name='seed' value={seed} onChange={({ target: { value } }) => setSeed(value)} />
+          <ConfigField label={`Palette: ${palette.name}`} as={Select} name='palette' defaultValue={palette.name} onChange={({ target: { value } }) => setPalette(tome.get(value as tome.PaletteName))}>
             {tome.getNames().map(name => <option key={name}>{name}</option>)}
           </ConfigField>
-          <ConfigField label={`Noise Zoom: ${noiseZoom}`} as={Slider} name='noiseZoom' min={1} max={1200} defaultValue={noiseZoom} onChange={R.compose(setNoiseZoom, Number.parseInt, R.prop('value'), R.prop<HTMLInputElement>('target'))} />
-          <ConfigField label={`Q: ${q}`} as={Slider} name='q' min={1} max={200} defaultValue={q} onChange={R.compose(setQ, Number.parseInt, R.prop('value'), R.prop<HTMLInputElement>('target'))} />
+          <ConfigField label={`Noise Zoom: ${noiseZoom}`} as={Slider} name='noiseZoom' min={1} max={1200} defaultValue={noiseZoom} onChange={({ target: { value } }) => setNoiseZoom(Number.parseInt(value))} />
+          <ConfigField label={`Q: ${q}`} as={Slider} name='q' min={1} max={200} defaultValue={q} onChange={({ target: { value } }) => setQ(Number.parseInt(value))} />
         </ConfigMenu>
       </Box>
     </Layout>

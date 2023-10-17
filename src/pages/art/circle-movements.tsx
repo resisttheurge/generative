@@ -28,14 +28,14 @@ interface CircleMovementsState {
 }
 
 const Scratch = (): JSX.Element => {
-  const [seedStr, setSeedStr] = useState('Move me to move you!')
+  const [seed, setSeed] = useState('Move me to move you!')
   const [palette, setPalette] = useState(tome.get('roygbiv-warm'))
   const [circleCount, setCircleCount] = useState(400)
   const [radiusFactor, setRadiusFactor] = useState(40)
   const [velocityFactor, setVelocityFactor] = useState(100)
   const [noiseZoom, setNoiseZoom] = useState(125)
 
-  const { generate } = useGenerators({ seed: seedStr })
+  const { generate } = useGenerators({ seed })
 
   const noise = generate(noise2D({ zoom: noiseZoom }))
 
@@ -154,14 +154,14 @@ const Scratch = (): JSX.Element => {
             saveAs(data, 'Circle Movements')
           }}
         >
-          <ConfigField label='Seed' name='seed' value={seedStr} onChange={R.compose(setSeedStr, R.prop('value'), R.prop<HTMLInputElement>('target'))} />
-          <ConfigField label={`Palette: ${palette.name}`} as={Select} name='palette' defaultValue={palette.name} onChange={R.compose(setPalette, tome.get, R.prop<tome.PaletteName>('value'), R.prop<HTMLSelectElement>('target'))}>
+          <ConfigField label='Seed' name='seed' value={seed} onChange={({ target: { value } }) => setSeed(value)} />
+          <ConfigField label={`Palette: ${palette.name}`} as={Select} name='palette' defaultValue={palette.name} onChange={({ target: { value } }) => setPalette(tome.get(value as tome.PaletteName))}>
             {tome.getNames().map(name => <option key={name}>{name}</option>)}
           </ConfigField>
-          <ConfigField label={`Circle Count: ${circleCount}`} as={Slider} name='noiseZoom' min={100} max={1000} defaultValue={circleCount} onChange={R.compose(setCircleCount, Number.parseInt, R.prop('value'), R.prop<HTMLInputElement>('target'))} />
-          <ConfigField label={`Radius Factor: ${radiusFactor}`} as={Slider} name='noiseZoom' min={1} max={100} defaultValue={radiusFactor} onChange={R.compose(setRadiusFactor, Number.parseInt, R.prop('value'), R.prop<HTMLInputElement>('target'))} />
-          <ConfigField label={`Velocity Factor: ${velocityFactor}`} as={Slider} name='noiseZoom' min={1} max={200} defaultValue={velocityFactor} onChange={R.compose(setVelocityFactor, Number.parseInt, R.prop('value'), R.prop<HTMLInputElement>('target'))} />
-          <ConfigField label={`Noise Zoom: ${noiseZoom}`} as={Slider} name='noiseZoom' min={1} max={800} defaultValue={noiseZoom} onChange={R.compose(setNoiseZoom, Number.parseInt, R.prop('value'), R.prop<HTMLInputElement>('target'))} />
+          <ConfigField label={`Circle Count: ${circleCount}`} as={Slider} name='circleCount' min={100} max={1000} defaultValue={circleCount} onChange={({ target: { value } }) => setCircleCount(Number.parseInt(value))} />
+          <ConfigField label={`Radius Factor: ${radiusFactor}`} as={Slider} name='radiusFactor' min={1} max={100} defaultValue={radiusFactor} onChange={({ target: { value } }) => setRadiusFactor(Number.parseInt(value))} />
+          <ConfigField label={`Velocity Factor: ${velocityFactor}`} as={Slider} name='velocityFactor' min={1} max={200} defaultValue={velocityFactor} onChange={({ target: { value } }) => setVelocityFactor(Number.parseInt(value))} />
+          <ConfigField label={`Noise Zoom: ${noiseZoom}`} as={Slider} name='noiseZoom' min={1} max={800} defaultValue={noiseZoom} onChange={({ target: { value } }) => setNoiseZoom(Number.parseInt(value))} />
         </ConfigMenu>
       </Box>
     </Layout>
