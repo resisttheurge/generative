@@ -3,7 +3,6 @@
 import paper, { Point, Rectangle, Shape, Size } from 'paper'
 import * as tome from 'chromotome'
 import chroma from 'chroma-js'
-import * as R from 'ramda'
 import { saveAs } from 'file-saver'
 import { useCallback, useState } from 'react'
 import { Box, Select, Slider } from 'theme-ui'
@@ -102,14 +101,14 @@ const PDS: React.FC = () => {
             saveAs(data, 'Poisson Disk Sampling')
           }}
         >
-          <ConfigField label='Seed' name='seed' value={seed} onChange={R.compose(setSeed, R.prop('value'), R.prop<HTMLInputElement>('target'))} />
-          <ConfigField label={`Palette: ${palette.name}`} as={Select} name='palette' defaultValue={palette.name} onChange={R.compose(setPalette, tome.get, R.prop<tome.PaletteName>('value'), R.prop<HTMLSelectElement>('target'))}>
+          <ConfigField label='Seed' name='seed' value={seed} onChange={({ target: { value } }) => setSeed(value)} />
+          <ConfigField label={`Palette: ${palette.name}`} as={Select} name='palette' defaultValue={palette.name} onChange={({ target: { value } }) => setPalette(tome.get(value as tome.PaletteName))}>
             {tome.getNames().map(name => <option key={name}>{name}</option>)}
           </ConfigField>
-          <ConfigField label={`Multiplier: ${multiplier}`} as={Slider} name='multiplier' min={0.05} max={1.5} step={0.05} defaultValue={multiplier} onChange={R.compose(setMultiplier, Number.parseFloat, R.prop('value'), R.prop<HTMLInputElement>('target'))} />
-          <ConfigField label={`Buffer: ${buffer}`} as={Slider} name='buffer' min={50} max={250} defaultValue={buffer} onChange={R.compose(setBuffer, Number.parseInt, R.prop('value'), R.prop<HTMLInputElement>('target'))} />
-          <ConfigField label={`Max Samples: ${candidateLimit}`} as={Slider} name='candidateLimit' min={15} max={45} defaultValue={candidateLimit} onChange={R.compose(setCandidateLimit, Number.parseInt, R.prop('value'), R.prop<HTMLInputElement>('target'))} />
-          <ConfigField label={`Noise Zoom: ${noiseZoom}`} as={Slider} name='noiseZoom' min={1} max={1200} defaultValue={noiseZoom} onChange={R.compose(setNoiseZoom, Number.parseInt, R.prop('value'), R.prop<HTMLInputElement>('target'))} />
+          <ConfigField label={`Multiplier: ${multiplier}`} as={Slider} name='multiplier' min={0.05} max={1.5} step={0.05} defaultValue={multiplier} onChange={({ target: { value } }) => setMultiplier(Number.parseFloat(value))} />
+          <ConfigField label={`Buffer: ${buffer}`} as={Slider} name='buffer' min={50} max={250} defaultValue={buffer} onChange={({ target: { value } }) => setBuffer(Number.parseFloat(value))} />
+          <ConfigField label={`Max Samples: ${candidateLimit}`} as={Slider} name='candidateLimit' min={15} max={45} defaultValue={candidateLimit} onChange={({ target: { value } }) => setCandidateLimit(Number.parseInt(value))} />
+          <ConfigField label={`Noise Zoom: ${noiseZoom}`} as={Slider} name='noiseZoom' min={1} max={1200} defaultValue={noiseZoom} onChange={({ target: { value } }) => setNoiseZoom(Number.parseInt(value))} />
         </ConfigMenu>
       </Box>
     </Layout>

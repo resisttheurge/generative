@@ -45,7 +45,7 @@ const calculateNoiseFlow = (palette: tome.Palette, scale: number, noiseZoom: num
 }
 
 const MossyTangle: React.FC = () => {
-  const [seedStr, setSeedStr] = useState('Blips and blops!')
+  const [seed, setSeed] = useState('Blips and blops!')
   const [palette, setPalette] = useState(tome.get('cc242'))
   const [scale, setScale] = useState(40)
   const [noiseZoom, setNoiseZoom] = useState(200)
@@ -73,12 +73,12 @@ const MossyTangle: React.FC = () => {
             saveAs(data, 'Mossy Tangle')
           }}
         >
-          <ConfigField label='Seed' name='seed' value={seedStr} onChange={R.compose(setSeedStr, R.prop('value'), R.prop<HTMLInputElement>('target'))} />
-          <ConfigField label={`Palette: ${palette.name}`} as={Select} name='palette' defaultValue={palette.name} onChange={R.compose(setPalette, tome.get, R.prop<tome.PaletteName>('value'), R.prop<HTMLSelectElement>('target'))}>
+          <ConfigField label='Seed' name='seed' value={seed} onChange={({ target: { value } }) => setSeed(value)} />
+          <ConfigField label={`Palette: ${palette.name}`} as={Select} name='palette' defaultValue={palette.name} onChange={({ target: { value } }) => setPalette(tome.get(value as tome.PaletteName))}>
             {tome.getNames().map(name => <option key={name}>{name}</option>)}
           </ConfigField>
-          <ConfigField label={`Scale: ${scale}`} as={Slider} name='scale' min={20} max={200} defaultValue={scale} onChange={R.compose(setScale, Number.parseInt, R.prop('value'), R.prop<HTMLInputElement>('target'))} />
-          <ConfigField label={`Noise Zoom: ${noiseZoom}`} as={Slider} name='noiseZoom' min={1} max={1200} defaultValue={noiseZoom} onChange={R.compose(setNoiseZoom, Number.parseInt, R.prop('value'), R.prop<HTMLInputElement>('target'))} />
+          <ConfigField label={`Scale: ${scale}`} as={Slider} name='scale' min={20} max={200} defaultValue={scale} onChange={({ target: { value } }) => setScale(Number.parseInt(value))} />
+          <ConfigField label={`Noise Zoom: ${noiseZoom}`} as={Slider} name='noiseZoom' min={1} max={1200} defaultValue={noiseZoom} onChange={({ target: { value } }) => setNoiseZoom(Number.parseInt(value))} />
         </ConfigMenu>
       </Box>
     </Layout>

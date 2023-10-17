@@ -86,7 +86,7 @@ const Palettes: React.FC = () => {
             saveAs(data, 'Poisson Disk Sampling')
           }}
         >
-          <ConfigField label={`Palette: ${palette.name}`} as={Select} name='palette' defaultValue={palette.name} onChange={R.compose(setPalette, tome.get, R.prop<tome.PaletteName>('value'), R.prop<HTMLSelectElement>('target'))}>
+          <ConfigField label={`Palette: ${palette.name}`} as={Select} name='palette' defaultValue={palette.name} onChange={({ target: { value } }) => setPalette(tome.get(value as tome.PaletteName))}>
             {tome.getNames().map(name => <option key={name}>{name}</option>)}
           </ConfigField>
         </ConfigMenu>
