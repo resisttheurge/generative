@@ -1,4 +1,5 @@
 import type { Config } from 'jest'
+import { defaults } from 'jest-config'
 
 /*
  * For a detailed explanation regarding each configuration property, visit:
@@ -15,8 +16,14 @@ const config: Config = {
   // Indicates which provider should be used to instrument code for coverage
   coverageProvider: 'v8',
 
-  // A preset that is used as a base for Jest's configuration
-  preset: 'ts-jest',
+  coverageReporters: [
+    ...defaults.coverageReporters,
+    'html'
+  ],
+
+  transform: {
+    '^.+\\.(t|j)sx?$': '@swc/jest',
+  },
 
   testPathIgnorePatterns: [
     '/node_modules/',
