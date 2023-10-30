@@ -54,7 +54,7 @@
     "@types/fscreen": "^1.0.3",
     "@types/jest": "^29.5.6",
     "@types/ramda": "^0.29.7",
-    "cypress": "^13.3.1",
+    "cypress": "^13.3.3",
     "eslint-config-next": "^13.5.5",
     "fast-check": "^3.13.1",
     "identity-obj-proxy": "^3.0.0",
