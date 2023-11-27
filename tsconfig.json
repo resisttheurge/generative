@@ -1,11 +1,20 @@
 {
   "compilerOptions": {
-    "target": "es5",
+    "target": "ES6",
     "lib": [
       "dom",
       "dom.iterable",
       "esnext"
     ],
+    "baseUrl": "./src",
+    "paths": {
+      "@data-structures/*": ["lib/data-structures/*"],
+      "@generators/*": ["lib/generators/*"],
+      "@hashers/*": ["lib/hashers/*"],
+      "@math/*": ["lib/math/*"],
+      "@prngs/*": ["lib/prngs/*"],
+      "@utils/*": ["lib/utils/*"]
+    },
     "allowJs": true,
     "skipLibCheck": true,
     "strict": true,

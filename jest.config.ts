@@ -1,12 +1,15 @@
-import type { Config } from 'jest'
 import { defaults } from 'jest-config'
+import { pathsToModuleNameMapper } from 'ts-jest'
+import type { JestConfigWithTsJest } from 'ts-jest'
+
+const { compilerOptions } = require('./tsconfig.json')
 
 /*
  * For a detailed explanation regarding each configuration property, visit:
  * https://jestjs.io/docs/configuration
  */
 
-const config: Config = {
+const config: JestConfigWithTsJest = {
   // Indicates whether the coverage information should be collected while executing the test
   collectCoverage: true,
 
@@ -21,13 +24,25 @@ const config: Config = {
     'html'
   ],
 
+  moduleDirectories: [...defaults.moduleDirectories, compilerOptions.baseUrl],
+
+  moduleNameMapper: pathsToModuleNameMapper(compilerOptions.paths, { prefix: '<rootDir>/src/' }),
+
+  roots: ['<rootDir>/src'],
+
+  setupFilesAfterEnv: [
+    'jest-extended/all',
+    '<rootDir>/jest.setup.ts'
+  ],
+
+  showSeed: true,
+
   transform: {
-    '^.+\\.(t|j)sx?$': '@swc/jest',
+    '^.+\\.(t|j)sx?$': '@swc/jest'
   },
 
   testPathIgnorePatterns: [
-    '/node_modules/',
-    '/__utils__/'
+    '/node_modules/'
   ]
 }
 
