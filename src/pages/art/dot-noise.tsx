@@ -13,7 +13,7 @@ import { PaperSetup, useGenerators, usePaper } from '../../effects'
 const DotNoise = (): JSX.Element => {
   const [seed, setSeed] = useState('Blips and blops!')
   const [noiseZoom, setNoiseZoom] = useState(150)
-  const { generate } = useGenerators({ seed })
+  const { generate } = useGenerators(seed)
 
   const noise = useMemo(() => generate(noise2D({ zoom: noiseZoom })), [generate, noiseZoom])
 

@@ -1,10 +1,9 @@
 import { mapAccum } from 'ramda'
-import * as splitmix32 from '../math/splitmix32'
 import { Range } from '../math/ranges'
-import * as xmur3a from '../math/xmur3a'
 import { SizedTuple } from '../data-structures/sized-tuples'
 import { OneOf } from '../data-structures/tuples'
 import { List, Map } from 'immutable'
+import { PRN } from '@prngs/PRNG'
 
 export interface BooleanGeneratorConfig {
   threshold: number
@@ -15,9 +14,13 @@ export interface NumericGeneratorConfig extends Range {
   distribution: Generator<number>
 }
 
-export type Flatten<T> = T extends Generator<infer U> ? Flatten<U> : T
+export type Flatten <T> =
+  T extends Generator<infer U>
+    ? Flatten<U>
+    : T
 
-export type RewrapGenerator<T> = Generator<UnwrapGenerator<T>>
+export type RewrapGenerator<T> =
+  Generator<UnwrapGenerator<T>>
 export type UnwrapGenerator<T> =
   T extends Generator<infer U>
     ? U
@@ -27,7 +30,8 @@ export type UnwrapGenerator<T> =
         ? UnwrapGeneratorRecord<T>
         : T
 
-export type RewrapGeneratorTuple<T extends [...any]> = Generator<UnwrapGeneratorTuple<T>>
+export type RewrapGeneratorTuple<T extends [...any]> =
+  Generator<UnwrapGeneratorTuple<T>>
 export type UnwrapGeneratorTuple<T extends [...any]> =
   T extends [infer A, ...infer B]
     ? [UnwrapGenerator<A>, ...UnwrapGeneratorTuple<B>]
@@ -37,49 +41,29 @@ export type UnwrapGeneratorTuple<T extends [...any]> =
         ? Array<UnwrapGenerator<A>>
         : []
 
-export type RewrapGeneratorRecord<T extends { [K in keyof T]: T[K] }> = Generator<UnwrapGeneratorRecord<T>>
+export type RewrapGeneratorRecord<T extends { [K in keyof T]: T[K] }> =
+  Generator<UnwrapGeneratorRecord<T>>
 export type UnwrapGeneratorRecord<T extends { [K in keyof T]: T[K] }> =
   T extends { [K in keyof T]: T[K] }
     ? { [K in keyof T]: UnwrapGenerator<T[K]> }
     : {}
 
-export type GeneratorFn<T> = (state: number) => [number, T]
+export type GeneratorFn <T> = (prn: PRN) => [PRN, T]
 
-export class Generator<T> {
-  static initSeed: (seedString: string) => number = xmur3a.hashString
+export class Generator <T> {
+  constructor (readonly run: GeneratorFn<T>) {}
 
-  static hashState: (state: number) => number = xmur3a.hashState
+  static readonly uniform =
+    new Generator(prn => [prn.next, prn.normalized])
 
-  static uniform: Generator<number> = new Generator(splitmix32.next)
-
-  readonly run: GeneratorFn<T>
-
-  constructor (run: GeneratorFn<T>) {
-    this.run = run
-  }
-
-  static run <T> (generator: T | Generator<T>, state: number): [number, T] {
+  static run <T> (generator: T | Generator<T>, prn: PRN): [PRN, T] {
     return generator instanceof Generator
-      ? generator.run(state)
-      : [state, generator]
-  }
-
-  static sequence <T> (structure: T): RewrapGenerator<T> {
-    return new Generator(state => {
-      const [,nextValue] =
-      structure instanceof Generator
-        ? structure.run(state)
-        : structure instanceof Array
-          ? Generator.tuple(structure).run(state)
-          : structure instanceof Object
-            ? Generator.record(structure).run(state)
-            : [state, structure]
-      return [Generator.hashState(state), nextValue]
-    })
+      ? generator.run(prn)
+      : [prn, generator]
   }
 
   static constant <T> (value: T): Generator<T> {
-    return new Generator(state => [state, value])
+    return new Generator(prn => [prn, value])
   }
 
   static bool (config: Partial<BooleanGeneratorConfig> = {}): Generator<boolean> {
@@ -112,7 +96,7 @@ export class Generator<T> {
           Generator.sequence(nextGenerator).run(currentState),
         state,
         values
-      ) as [number, UnwrapGeneratorTuple<T>]
+      ) as [PRN, UnwrapGeneratorTuple<T>]
     )
   }
 
@@ -130,11 +114,25 @@ export class Generator<T> {
     })
   }
 
+  static sequence <T> (structure: T): RewrapGenerator<T> {
+    return new Generator(prn => {
+      const [nextPrn, nextValue] =
+      structure instanceof Generator
+        ? structure.run(prn)
+        : structure instanceof Array
+          ? Generator.tuple(structure).run(prn)
+          : structure instanceof Object
+            ? Generator.record(structure).run(prn)
+            : [prn, structure]
+      return [prn.variation ?? nextPrn, nextValue]
+    })
+  }
+
   /**
    * Warning - breaks generator purity in most cases
    */
   static spread <T extends [...any]> (generator: Generator<T>): Generator<OneOf<T>> {
-    let lastState: number = 0
+    let lastState: PRN
     let extra: Array<OneOf<T>> = []
     return new Generator(state => {
       if (extra.length === 0 || state !== lastState) {
@@ -196,7 +194,7 @@ export class Generator<T> {
 
   flatten (): Generator<Flatten<T>> {
     return new Generator(state => {
-      let [currentState, currentValue] = this.run(state) as [number, Flatten<T>]
+      let [currentState, currentValue] = this.run(state) as [PRN, Flatten<T>]
       while (currentValue instanceof Generator) {
         const [nextState, nextValue] = currentValue.run(currentState)
         currentValue = nextValue

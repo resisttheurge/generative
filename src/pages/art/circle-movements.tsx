@@ -35,7 +35,7 @@ const Scratch = (): JSX.Element => {
   const [velocityFactor, setVelocityFactor] = useState(100)
   const [noiseZoom, setNoiseZoom] = useState(125)
 
-  const { generate } = useGenerators({ seed })
+  const { generate } = useGenerators(seed)
 
   const noise = generate(noise2D({ zoom: noiseZoom }))
 
