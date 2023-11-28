@@ -1,7 +1,7 @@
 import fc from 'fast-check'
 import { List } from 'immutable'
 
-import { PRN, PRNG } from '@prngs/PRNG'
+import { ConcretePRN, PRN, PRNG } from '@prngs/PRNG'
 import { Liftable, lift } from '@utils/arbitraries'
 
 export interface PRNGConstraints {
@@ -55,12 +55,12 @@ export interface PRNConstraints {
   pathSize?: Liftable<fc.Size>
 }
 
-export function prn (): fc.Arbitrary<PRN<unknown>>
+export function prn (): fc.Arbitrary<ConcretePRN<unknown>>
 
 export function prn <State> (
   prngArbitrary?: fc.Arbitrary<PRNG<State>>,
   constraints?: PRNConstraints
-): fc.Arbitrary<PRN<State>>
+): fc.Arbitrary<ConcretePRN<State>>
 
 export function prn (
   prngArbitrary = prng(),
@@ -71,7 +71,7 @@ export function prn (
     maxPathIterations = 100,
     pathSize = 'small'
   }: PRNConstraints = {}
-): fc.Arbitrary<PRN<unknown>> {
+): fc.Arbitrary<PRN> {
   return fc.record({
     prng: prngArbitrary,
     seed: lift(seed),
@@ -88,6 +88,6 @@ export function prn (
             fc.nat(maxPathIterations),
             { size: pathSize }
           ).map(List)
-      ).map(path => new PRN(prng, seed, path, iteration))
+      ).map(path => new ConcretePRN(prng, seed, path, iteration))
   )
 }

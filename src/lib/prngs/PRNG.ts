@@ -153,7 +153,17 @@ export function calculateState <State> (
   return state
 }
 
-export class PRN<State> {
+export interface PRN {
+  readonly seed: string
+  readonly path: List<number>
+  readonly iteration: number
+  readonly value: number
+  readonly normalized: number
+  readonly next: PRN
+  readonly variation?: PRN
+}
+
+export class ConcretePRN<State> implements PRN {
   private _value?: number
   private _normalized?: number
 
@@ -181,8 +191,8 @@ export class PRN<State> {
     return this._normalized
   }
 
-  get next (): PRN<State> {
-    return new PRN(
+  get next (): ConcretePRN<State> {
+    return new ConcretePRN(
       this.prng,
       this.seed,
       this.path,
@@ -191,18 +201,18 @@ export class PRN<State> {
     )
   }
 
-  get variation (): PRN<State> {
-    invariant(
-      this.prng.hashState !== undefined,
-      () => VARIATION_NOT_SUPPORTED(this.prng.name)
-    )
-    return new PRN(
-      this.prng,
-      this.seed,
-      this.path.push(this.iteration),
-      0,
-      this.prng.hashState(this.state)
-    )
+  get variation (): ConcretePRN<State> | undefined {
+    if (this.prng.hashState === undefined) {
+      return undefined
+    } else {
+      return new ConcretePRN(
+        this.prng,
+        this.seed,
+        this.path.push(this.iteration),
+        0,
+        this.prng.hashState(this.state)
+      )
+    }
   }
 
   /**

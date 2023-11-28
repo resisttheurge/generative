@@ -3,7 +3,7 @@ import { fc, it } from '@fast-check/jest'
 import * as arb from '@prngs/arbitraries'
 import {
   ANONYMOUS_PRNG_NAME,
-  PRN,
+  ConcretePRN,
   STATE_NOT_CALCULABLE,
   VARIATION_NOT_SUPPORTED,
   calculateState
@@ -97,7 +97,7 @@ describe('the calculateState function', () => {
   )
 })
 
-describe('the PRN class', () => {
+describe('the ConcretePRN class', () => {
   it.prop({
     prng: arb.prng(fc.anything(), { noHashState: false }),
     seed: fc.string(),
@@ -110,13 +110,17 @@ describe('the PRN class', () => {
   })(
     'should be constructable with a PRNG, a seed, and an optional path, iteration, and state',
     ({ prng, seed, path, iteration, state }) => {
-      const prn = new PRN(prng, seed, path, iteration, state)
-      expect(prn).toBeInstanceOf(PRN)
+      const prn = new ConcretePRN(prng, seed, path, iteration, state)
+      expect(prn).toBeInstanceOf(ConcretePRN)
       expect(prn.prng).toBe(prng)
       expect(prn.seed).toBe(seed)
       expect(prn.path).toBe(path ?? List())
       expect(prn.iteration).toBe(iteration ?? 0)
-      expect(prn.state).toBe(state ?? calculateState(prng, seed, path, iteration))
+      expect(prn.state).toBe(
+        state !== undefined
+          ? state
+          : calculateState(prng, seed, path, iteration)
+      )
     }
   )
 

@@ -22,7 +22,7 @@ const PDS: React.FC = () => {
   const [candidateLimit, setCandidateLimit] = useState(30)
   const [noiseZoom, setNoiseZoom] = useState(1200)
 
-  const { generate } = useGenerators({ seed })
+  const { generate } = useGenerators(seed)
 
   const radius = (multiplier * buffer) / 2
   const offset = radius / 5

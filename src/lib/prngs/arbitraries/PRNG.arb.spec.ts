@@ -2,7 +2,7 @@ import { fc, it } from '@fast-check/jest'
 
 import * as arb from './PRNG.arb'
 import { isList } from 'immutable'
-import { PRN, calculateState } from '@prngs/PRNG'
+import { ConcretePRN, calculateState } from '@prngs/PRNG'
 
 describe('an arbitrary PRNG', () => {
   it.prop([arb.prng()])(
@@ -195,11 +195,13 @@ describe('an arbitrary PRN', () => {
       expect(prn.normalized).toBeLessThanOrEqual(1)
 
       expect(prn).toHaveProperty('next')
-      expect(prn.next).toBeInstanceOf(PRN)
+      expect(prn.next).toBeInstanceOf(ConcretePRN)
 
+      expect(prn).toHaveProperty('variation')
       if (prn.prng.hashState !== undefined) {
-        expect(prn).toHaveProperty('variation')
-        expect(prn.variation).toBeInstanceOf(PRN)
+        expect(prn.variation).toBeInstanceOf(ConcretePRN)
+      } else {
+        expect(prn.variation).toBeUndefined()
       }
     }
   )

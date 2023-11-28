@@ -65,7 +65,7 @@ const Grids: React.FC = () => {
   const [maxSegments, setMaxSegments] = useState(30)
   const [shouldDrawGrid, setShouldDrawGrid] = useState(false)
   const [gridOnTop, setGridOnTop] = useState(false)
-  const { generate } = useGenerators({ seed })
+  const { generate } = useGenerators(seed)
   const { theme } = useThemeUI()
 
   const backgroundColor = useMemo(() => new paper.Color(palette.background ?? extractColor(theme.rawColors?.background)), [palette, theme])

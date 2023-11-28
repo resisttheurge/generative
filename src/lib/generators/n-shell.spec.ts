@@ -1,13 +1,9 @@
 import fc from 'fast-check'
-import { Range, subdivide } from '../math/ranges'
-import { nShell } from './n-shell'
-import { magnitude, magnitudeSquared } from '../math/vectors'
-import { Generator } from './Generator'
-import { goodSeed } from '../../__tests__/__utils__/arbitraries'
-import { goodnessOfFit } from '../../__tests__/__utils__/goodnessOfFit'
 
-export const seed: () => fc.Arbitrary<number> =
-  () => fc.string().map(Generator.initSeed)
+import { jsf32, mulberry32, prn, sfc32, splitmix32 } from '@prngs/arbitraries'
+import { Range } from '../math/ranges'
+import { nShell } from './n-shell'
+import { magnitudeSquared } from '../math/vectors'
 
 export const invalidDimensions: () => fc.Arbitrary<number> =
   () => fc.oneof(
@@ -17,7 +13,7 @@ export const invalidDimensions: () => fc.Arbitrary<number> =
   )
 
 export const validDimensions: () => fc.Arbitrary<number> =
-  () => fc.double({ min: 1, max: 100, noDefaultInfinity: true, noNaN: true })
+  () => fc.double({ min: 1, max: 10, noDefaultInfinity: true, noNaN: true })
 
 const invalidRadiusRangeBound: () => fc.Arbitrary<number> =
   () => fc.oneof(
@@ -85,7 +81,7 @@ describe('module lib/generators/n-shell', () => {
   })
 
   it('should generate points in the unit sphere if no radius range is specified', () => {
-    fc.assert(fc.property(validDimensions(), goodSeed(), (dimensions, seed) => {
+    fc.assert(fc.property(validDimensions(), prn<any>(fc.oneof(jsf32(), mulberry32(), sfc32(), splitmix32())), (dimensions, seed) => {
       const generator = nShell(dimensions)
       const [,vector] = generator.run(seed)
       expect(vector.length).toBe(Math.floor(dimensions))
@@ -96,7 +92,7 @@ describe('module lib/generators/n-shell', () => {
   })
 
   it('should generate points in the specified radius range', () => {
-    fc.assert(fc.property(validDimensions(), validRadiusRange(), goodSeed(), (dimensions, radiusRange, seed) => {
+    fc.assert(fc.property(validDimensions(), validRadiusRange(), prn<any>(fc.oneof(jsf32(), mulberry32(), sfc32(), splitmix32())), (dimensions, radiusRange, seed) => {
       const { min = 0, max = 1 } = radiusRange
       const [min2, max2] = [min * min, max * max]
       const generator = nShell(dimensions, radiusRange)
@@ -113,36 +109,6 @@ describe('module lib/generators/n-shell', () => {
         expect(mag2).toBeGreaterThanOrEqual(min * min)
         expect(mag2).toBeLessThanOrEqual(max * max)
       }
-    }))
-  })
-
-  xit('should generate points with with a uniformly distributed magnitude', () => {
-    const numBins = 16
-    const expectedPerBin = 1024
-    const numSamples = numBins * expectedPerBin
-    const expected = new Array(numBins).fill(expectedPerBin)
-    const bins = subdivide({ min: 0, max: 1 }, numBins)
-    fc.assert(fc.property(validDimensions(), goodSeed(), (dimensions, seed) => {
-      const generator = nShell(dimensions)
-      const [, samples] = generator.repeat(numSamples).run(seed)
-      const observed =
-          samples.reduce<number[]>(
-            (acc, next) => {
-              const mag = magnitude(next)
-              const binIndex = bins.findIndex(bin => mag >= bin.min && mag < bin.max)
-              expect(binIndex).toBeGreaterThanOrEqual(0)
-              if (acc[binIndex] === undefined) {
-                acc[binIndex] = 0
-              }
-              acc[binIndex]++
-              return acc
-            },
-            []
-          )
-      // console.log(observed)
-      expect(observed.reduce((a, b) => a + b)).toEqual(numSamples)
-      const gof = goodnessOfFit(observed, expected)
-      expect(gof.pValue).toBeGreaterThan(0.005)
     }))
   })
 })

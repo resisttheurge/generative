@@ -1,7 +1,7 @@
 import { List, Range } from 'immutable'
 import invariant from 'tiny-invariant'
-import { Vector, size, translate, printVector, distance } from '../math/vectors'
-import { setIn, getIn, NDimensionalList, fill, fromJS, toJS } from '../data-structures/nd-arrays'
+import { Vector, size, translate, printVector, distanceSquared } from '../math/vectors'
+import { setIn, getIn, NDimensionalList, fill, fromJS } from '../data-structures/nd-arrays'
 import { map, cartesianProduct } from '../data-structures/sized-tuples'
 import { Generator } from './Generator'
 import { nShell } from './n-shell'
@@ -80,20 +80,11 @@ export class BlueNoiseLibrary <Dimensions extends number> {
 
       canEmit (sample: Vector<Dimensions>): boolean {
         const { grid } = this
-        const { radius } = library
+        const { radiusSquared } = library
         const gridIndex = library.gridCoordinates(sample)
         const canEmit =
           getIn(grid, gridIndex) === -1 &&
-          this.neighbors(sample).filter(neighbor => distance(sample, neighbor) < radius).length === 0
-        if (canEmit) {
-          console.log({
-            sample,
-            coordinates: gridIndex,
-            grid: toJS(grid),
-            neighbors: this.neighbors(sample),
-            tooClose: this.neighbors(sample)
-          })
-        }
+          this.neighbors(sample).filter(neighbor => distanceSquared(sample, neighbor) < radiusSquared).length === 0
         return canEmit
       }
 
@@ -179,15 +170,15 @@ export class BlueNoiseLibrary <Dimensions extends number> {
 
   neighborAddresses (position: Vector<Dimensions>): Array<Vector<Dimensions>> {
     invariant(this.inBounds(position), () => `position ([${position.join(', ')}]) not in bounds`)
-    return cartesianProduct(
+    const result = cartesianProduct(
       map(this.gridCoordinates(position), (coordinate, i) =>
         Range(
-          Math.max(coordinate - 1, 0),
-          Math.min(coordinate + 1, this.gridDimensions[i]) + 1,
-          1
+          Math.max(coordinate - 2, 0),
+          Math.min(coordinate + 3, this.gridDimensions[i])
         ).toJS()
       )
     )
+    return result
   }
 
   generateBlueNoise (initialPosition: Vector<Dimensions>): BlueNoiseGenerator<Dimensions> {
