@@ -131,15 +131,19 @@ export interface PRNG<State> {
 export function calculateState <State> (
   prng: PRNG<State>,
   seed: string,
+  offset: number = 0,
   path: List<number> = List(),
   iteration: number = 0
 ): State {
   let state = prng.initState(seed)
-  if (!path.isEmpty()) {
+  if (offset > 0 || path.size > 0) {
     invariant(
       prng.hashState !== undefined,
       () => STATE_NOT_CALCULABLE(prng.name)
     )
+    while (offset-- > 0) {
+      state = prng.hashState(state)
+    }
     for (let segment of path) {
       while (segment-- > 0) {
         state = prng.nextState(state)
@@ -155,6 +159,7 @@ export function calculateState <State> (
 
 export interface PRN {
   readonly seed: string
+  readonly offset: number
   readonly path: List<number>
   readonly iteration: number
   readonly value: number
@@ -170,9 +175,10 @@ export class ConcretePRN<State> implements PRN {
   constructor (
     readonly prng: PRNG<State>,
     readonly seed: string,
+    readonly offset: number = 0,
     readonly path: List<number> = List(),
     readonly iteration: number = 0,
-    readonly state: State = calculateState(prng, seed, path, iteration)
+    readonly state: State = calculateState(prng, seed, offset, path, iteration)
   ) {}
 
   get value (): number {
@@ -195,6 +201,7 @@ export class ConcretePRN<State> implements PRN {
     return new ConcretePRN(
       this.prng,
       this.seed,
+      this.offset,
       this.path,
       this.iteration + 1,
       this.prng.nextState(this.state)
@@ -208,6 +215,7 @@ export class ConcretePRN<State> implements PRN {
       return new ConcretePRN(
         this.prng,
         this.seed,
+        this.offset,
         this.path.push(this.iteration),
         0,
         this.prng.hashState(this.state)
@@ -224,9 +232,12 @@ export class ConcretePRN<State> implements PRN {
       this.prng.name ?? ANONYMOUS_PRNG_NAME
     }@${
       this.seed
+    }^${
+      this.offset
     }:${
-      this.path.push(this.iteration)
-        .join(':')
+      this.path.size > 0
+        ? `${this.path.join(':')}:${this.iteration}`
+        : this.iteration
     }=${
       this.prng.formatState?.(this.state) ??
       JSON.stringify(this.state)
