@@ -24,8 +24,8 @@ export type RewrapGenerator<T> =
 export type UnwrapGenerator<T> =
   T extends Generator<infer U>
     ? U
-    : T extends [...any]
-      ? UnwrapGeneratorTuple<T>
+    : T extends [...infer U]
+      ? UnwrapGeneratorTuple<U>
       : T extends { [K in keyof T]: T[K] }
         ? UnwrapGeneratorRecord<T>
         : T
@@ -37,7 +37,11 @@ export type UnwrapGeneratorTuple<T extends [...any]> =
     ? [UnwrapGenerator<A>, ...UnwrapGeneratorTuple<B>]
     : T extends [infer A]
       ? [UnwrapGenerator<A>]
-      : []
+      : T extends []
+        ? []
+        : T extends Array<infer A>
+          ? Array<UnwrapGenerator<A>>
+          : never
 
 export type RewrapGeneratorRecord<T extends { [K in keyof T]: T[K] }> =
   Generator<UnwrapGeneratorRecord<T>>
