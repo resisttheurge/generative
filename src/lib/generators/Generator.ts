@@ -37,9 +37,7 @@ export type UnwrapGeneratorTuple<T extends [...any]> =
     ? [UnwrapGenerator<A>, ...UnwrapGeneratorTuple<B>]
     : T extends [infer A]
       ? [UnwrapGenerator<A>]
-      : T extends Array<infer A>
-        ? Array<UnwrapGenerator<A>>
-        : []
+      : []
 
 export type RewrapGeneratorRecord<T extends { [K in keyof T]: T[K] }> =
   Generator<UnwrapGeneratorRecord<T>>
@@ -93,7 +91,7 @@ export class Generator <T> {
     return new Generator(state =>
       mapAccum(
         (currentState, nextGenerator) =>
-          Generator.sequence(nextGenerator).run(currentState),
+          nextGenerator.run(currentState),
         state,
         values
       ) as [PRN, UnwrapGeneratorTuple<T>]
@@ -104,7 +102,7 @@ export class Generator <T> {
     return new Generator(state => {
       const [finalState, entries] = mapAccum(
         (currentState, [nextKey, nextGenerator]) => {
-          const [nextState, value] = Generator.sequence(nextGenerator).run(currentState)
+          const [nextState, value] = nextGenerator.run(currentState)
           return [nextState, [nextKey, value]]
         },
         state,
@@ -213,10 +211,9 @@ export class Generator <T> {
 
   repeat <N extends number> (count: N): Generator<SizedTuple<T, N>> {
     return new Generator(state => {
-      const generator = Generator.sequence(this as Generator<T>)
       let [result, currentState] = [[] as SizedTuple<T, N>, state]
       for (let i = 0; i < count; i++) {
-        const [nextState, nextValue] = generator.run(currentState)
+        const [nextState, nextValue] = this.run(currentState)
         result.push(nextValue)
         currentState = nextState
       }
