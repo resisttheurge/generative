@@ -30,3 +30,17 @@ export const paretoDistribution = (config: Partial<ParetoConfig>): Generator<num
     ? generator.filter(inRange(truncate))
     : generator
 }
+
+// from https://en.wikipedia.org/wiki/Pareto_distribution#Generating_bounded_Pareto_random_variables
+export function pareto (alpha: number, low: number = 0, high: number = 1): Generator<number> {
+  return Generator.uniform
+    .filter(u => u > 0 && u < 1)
+    .map(u => {
+      const h = Math.pow(high, alpha)
+      const l = Math.pow(low, alpha)
+      return Math.pow(
+        -((u * (h - l) - h) / (h * l)),
+        -1 / alpha
+      )
+    })
+}
