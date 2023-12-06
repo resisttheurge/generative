@@ -11,6 +11,7 @@ export const links = {
     'Circle Movements': '/art/circle-movements'
   },
   Utilities: {
+    Distributions: '/utilities/distributions',
     Palettes: '/utilities/palettes',
     'Style Guide': '/utilities/style-guide'
   }

@@ -49,8 +49,9 @@ export function prng (
 
 export interface PRNConstraints {
   seed?: Liftable<string>
+  offset?: Liftable<number>
   iteration?: Liftable<number>
-  noPath?: Liftable<boolean>
+  noVariation?: Liftable<boolean>
   maxPathIterations?: Liftable<number>
   pathSize?: Liftable<fc.Size>
 }
@@ -66,8 +67,9 @@ export function prn (
   prngArbitrary = prng(),
   {
     seed = fc.string(),
+    offset = fc.nat(100),
     iteration = fc.nat(100),
-    noPath = fc.boolean(),
+    noVariation = fc.boolean(),
     maxPathIterations = 100,
     pathSize = 'small'
   }: PRNConstraints = {}
@@ -75,19 +77,30 @@ export function prn (
   return fc.record({
     prng: prngArbitrary,
     seed: lift(seed),
+    offset: lift(offset),
     iteration: lift(iteration),
-    noPath: lift(noPath),
+    noVariation: lift(noVariation),
     maxPathIterations: lift(maxPathIterations),
     pathSize: lift(pathSize)
   }).chain(
-    ({ prng, seed, iteration, noPath, maxPathIterations, pathSize }) =>
-      lift(
-        noPath || prng.hashState === undefined
+    ({ prng, seed, offset, iteration, noVariation, maxPathIterations, pathSize }) => {
+      noVariation = noVariation || prng.hashState === undefined
+      return lift(
+        noVariation
           ? List<number>()
           : fc.array(
             fc.nat(maxPathIterations),
             { size: pathSize }
           ).map(List)
-      ).map(path => new ConcretePRN(prng, seed, path, iteration))
+      ).map(path =>
+        new ConcretePRN(
+          prng,
+          seed,
+          noVariation ? 0 : offset,
+          path,
+          iteration
+        )
+      )
+    }
   )
 }

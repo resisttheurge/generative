@@ -54,16 +54,17 @@ describe('the calculateState function', () => {
   it.prop({
     prng: arb.prng(fc.anything(), { noHashState: true }),
     seed: fc.string(),
+    offset: fc.nat(100),
     path: fc.array(fc.nat(100), { size: 'small' }).map(List),
     iteration: fc.nat(100)
   })(
-    'should throw an error when given a PRNG that does not define a hashState function and a non-empty path',
-    ({ prng, seed, path, iteration }) => {
-      if (path.isEmpty()) {
-        expect(() => calculateState(prng, seed, path, iteration))
+    'should throw an error when given a PRNG that does not define a hashState function and a non-zero offset or a non-empty path',
+    ({ prng, seed, offset, path, iteration }) => {
+      if (offset === 0 && path.isEmpty()) {
+        expect(() => calculateState(prng, seed, offset, path, iteration))
           .not.toThrow()
       } else {
-        expect(() => calculateState(prng, seed, path, iteration))
+        expect(() => calculateState(prng, seed, offset, path, iteration))
           .toThrowError(STATE_NOT_CALCULABLE(prng.name))
       }
     }
@@ -72,27 +73,29 @@ describe('the calculateState function', () => {
   it.prop({
     prng: arb.prng(fc.anything(), { noHashState: false }),
     seed: fc.string(),
+    offset: fc.nat(100),
     path: fc.array(fc.nat(100), { size: 'small' }).map(List),
     iteration: fc.nat(100)
   })(
     "pushing the given iteration onto the given path should return the same state as calling the given PRNGs's hashState function on the previous state",
-    ({ prng, seed, path, iteration }) => {
+    ({ prng, seed, offset, path, iteration }) => {
       invariant(prng.hashState !== undefined, () => VARIATION_NOT_SUPPORTED(prng.name))
-      expect(calculateState(prng, seed, path.push(iteration)))
-        .toBe(prng.hashState(calculateState(prng, seed, path, iteration)))
+      expect(calculateState(prng, seed, offset, path.push(iteration)))
+        .toBe(prng.hashState(calculateState(prng, seed, offset, path, iteration)))
     }
   )
 
   it.prop({
     prng: arb.prng(fc.anything(), { noHashState: false }),
     seed: fc.string(),
+    offset: fc.nat(100),
     path: fc.array(fc.nat(100), { size: 'small' }).map(List),
     iteration: fc.nat(100)
   })(
     "incrementing the given iteration should return the same state as calling the given PRNG's nextState function on the previous state",
-    ({ prng, seed, path, iteration }) => {
-      expect(calculateState(prng, seed, path, iteration + 1))
-        .toBe(prng.nextState(calculateState(prng, seed, path, iteration)))
+    ({ prng, seed, offset, path, iteration }) => {
+      expect(calculateState(prng, seed, offset, path, iteration + 1))
+        .toBe(prng.nextState(calculateState(prng, seed, offset, path, iteration)))
     }
   )
 })
@@ -101,6 +104,7 @@ describe('the ConcretePRN class', () => {
   it.prop({
     prng: arb.prng(fc.anything(), { noHashState: false }),
     seed: fc.string(),
+    offset: fc.nat(100),
     path: fc.option(
       fc.array(fc.nat(100), { size: 'small' }).map(List),
       { nil: undefined }
@@ -109,8 +113,8 @@ describe('the ConcretePRN class', () => {
     state: fc.option(fc.anything(), { nil: undefined })
   })(
     'should be constructable with a PRNG, a seed, and an optional path, iteration, and state',
-    ({ prng, seed, path, iteration, state }) => {
-      const prn = new ConcretePRN(prng, seed, path, iteration, state)
+    ({ prng, seed, offset, path, iteration, state }) => {
+      const prn = new ConcretePRN(prng, seed, offset, path, iteration, state)
       expect(prn).toBeInstanceOf(ConcretePRN)
       expect(prn.prng).toBe(prng)
       expect(prn.seed).toBe(seed)
@@ -119,7 +123,7 @@ describe('the ConcretePRN class', () => {
       expect(prn.state).toBe(
         state !== undefined
           ? state
-          : calculateState(prng, seed, path, iteration)
+          : calculateState(prng, seed, offset, path, iteration)
       )
     }
   )
@@ -149,6 +153,8 @@ describe('the ConcretePRN class', () => {
           prn.prng.name ?? ANONYMOUS_PRNG_NAME
         }@${
           prn.seed
+        }^${
+          prn.offset
         }:${
           prn.path.push(prn.iteration)
             .join(':')

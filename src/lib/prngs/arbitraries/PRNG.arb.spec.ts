@@ -214,6 +214,7 @@ describe('an arbitrary PRN', () => {
         .toEqual(calculateState(
           prng,
           prn.seed,
+          prn.offset,
           prn.path,
           prn.iteration
         ))
@@ -244,18 +245,18 @@ describe('an arbitrary PRN', () => {
 
   it.prop([fc.boolean()])(
     'should allow the caller to flag that the PRN has no path',
-    noPath => {
+    noVariation => {
       const concrete = fc.sample(arb.prn(
         arb.prng(),
-        { noPath }
+        { noVariation }
       ), 1)[0]
 
       const arbitrary = fc.sample(arb.prn(
         arb.prng(),
-        { noPath: fc.constant(noPath) }
+        { noVariation: fc.constant(noVariation) }
       ), 1)[0]
 
-      if (noPath) {
+      if (noVariation) {
         expect(concrete.path.isEmpty()).toBeTrue()
         expect(arbitrary.path.isEmpty()).toBeTrue()
       }
@@ -289,12 +290,12 @@ describe('an arbitrary PRN', () => {
     'should allow the caller to provide a concrete or arbitrary pathSize',
     pathSize => {
       const concrete = fc.sample(arb.prn(
-        arb.prng(),
+        arb.prng(fc.anything(), { noHashState: false }),
         { pathSize, maxPathIterations: 1 }
       ), 1)[0]
 
       const arbitrary = fc.sample(arb.prn(
-        arb.prng(),
+        arb.prng(fc.anything(), { noHashState: false }),
         {
           pathSize: fc.constant(pathSize),
           maxPathIterations: 1
