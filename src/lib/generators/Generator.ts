@@ -58,10 +58,14 @@ export class Generator <T> {
   static readonly uniform =
     new Generator(prn => [prn.next, prn.normalized])
 
-  static run <T> (generator: T | Generator<T>, prn: PRN): [PRN, T] {
-    return generator instanceof Generator
-      ? generator.run(prn)
-      : [prn, generator]
+  static run <T> (structure: T, prn: PRN): [PRN, UnwrapGenerator<T>] {
+    return structure instanceof Generator
+      ? structure.run(prn)
+      : structure instanceof Array
+        ? Generator.tuple(structure).run(prn)
+        : structure instanceof Object
+          ? Generator.record(structure).run(prn)
+          : [prn, structure]
   }
 
   static constant <T> (value: T): Generator<T> {
@@ -87,7 +91,7 @@ export class Generator <T> {
     return Generator.int({ min: 0, max, distribution })
   }
 
-  static choose <T extends [...any]> (values: [...T], distribution?: Generator<number>): Generator<OneOf<UnwrapGeneratorTuple<T>>> {
+  static choose <T extends [...any]> (values: [...T], distribution?: Generator<number>): RewrapGenerator<[...T][number]> {
     return Generator.nat(values.length, distribution).chain(i => values[i])
   }
 
@@ -95,7 +99,7 @@ export class Generator <T> {
     return new Generator(state =>
       mapAccum(
         (currentState, nextGenerator) =>
-          nextGenerator.run(currentState),
+          Generator.run(nextGenerator, currentState),
         state,
         values
       ) as [PRN, UnwrapGeneratorTuple<T>]
@@ -106,7 +110,7 @@ export class Generator <T> {
     return new Generator(state => {
       const [finalState, entries] = mapAccum(
         (currentState, [nextKey, nextGenerator]) => {
-          const [nextState, value] = nextGenerator.run(currentState)
+          const [nextState, value] = Generator.run(nextGenerator, currentState)
           return [nextState, [nextKey, value]]
         },
         state,
@@ -150,7 +154,7 @@ export class Generator <T> {
     })
   }
 
-  chain <U> (chainFn: (generated: T) => U | Generator<U>): Generator<U> {
+  chain <U> (chainFn: (generated: T) => U): RewrapGenerator<U> {
     return new Generator(state => {
       const [nextState, nextValue] = this.run(state)
       const maybeGenerator = chainFn(nextValue)
