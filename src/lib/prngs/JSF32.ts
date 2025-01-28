@@ -5,10 +5,7 @@ import { PRNG } from './PRNG'
 
 export type JSF32Algorithm = 'jsf32a' | 'jsf32b' | 'jsf32c'
 
-export const jsf32Algorithms: JSF32Algorithm[] = [
-  'jsf32a',
-  'jsf32b'
-]
+export const jsf32Algorithms: JSF32Algorithm[] = ['jsf32a', 'jsf32b']
 
 export type JSF32State = Vector<4>
 
@@ -22,10 +19,10 @@ export abstract class JSF32 implements PRNG<JSF32State> {
   readonly min = 0x0
   readonly max = 0x100000000
 
-  constructor (readonly hasher: Hasher<number>) {}
+  constructor(readonly hasher: Hasher<number>) {}
 
   // Author-recommended seeding procedure.
-  initState (seed: string): JSF32State {
+  initState(seed: string): JSF32State {
     const seedx = this.hasher.initState(seed)
     let state: JSF32State = [0xf1ea5eed, seedx, seedx, seedx]
     for (let i = 0; i < 20; i++) {
@@ -34,9 +31,9 @@ export abstract class JSF32 implements PRNG<JSF32State> {
     return state
   }
 
-  abstract nextState (state: JSF32State): JSF32State
+  abstract nextState(state: JSF32State): JSF32State
 
-  extractValue (state: JSF32State): number {
+  extractValue(state: JSF32State): number {
     return state[3] >>> 0
   }
 }
@@ -46,13 +43,13 @@ export abstract class JSF32 implements PRNG<JSF32State> {
  */
 export class JSF32a extends JSF32 {
   readonly name = 'jsf32a'
-  nextState (state: JSF32State): JSF32State {
+  nextState(state: JSF32State): JSF32State {
     let [a, b, c, d] = state
-    const t = a - (b << 27 | b >>> 5) | 0
-    a = b ^ (c << 17 | c >>> 15)
-    b = c + d | 0
-    c = d + t | 0
-    d = a + t | 0
+    const t = (a - ((b << 27) | (b >>> 5))) | 0
+    a = b ^ ((c << 17) | (c >>> 15))
+    b = (c + d) | 0
+    c = (d + t) | 0
+    d = (a + t) | 0
     return [a, b, c, d]
   }
 }
@@ -63,14 +60,14 @@ export class JSF32a extends JSF32 {
  */
 export class JSF32b extends JSF32 {
   readonly name = 'jsf32b'
-  nextState (state: JSF32State): JSF32State {
+  nextState(state: JSF32State): JSF32State {
     let [a, b, c, d] = state
-    const t = a - (b << 23 | b >>> 9) | 0
-    a = b ^ (c << 16 | c >>> 16) | 0
-    b = c + (d << 11 | d >>> 21) | 0
-    b = c + d | 0
-    c = d + t | 0
-    d = a + t | 0
+    const t = (a - ((b << 23) | (b >>> 9))) | 0
+    a = (b ^ ((c << 16) | (c >>> 16))) | 0
+    b = (c + ((d << 11) | (d >>> 21))) | 0
+    b = (c + d) | 0
+    c = (d + t) | 0
+    d = (a + t) | 0
     return [a, b, c, d]
   }
 }

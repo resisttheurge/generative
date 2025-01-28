@@ -10,7 +10,15 @@ export const ConfigMenu = ({
 }): JSX.Element => {
   const [visible, setVisible] = useState(visibleOnInit)
 
-  const toggleMenuButton = <IconButton icon='gear' fab={!visible} key='toggleMenu' onClick={() => setVisible(!visible)} sx={{ gridArea: 'center' }} />
+  const toggleMenuButton = (
+    <IconButton
+      icon='gear'
+      fab={!visible}
+      key='toggleMenu'
+      onClick={() => setVisible(!visible)}
+      sx={{ gridArea: 'center' }}
+    />
+  )
 
   return (
     <Box
@@ -18,22 +26,26 @@ export const ConfigMenu = ({
       variant={visible ? 'forms.menu' : 'forms.menuCollapsed'}
       {...props}
     >
-      {
-        !visible
-          ? toggleMenuButton
-          : (
-            <>
-              <Box variant='forms.menu.fieldset'>
-                {props.children}
-              </Box>
-              <Box variant='forms.menu.actions'>
-                <IconButton icon='dice' onClick={onClickRandom} sx={{ gridArea: 'left' }} />
-                {toggleMenuButton}
-                <IconButton icon='download' onClick={onClickDownload} sx={{ gridArea: 'right' }} />
-              </Box>
-            </>
-            )
-      }
+      {!visible ? (
+        toggleMenuButton
+      ) : (
+        <>
+          <Box variant='forms.menu.fieldset'>{props.children}</Box>
+          <Box variant='forms.menu.actions'>
+            <IconButton
+              icon='dice'
+              onClick={onClickRandom}
+              sx={{ gridArea: 'left' }}
+            />
+            {toggleMenuButton}
+            <IconButton
+              icon='download'
+              onClick={onClickDownload}
+              sx={{ gridArea: 'right' }}
+            />
+          </Box>
+        </>
+      )}
     </Box>
   )
 }

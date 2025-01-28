@@ -4,21 +4,21 @@ const withMDX = require('@next/mdx')({
     jsxImportSource: 'theme-ui',
     providerImportSource: '@mdx-js/react',
     remarkPlugins: [],
-    rehypePlugins: []
-  }
+    rehypePlugins: [],
+  },
 })
 module.exports = withMDX({
   compiler: {
-    emotion: true
+    emotion: true,
   },
   // Append the default value with md extensions
   pageExtensions: ['tsx', 'mdx'],
-  webpack (config) {
+  webpack(config) {
     config.module.rules.push({
       test: /\.svg$/,
-      use: ['@svgr/webpack']
+      use: ['@svgr/webpack'],
     })
 
     return config
-  }
+  },
 })

@@ -7,8 +7,8 @@ describe('the @hashers/arbitraries index file', () => {
     expect(arbs).toContainAllEntries(
       Object.entries({
         ...hasherArbs,
-        ...xmur3aArbs
-      })
+        ...xmur3aArbs,
+      }),
     )
   })
 })

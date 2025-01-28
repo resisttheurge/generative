@@ -7,13 +7,17 @@ export interface SideNavProps {
   links: LinkConfig
 }
 
-export const SideNav = ({ open, links, ...props }: SideNavProps & BoxProps): JSX.Element => {
+export const SideNav = ({
+  open,
+  links,
+  ...props
+}: SideNavProps & BoxProps): JSX.Element => {
   return (
     <Box
       variant='layout.sidenav'
       sx={{
         transition: 'transform .3s ease-in-out',
-        transform: open ? 'translateX(100vw)' : 'none'
+        transform: open ? 'translateX(100vw)' : 'none',
       }}
       {...props}
     >

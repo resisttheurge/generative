@@ -11,8 +11,8 @@ export const primary: ThemeUIStyleObject = {
   borderWidth: '3px',
   '&:hover': {
     bg: 'primary',
-    color: 'textInverse'
-  }
+    color: 'textInverse',
+  },
 }
 
 export const secondary: ThemeUIStyleObject = {
@@ -21,8 +21,8 @@ export const secondary: ThemeUIStyleObject = {
   borderColor: 'secondary',
   '&:hover': {
     bg: 'secondary',
-    color: 'textInverse'
-  }
+    color: 'textInverse',
+  },
 }
 
 export const muted: ThemeUIStyleObject = {
@@ -32,8 +32,8 @@ export const muted: ThemeUIStyleObject = {
   bg: 'background',
   '&:hover': {
     bg: 'gray',
-    color: 'textInverse'
-  }
+    color: 'textInverse',
+  },
 }
 
 export const icon: ThemeUIStyleObject = {
@@ -50,11 +50,11 @@ export const icon: ThemeUIStyleObject = {
   borderRadius: '9999px',
   ':hover': {
     boxShadow: 'button',
-    zIndex: '1'
+    zIndex: '1',
   },
   '& > *': {
-    gridArea: 'center'
-  }
+    gridArea: 'center',
+  },
 }
 
 export const tint: ThemeUIStyleObject = {
@@ -62,13 +62,13 @@ export const tint: ThemeUIStyleObject = {
   justifySelf: 'stretch',
   transition: 'activate',
   ':hover': {
-    bg: 'lightShadow'
-  }
+    bg: 'lightShadow',
+  },
 }
 
 export const fab: ThemeUIStyleObject = {
   variant: 'buttons.icon',
   bg: 'background',
   boxShadow: 'fab',
-  m: [4, 3, 2]
+  m: [4, 3, 2],
 }

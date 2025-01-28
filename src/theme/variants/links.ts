@@ -7,9 +7,9 @@ export const nav: ThemeUIStyleObject = {
   p: 0,
   color: 'text',
   '&:active': {
-    color: 'primary'
+    color: 'primary',
   },
   '&:hover': {
-    color: 'secondary'
-  }
+    color: 'secondary',
+  },
 }

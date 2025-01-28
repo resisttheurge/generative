@@ -6,8 +6,15 @@ import useCanvas from './useCanvas'
 type Ref<T> = React.RefObject<T>
 type Project = paper.Project
 type Size = paper.Size
-interface OnResizeEvent { size: Size, delta: Size }
-interface OnFrameEvent { count: number, time: number, delta: number }
+interface OnResizeEvent {
+  size: Size
+  delta: Size
+}
+interface OnFrameEvent {
+  count: number
+  time: number
+  delta: number
+}
 
 export interface InitialContext<T = void> {
   project: Project
@@ -38,22 +45,22 @@ export interface UsePaperConfig<T = void> {
   teardown?: PaperTeardown<T>
 }
 
-export interface UsePaperHandle <T> {
+export interface UsePaperHandle<T> {
   canvasRef: Ref<HTMLCanvasElement>
   projectRef: Ref<paper.Project>
   stateRef: Ref<T>
 }
 
-const preserveState = <T> ({ state }: { state: T }): T => state
+const preserveState = <T>({ state }: { state: T }): T => state
 
-export function usePaper <T> (
+export function usePaper<T>(
   setup: PaperSetup<T>,
   {
     canvasRef: externalCanvasRef,
     onResize = setup,
     onFrame = preserveState,
-    teardown = preserveState
-  }: UsePaperConfig<T> = {}
+    teardown = preserveState,
+  }: UsePaperConfig<T> = {},
 ): UsePaperHandle<T> {
   const localCanvasRef = useRef<HTMLCanvasElement | null>(null)
   const canvasRef = externalCanvasRef ?? localCanvasRef
@@ -75,7 +82,7 @@ export function usePaper <T> (
       project.activate()
       stateRef.current = setup({
         project,
-        state: stateRef.current ?? undefined
+        state: stateRef.current ?? undefined,
       })
 
       return () => {
@@ -87,7 +94,7 @@ export function usePaper <T> (
         projectRef.current = null
       }
     }
-  }, [setup, teardown])
+  }, [setup, teardown, canvasRef])
 
   useEffect(() => {
     const project = projectRef.current

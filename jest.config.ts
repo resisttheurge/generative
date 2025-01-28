@@ -19,31 +19,25 @@ const config: JestConfigWithTsJest = {
   // Indicates which provider should be used to instrument code for coverage
   coverageProvider: 'v8',
 
-  coverageReporters: [
-    ...defaults.coverageReporters,
-    'html'
-  ],
+  coverageReporters: [...defaults.coverageReporters, 'html'],
 
   moduleDirectories: [...defaults.moduleDirectories, compilerOptions.baseUrl],
 
-  moduleNameMapper: pathsToModuleNameMapper(compilerOptions.paths, { prefix: '<rootDir>/src/' }),
+  moduleNameMapper: pathsToModuleNameMapper(compilerOptions.paths, {
+    prefix: '<rootDir>/src/',
+  }),
 
   roots: ['<rootDir>/src'],
 
-  setupFilesAfterEnv: [
-    'jest-extended/all',
-    '<rootDir>/jest.setup.ts'
-  ],
+  setupFilesAfterEnv: ['jest-extended/all', '<rootDir>/jest.setup.ts'],
 
   showSeed: true,
 
   transform: {
-    '^.+\\.(t|j)sx?$': '@swc/jest'
+    '^.+\\.(t|j)sx?$': '@swc/jest',
   },
 
-  testPathIgnorePatterns: [
-    '/node_modules/'
-  ]
+  testPathIgnorePatterns: ['/node_modules/'],
 }
 
 export default config

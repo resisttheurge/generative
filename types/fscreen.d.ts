@@ -2,7 +2,6 @@
  * Vendor agnostic access to the Fullscreen API. Build with the Fullscreen API as intended without worrying about vendor prefixes.
  */
 declare module 'fscreen' {
-
   /**
    * boolean to tell if fullscreen mode is supported
    * replacement for: document.fullscreenEnabled
@@ -25,7 +24,7 @@ declare module 'fscreen' {
    * mapped to: element.vendorMappedRequestFullscreen()
    * @param element the element to request fullscreen mode for
    */
-  declare function requestFullscreen (element: Element): Promise<void>
+  declare function requestFullscreen(element: Element): Promise<void>
 
   /**
    * replacement for: element.requestFullscreen - without calling the function
@@ -34,7 +33,9 @@ declare module 'fscreen' {
    * @param element the element to request fullscreen mode for
    * @returns a function that can be called to request fullscreen mode for the element
    */
-  declare function requestFullscreenFunction (element: Element): (options: FullscreenOptions) => Promise<void>
+  declare function requestFullscreenFunction(
+    element: Element,
+  ): (options: FullscreenOptions) => Promise<void>
 
   /**
    * replacement for: document.exitFullscreen()
@@ -44,7 +45,7 @@ declare module 'fscreen' {
    *
    * @returns a promise that represents when the exitFullscreen request has been completed
    */
-  declare function exitFullscreen (): Promise<void>
+  declare function exitFullscreen(): Promise<void>
 
   /**
    * replacement for: document.onfullscreenchange = handler
@@ -73,7 +74,11 @@ declare module 'fscreen' {
    * @param handler the event listener
    * @param options the event listener options
    */
-  declare function addEventListener (type: SupportedEvent, handler: (this: Document, ev: Event) => any, options?: boolean | AddEventListenerOptions): void
+  declare function addEventListener(
+    type: SupportedEvent,
+    handler: (this: Document, ev: Event) => any,
+    options?: boolean | AddEventListenerOptions,
+  ): void
 
   /**
    * replacement for: document.removeEventListener(type, handler, options)
@@ -83,7 +88,11 @@ declare module 'fscreen' {
    * @param handler the event listener to remove
    * @param options the event listener options
    */
-  declare function removeEventListener (type: SupportedEvent, handler: (this: Document, ev: Event) => any, options?: boolean | EventListenerOptions): void
+  declare function removeEventListener(
+    type: SupportedEvent,
+    handler: (this: Document, ev: Event) => any,
+    options?: boolean | EventListenerOptions,
+  ): void
 
   /**
    * returns the vendorMapped fullscreen Pseudo Class
@@ -92,5 +101,4 @@ declare module 'fscreen' {
    * e.g. document.querySelectorAll(fscreen.fullscreenPseudoClass).forEach(...);
    */
   declare const fullscreenPseudoClass: string
-
 }

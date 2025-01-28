@@ -6,5 +6,5 @@ Object.assign(zIndices, {
   header: 200,
   sidenav: 300,
   menu: 400,
-  modal: 500
+  modal: 500,
 })

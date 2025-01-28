@@ -24,7 +24,7 @@ export const styles: ThemeStyles = {
   ...pre,
   ...root,
   ...table,
-  ...ul
+  ...ul,
 }
 
 export default styles

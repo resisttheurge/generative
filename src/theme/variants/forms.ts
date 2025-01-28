@@ -10,18 +10,18 @@ export const checkbox: ThemeUIStyleObject = {
   '*:focus-within > &, *:hover > &, &:hover': {
     bg: 'lightShadow',
     color: 'primary',
-    boxShadow: 'button'
-  }
+    boxShadow: 'button',
+  },
 }
 
 export const form: ThemeUIStyleObject = {
-  variant: 'text.body'
+  variant: 'text.body',
 }
 
 export const menuCollapsed: ThemeUIStyleObject = {
   variant: 'forms.menu',
   width: 'min-content',
-  gap: 0
+  gap: 0,
 }
 
 export const menu: ThemeUIStyleObject = {
@@ -57,7 +57,7 @@ export const menu: ThemeUIStyleObject = {
     borderBottomLeftRadius: [3, 2],
     borderBottomRightRadius: [3, 2],
     boxShadow: 'card',
-    overflow: 'clip'
+    overflow: 'clip',
   },
 
   field: {
@@ -72,13 +72,13 @@ export const menu: ThemeUIStyleObject = {
     justifyItems: 'stretch',
     bg: 'background',
     '&:focus-within': {
-      bg: 'brightBackground'
+      bg: 'brightBackground',
     },
 
     control: {
       gridArea: 'control',
-      px: [5, 4, 3]
-    }
+      px: [5, 4, 3],
+    },
   },
 
   actions: {
@@ -93,15 +93,15 @@ export const menu: ThemeUIStyleObject = {
     borderTopRightRadius: [3, 2],
     borderBottomLeftRadius: [4, 3],
     borderBottomRightRadius: [4, 3],
-    boxShadow: 'card'
-  }
+    boxShadow: 'card',
+  },
 }
 
 export const label: ThemeUIStyleObject = {
   alignSelf: 'center',
   userSelect: 'none',
   fontSize: 'inherit',
-  width: 'fit-content'
+  width: 'fit-content',
 }
 
 export const select: ThemeUIStyleObject = {
@@ -116,14 +116,14 @@ export const select: ThemeUIStyleObject = {
   transition: 'activate',
   '& ~ svg': {
     size: [5, 4, 3],
-    ml: [-6, -5]
+    ml: [-6, -5],
   },
   ':focus, :hover': {
     bg: 'lightShadow',
     borderColor: 'primary',
     outline: 'none',
-    boxShadow: 'button'
-  }
+    boxShadow: 'button',
+  },
 }
 
 export const input: ThemeUIStyleObject = {
@@ -139,8 +139,8 @@ export const input: ThemeUIStyleObject = {
     bg: 'lightShadow',
     borderColor: 'primary',
     outline: 'none',
-    boxShadow: 'button'
-  }
+    boxShadow: 'button',
+  },
 }
 
 export const slider: ThemeUIStyleObject = {
@@ -151,12 +151,12 @@ export const slider: ThemeUIStyleObject = {
   bg: 'gray',
   ':focus, :hover': {
     bg: 'primary',
-    boxShadow: 'button'
+    boxShadow: 'button',
   },
   thumb: {
     size: [5, 4],
     bg: 'inherit',
     transition: 'activate',
-    boxShadow: 'inherit'
-  }
+    boxShadow: 'inherit',
+  },
 }

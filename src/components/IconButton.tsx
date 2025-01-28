@@ -1,4 +1,8 @@
-import { Box, IconButton as OgIconButton, IconButtonProps as OgIconButtonProps } from 'theme-ui'
+import {
+  Box,
+  IconButton as OgIconButton,
+  IconButtonProps as OgIconButtonProps,
+} from 'theme-ui'
 import Icon from './Icon'
 
 export interface IconButtonProps extends OgIconButtonProps {
@@ -6,12 +10,13 @@ export interface IconButtonProps extends OgIconButtonProps {
   fab?: boolean
 }
 
-export const IconButton = ({ icon, fab = false, ...props }: IconButtonProps): JSX.Element => {
+export const IconButton = ({
+  icon,
+  fab = false,
+  ...props
+}: IconButtonProps): JSX.Element => {
   return (
-    <OgIconButton
-      variant={!fab ? 'buttons.icon' : 'buttons.fab'}
-      {...props}
-    >
+    <OgIconButton variant={!fab ? 'buttons.icon' : 'buttons.fab'} {...props}>
       <Box variant='buttons.tint' />
       <Icon noun={icon} sx={{ gridArea: 'center' }} />
     </OgIconButton>
@@ -19,7 +24,7 @@ export const IconButton = ({ icon, fab = false, ...props }: IconButtonProps): JS
 }
 
 IconButton.propTypes = {
-  icon: Icon.propTypes.noun
+  icon: Icon.propTypes.noun,
 }
 
 export default IconButton

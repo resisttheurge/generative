@@ -2,15 +2,14 @@ import { Global } from '@emotion/react'
 
 const GlobalStyle = (): JSX.Element => (
   <Global
-    styles={(theme) => ({
+    styles={() => ({
       html: {
-        boxSizing: 'border-box'
+        boxSizing: 'border-box',
       },
       '*, *:before, *:after': {
-        boxSizing: 'inherit'
-      }
+        boxSizing: 'inherit',
+      },
     })}
   />
 )
-
 export default GlobalStyle

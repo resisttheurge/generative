@@ -9,7 +9,8 @@ export const text = chroma('#000').alpha(0.75).hex()
 export const textInverse = chroma('#FFF').alpha(0.75).hex()
 
 /** Body background color */
-export const background = palette.background !== undefined ? palette.background : '#AAA'
+export const background =
+  palette.background !== undefined ? palette.background : '#AAA'
 
 /** Dark background for hover */
 export const darkBackground = chroma(background).darken().hex()

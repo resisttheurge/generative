@@ -10,6 +10,6 @@ export const root: ThemeUIStyleObject = {
   overflowY: 'hidden',
 
   '*:focus-visible': {
-    outline: t => `thin solid ${t.colors.primary}`
-  }
+    outline: t => `thin solid ${t.colors?.primary}`,
+  },
 }

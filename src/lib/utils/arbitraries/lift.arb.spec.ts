@@ -9,7 +9,7 @@ describe('the @utils/arbitraries lift function', () => {
       const lifted = lift(value)
       expect(lifted).toBeInstanceOf(fc.Arbitrary)
       expect(fc.sample(lifted, 1)[0]).toBe(value)
-    }
+    },
   )
 
   it.prop([fc.anything().map((value: unknown) => fc.constant(value))])(
@@ -17,6 +17,6 @@ describe('the @utils/arbitraries lift function', () => {
     (arbitrary: fc.Arbitrary<unknown>) => {
       const lifted = lift(arbitrary)
       expect(lifted).toBe(arbitrary)
-    }
+    },
   )
 })

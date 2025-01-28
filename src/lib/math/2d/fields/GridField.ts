@@ -22,9 +22,9 @@ export interface GridCopy<Data = undefined> {
   indexData: ArrayBuffer
 }
 
-function initGridField <Data = undefined> (
+function initGridField<Data = undefined>(
   dimensions: Vector<2>,
-  resolution: number
+  resolution: number,
 ): GridCopy<Data> {
   const cellSize = Math.min(...dimensions) / resolution
   const [numCols, numRows] = map(dimensions, d => Math.ceil(d / cellSize))
@@ -52,14 +52,13 @@ export class GridField<Data = undefined> extends Field<Data> {
   readonly cols: number[]
   readonly rows: number[]
 
-  constructor (
+  constructor(
     readonly dimensions: Vector<2>,
     readonly resolution: number,
-    copyData?: GridCopy<Data>
+    copyData?: GridCopy<Data>,
   ) {
     const { cells, cellSize, cols, rows, indexData } =
-      copyData ??
-      initGridField<Data>(dimensions, resolution)
+      copyData ?? initGridField<Data>(dimensions, resolution)
 
     super(cells, indexData)
 
@@ -68,70 +67,84 @@ export class GridField<Data = undefined> extends Field<Data> {
     this.rows = rows
   }
 
-  find (query: Bounds | Vector<2>, filter?: (cell: GridCell<Data>) => boolean): GridCell<Data> | undefined {
+  find(
+    query: Bounds | Vector<2>,
+    filter?: (cell: GridCell<Data>) => boolean,
+  ): GridCell<Data> | undefined {
     return super.find(
       query,
-      filter as (cell: Cell<Data>) => boolean
+      filter as (cell: Cell<Data>) => boolean,
     ) as GridCell<Data>
   }
 
-  findAll (query: Bounds | Vector<2>, filter?: (cell: GridCell<Data>) => boolean): Array<GridCell<Data>> {
+  findAll(
+    query: Bounds | Vector<2>,
+    filter?: (cell: GridCell<Data>) => boolean,
+  ): Array<GridCell<Data>> {
     return super.findAll(
       query,
-      filter as (cell: Cell<Data>) => boolean
+      filter as (cell: Cell<Data>) => boolean,
     ) as Array<GridCell<Data>>
   }
 
-  generate <T> (fn: (cell: GridCell<Data>) => Generator<T>): Generator<GridField<T>> {
-    return Generator.tuple(
-      this.cells.map(cell => cell.generate(fn))
-    ).map(cells =>
-      new GridField(this.dimensions, this.resolution, {
-        cells,
-        cellSize: this.cellSize,
-        cols: this.cols,
-        rows: this.rows,
-        indexData: this.index.data
-      })
+  generate<T>(
+    fn: (cell: GridCell<Data>) => Generator<T>,
+  ): Generator<GridField<T>> {
+    return Generator.tuple(this.cells.map(cell => cell.generate(fn))).map(
+      cells =>
+        new GridField(this.dimensions, this.resolution, {
+          cells,
+          cellSize: this.cellSize,
+          cols: this.cols,
+          rows: this.rows,
+          indexData: this.index.data,
+        }),
     )
   }
 
-  getCell ([col, row]: Vector<2>): GridCell<Data> {
+  getCell([col, row]: Vector<2>): GridCell<Data> {
     return this.cells[this.toIndex([col, row])]
   }
 
-  getColumn (col: number): Array<GridCell<Data>> {
+  getColumn(col: number): Array<GridCell<Data>> {
     return this.rows.map(row => this.cells[this.toIndex([col, row])])
   }
 
-  getRow (row: number): Array<GridCell<Data>> {
+  getRow(row: number): Array<GridCell<Data>> {
     return this.cols.map(col => this.cells[this.toIndex([col, row])])
   }
 
-  map <T> (fn: (cell: GridCell<Data>) => T): GridField<T> {
+  map<T>(fn: (cell: GridCell<Data>) => T): GridField<T> {
     return new GridField(this.dimensions, this.resolution, {
       cells: this.cells.map(cell => cell.map(fn)),
       cellSize: this.cellSize,
       cols: this.cols,
       rows: this.rows,
-      indexData: this.index.data
+      indexData: this.index.data,
     })
   }
 
-  neighbors (query: Query, { maxResults, maxDistance, filter }: NeighborConfig<Data> = {}): Array<GridCell<Data>> {
+  neighbors(
+    query: Query,
+    { maxResults, maxDistance, filter }: NeighborConfig<Data> = {},
+  ): Array<GridCell<Data>> {
     return super.neighbors(query, {
       maxResults,
       maxDistance,
-      filter: filter as (cell: Cell<Data>) => boolean
+      filter: filter as (cell: Cell<Data>) => boolean,
     }) as Array<GridCell<Data>>
   }
 
-  toCoordinates (position: Vector<2>): Vector<2> {
-    invariant(contains(this.bounds, position), () => `Given position (${printVector(position)}) is out of bounds (${printBounds(this.bounds)})`)
-    return map<2>(position, (n) => Math.floor(n / this.cellSize))
+  toCoordinates(position: Vector<2>): Vector<2> {
+    invariant(
+      contains(this.bounds, position),
+      () =>
+        `Given position (${printVector(position)}) is out of bounds (${printBounds(this.bounds)})`,
+    )
+    return map<2>(position, n => Math.floor(n / this.cellSize))
   }
 
-  toIndex (coordinates: Vector<2>): number {
+  toIndex(coordinates: Vector<2>): number {
     const [col, row] = coordinates
     return row * this.cols.length + col
   }

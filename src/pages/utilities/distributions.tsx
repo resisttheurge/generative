@@ -5,7 +5,18 @@ import { useState } from 'react'
 import paper from 'paper'
 
 import { ConfigField, ConfigMenu, Layout } from 'components'
-import { ANONYMOUS_PRNG_NAME, JSF32a, JSF32b, Mulberry32, PRNG, SFC32a, SFC32b, SFC32c, Splitmix32a, Splitmix32b } from 'lib/prngs'
+import {
+  ANONYMOUS_PRNG_NAME,
+  JSF32a,
+  JSF32b,
+  Mulberry32,
+  PRNG,
+  SFC32a,
+  SFC32b,
+  SFC32c,
+  Splitmix32a,
+  Splitmix32b,
+} from 'lib/prngs'
 import { xmur3a } from 'lib/hashers'
 import { Generator } from '@generators/Generator'
 import { extractColorOrElse } from '@utils/theme-ui-utils'
@@ -20,7 +31,7 @@ const prngs = {
   sfc32b: new SFC32b(xmur3a),
   sfc32c: new SFC32c(xmur3a),
   splitmix32a: new Splitmix32a(xmur3a),
-  splitmix32b: new Splitmix32b(xmur3a)
+  splitmix32b: new Splitmix32b(xmur3a),
 }
 
 const prngNames = Object.keys(prngs)
@@ -36,7 +47,7 @@ const distributions: Distribution[] = ['uniform', 'gaussian', 'pareto']
 
 export const PRNGTest: React.FC = () => {
   const theme = useThemeUI()
-  const [prng, setPRNG] = useState<PRNG<any>>(prngs.jsf32a)
+  const [prng, setPRNG] = useState<PRNG<any>>(prngs.jsf32a) // eslint-disable-line @typescript-eslint/no-explicit-any
   const [seed, setSeed] = useState('see num, be num')
   const [variant, setVariant] = useState(0)
   const [distribution, setDistribution] = useState<Distribution>('uniform')
@@ -47,7 +58,7 @@ export const PRNGTest: React.FC = () => {
 
   const rate = samples / drawTime
 
-  const { generate } = useGenerators<any>(seed, { prng, offset: variant })
+  const { generate } = useGenerators<any>(seed, { prng, offset: variant }) // eslint-disable-line @typescript-eslint/no-explicit-any
 
   interface PaperState {
     definition: paper.SymbolDefinition
@@ -55,14 +66,22 @@ export const PRNGTest: React.FC = () => {
     symbols: number
   }
 
-  const setup: PaperSetup<PaperState> = ({ project: { view: { bounds: { width, height } } } }) => {
+  const setup: PaperSetup<PaperState> = ({
+    project: {
+      view: {
+        bounds: { width, height },
+      },
+    },
+  }) => {
     const item: paper.Item =
       dimension === '2d'
         ? new paper.Path.Rectangle([0, 0], [1, 1])
         : orientation === 'horizontal'
           ? new paper.Path.Line([0, 0], [0, 2 * height])
           : new paper.Path.Line([0, 0], [2 * width, 0])
-    item.strokeColor = new paper.Color(extractColorOrElse(theme.theme.rawColors?.text, 'black'))
+    item.strokeColor = new paper.Color(
+      extractColorOrElse(theme.theme.rawColors?.text, 'black'),
+    )
 
     const definition = new paper.SymbolDefinition(item)
     const distGenerator =
@@ -84,19 +103,23 @@ export const PRNGTest: React.FC = () => {
     return {
       definition,
       generator,
-      symbols: 0
+      symbols: 0,
     }
   }
 
-  const onFrame: PaperOnFrame<PaperState> = ({ event, state, project: { view: { bounds: { width, height } } } }) => {
+  const onFrame: PaperOnFrame<PaperState> = ({ event, state }) => {
     if (state.symbols >= samples) {
       return state
     } else {
-      const positions = generate(state.generator.repeat(Math.min(Math.ceil(rate * event.delta), samples - state.symbols)))
+      const positions = generate(
+        state.generator.repeat(
+          Math.min(Math.ceil(rate * event.delta), samples - state.symbols),
+        ),
+      )
       positions.forEach(position => state.definition.place(position))
       return {
         ...state,
-        symbols: state.symbols + positions.length
+        symbols: state.symbols + positions.length,
       }
     }
   }
@@ -110,7 +133,10 @@ export const PRNGTest: React.FC = () => {
       <ConfigMenu
         onSubmit={(event: React.FormEvent) => event.preventDefault()}
         onClickDownload={() => {
-          const data = new Blob([paper.project.exportSVG({ asString: true }) as string], { type: 'image/svg+xml;charset=utf-8' })
+          const data = new Blob(
+            [paper.project.exportSVG({ asString: true }) as string],
+            { type: 'image/svg+xml;charset=utf-8' },
+          )
           saveAs(data, 'PRNGTest')
         }}
       >
@@ -119,17 +145,17 @@ export const PRNGTest: React.FC = () => {
           as={Select}
           name='prng'
           defaultValue={prng.name}
-          onChange={
-            ({ target: { value } }) => {
-              const newPrng: PRNG<any> = prngs[value as keyof typeof prngs]
-              if (newPrng.hashState === undefined) {
-                setVariant(0)
-              }
-              setPRNG(newPrng)
+          onChange={({ target: { value } }) => {
+            const newPrng: PRNG<any> = prngs[value as keyof typeof prngs] // eslint-disable-line @typescript-eslint/no-explicit-any
+            if (newPrng.hashState === undefined) {
+              setVariant(0)
             }
-          }
+            setPRNG(newPrng)
+          }}
         >
-          {prngNames.map(name => <option key={name}>{name}</option>)}
+          {prngNames.map(name => (
+            <option key={name}>{name}</option>
+          ))}
         </ConfigField>
         <ConfigField
           label='Seed'
@@ -137,65 +163,60 @@ export const PRNGTest: React.FC = () => {
           value={seed}
           onChange={({ target: { value } }) => setSeed(value)}
         />
-        {
-          prng.hashState === undefined
-            ? undefined
-            : (
-              <ConfigField
-                label={`Variant: ${variant}`}
-                as={Input}
-                name='samples'
-                type='number'
-                min={0}
-                step={1}
-                value={variant}
-                disabled={prng.hashState === undefined}
-                onChange={({ target: { value } }) => setVariant(Number.parseInt(value))}
-              />
-              )
-        }
+        {prng.hashState === undefined ? undefined : (
+          <ConfigField
+            label={`Variant: ${variant}`}
+            as={Input}
+            name='samples'
+            type='number'
+            min={0}
+            step={1}
+            value={variant}
+            disabled={prng.hashState === undefined}
+            onChange={({ target: { value } }) =>
+              setVariant(Number.parseInt(value))
+            }
+          />
+        )}
         <ConfigField
           label={`Distribution: ${distribution}`}
           as={Select}
           name='distribution'
           defaultValue={distribution}
-          onChange={
-            ({ target: { value } }) =>
-              setDistribution(value as Distribution)
+          onChange={({ target: { value } }) =>
+            setDistribution(value as Distribution)
           }
         >
-          {distributions.map(name => <option key={name}>{name}</option>)}
+          {distributions.map(name => (
+            <option key={name}>{name}</option>
+          ))}
         </ConfigField>
         <ConfigField
           label={`Dimension: ${dimension}`}
           as={Select}
           name='dimension'
           defaultValue={dimension}
-          onChange={
-            ({ target: { value } }) =>
-              setDimension(value as Dimension)
-          }
+          onChange={({ target: { value } }) => setDimension(value as Dimension)}
         >
-          {dimensions.map(name => <option key={name}>{name}</option>)}
+          {dimensions.map(name => (
+            <option key={name}>{name}</option>
+          ))}
         </ConfigField>
-        {
-          dimension === '2d'
-            ? undefined
-            : (
-              <ConfigField
-                label='Orientation'
-                as={Select}
-                name='orientation'
-                defaultValue={orientation}
-                onChange={
-                  ({ target: { value } }) =>
-                    setOrientation(value as Orientation)
-                }
-              >
-                {orientations.map(name => <option key={name}>{name}</option>)}
-              </ConfigField>
-              )
-        }
+        {dimension === '2d' ? undefined : (
+          <ConfigField
+            label='Orientation'
+            as={Select}
+            name='orientation'
+            defaultValue={orientation}
+            onChange={({ target: { value } }) =>
+              setOrientation(value as Orientation)
+            }
+          >
+            {orientations.map(name => (
+              <option key={name}>{name}</option>
+            ))}
+          </ConfigField>
+        )}
         <ConfigField
           label={`Samples: ${samples}`}
           as={Slider}
@@ -204,7 +225,9 @@ export const PRNGTest: React.FC = () => {
           max={10000}
           step={100}
           value={samples}
-          onChange={({ target: { value } }) => setSamples(Number.parseInt(value))}
+          onChange={({ target: { value } }) =>
+            setSamples(Number.parseInt(value))
+          }
         />
         <ConfigField
           label={`Draw Time: ${drawTime}s`}
@@ -214,7 +237,9 @@ export const PRNGTest: React.FC = () => {
           max={10}
           step={0.5}
           value={drawTime}
-          onChange={({ target: { value } }) => setDrawTime(Number.parseFloat(value))}
+          onChange={({ target: { value } }) =>
+            setDrawTime(Number.parseFloat(value))
+          }
         />
       </ConfigMenu>
     </Layout>

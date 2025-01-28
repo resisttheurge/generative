@@ -9,10 +9,8 @@ export interface Mulberry32Constraints {
   hasher?: Liftable<Hasher<number>>
 }
 
-export function mulberry32 (
-  {
-    hasher = xmur3a()
-  }: Mulberry32Constraints = {}
-): fc.Arbitrary<Mulberry32> {
+export function mulberry32({
+  hasher = xmur3a(),
+}: Mulberry32Constraints = {}): fc.Arbitrary<Mulberry32> {
   return lift(hasher).map(hasher => new Mulberry32(hasher))
 }

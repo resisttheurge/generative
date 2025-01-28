@@ -5,5 +5,5 @@ export const blockquote: ThemeUIStyleObject = {
   borderLeftWidth: '4px',
   borderLeftColor: 'gray',
   marginInlineStart: [1, 2, 3],
-  marginInlineEnd: [1, 2, 3]
+  marginInlineEnd: [1, 2, 3],
 }

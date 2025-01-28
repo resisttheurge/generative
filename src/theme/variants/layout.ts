@@ -11,7 +11,7 @@ export const container: ThemeUIStyleObject = {
   placeItems: 'center',
   overflow: 'clip',
   width: '100%',
-  height: '100%'
+  height: '100%',
 }
 
 export const headerBar: ThemeUIStyleObject = {
@@ -22,13 +22,13 @@ export const headerBar: ThemeUIStyleObject = {
   bg: 'background',
   boxShadow: 'card',
   zIndex: 'header',
-  placeSelf: 'stretch'
+  placeSelf: 'stretch',
 }
 
 export const leftMenu: ThemeUIStyleObject = {
   p: [4, 3, 2],
   gridArea: 'leftMenu',
-  zIndex: 'header'
+  zIndex: 'header',
 }
 
 export const heading: ThemeUIStyleObject = {
@@ -37,13 +37,13 @@ export const heading: ThemeUIStyleObject = {
   gridArea: 'title',
   justifySelf: 'center',
   alignSelf: 'center',
-  zIndex: 'header'
+  zIndex: 'header',
 }
 
 export const rightMenu: ThemeUIStyleObject = {
   p: [4, 3, 2],
   gridArea: 'rightMenu',
-  zIndex: 'header'
+  zIndex: 'header',
 }
 
 export const content: ThemeUIStyleObject = {
@@ -52,7 +52,7 @@ export const content: ThemeUIStyleObject = {
   justifySelf: 'stretch',
   alignSelf: 'stretch',
   overflow: 'hidden',
-  zIndex: 'content'
+  zIndex: 'content',
 }
 
 export const moreMenu: ThemeUIStyleObject = {
@@ -60,11 +60,11 @@ export const moreMenu: ThemeUIStyleObject = {
   justifySelf: 'right',
   alignSelf: 'stretch',
   zIndex: 'header',
-  flexDirection: 'column'
+  flexDirection: 'column',
 }
 
 export const sideNav: ThemeUIStyleObject = {
-  position: 'relative', /* or choose `absolute` depending on desired behavior */
+  position: 'relative' /* or choose `absolute` depending on desired behavior */,
   gridArea: 'content',
   top: 0,
   bottom: 0,
@@ -73,5 +73,5 @@ export const sideNav: ThemeUIStyleObject = {
   bg: 'background',
   boxShadow: 'sidenav',
   alignSelf: 'start',
-  justifySelf: 'left'
+  justifySelf: 'left',
 }
