@@ -152,7 +152,7 @@ const Grids: React.FC = () => {
   const genField = useCallback(
     ({ width, height }: paper.Size) =>
       flowGrid([width, height], resolution, genFlow),
-    [resolution]
+    [resolution, genFlow]
   )
 
   const genStartingPoints = useCallback(
