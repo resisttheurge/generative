@@ -5,7 +5,7 @@ export const fonts = {
   monospace: '"Fira Code", monospace'
 }
 
-export const fontSizes = [12, 14, 16, 20, 24, 32, 48, 64, 72, 84, 96, 108]
+export const fontSizes = [0, '0.5rem', '0.875rem', '1rem', '1.125rem', '1.5rem', '2rem', '3rem', '4rem', '6rem', '8rem']
 
 export const fontWeights = {
   body: 400,
@@ -15,7 +15,7 @@ export const fontWeights = {
 }
 
 export const lineHeights = {
-  monospace: 1.2,
+  monospace: 1.3,
   body: 1.5,
   heading: 1.125,
   display: 1.0

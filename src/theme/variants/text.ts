@@ -1,7 +1,7 @@
 import { ThemeUIStyleObject } from 'theme-ui'
 
 export const body: ThemeUIStyleObject = {
-  fontSize: 1,
+  fontSize: [4, 3, 2],
   fontFamily: 'body',
   fontWeight: 'body',
   lineHeight: 'body'

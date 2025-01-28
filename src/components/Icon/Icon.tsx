@@ -5,6 +5,7 @@ import dynamic from 'next/dynamic'
 import { keyframes } from '@emotion/react'
 
 import Loading from './svg/noun-loading.svg'
+import { ThemeUIStyleObject } from 'theme-ui'
 
 const load = keyframes({ to: { transform: 'rotate(1turn)' } })
 
@@ -97,10 +98,10 @@ export const nouns = [
 
 export interface IconProps {
   noun: string
-  size?: number
+  sx?: ThemeUIStyleObject
 }
 
-export const Icon = ({ noun, size = 0 }: IconProps): JSX.Element => {
+export const Icon = ({ noun, sx }: IconProps): JSX.Element => {
   invariant(nouns.includes(noun), `Cannot create Icon with noun '${noun}' because is is not one of [${nouns.join(', ')}]`)
   const Svg = useMemo(() => {
     switch (noun) {
@@ -164,7 +165,8 @@ export const Icon = ({ noun, size = 0 }: IconProps): JSX.Element => {
   return (
     <Svg
       sx={{
-        variant: 'images.icon'
+        variant: 'images.icon',
+        ...sx
       }}
     />
   )

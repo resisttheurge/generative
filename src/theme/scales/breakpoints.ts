@@ -1,1 +1,1 @@
-export const breakpoints = ['600px', '900px', '1200px', '1800px']
+export const breakpoints = ['36rem', '56.25rem', '75rem', '112.5rem']

@@ -2,7 +2,10 @@ import { ComponentPropsWithoutRef, ElementType } from 'react'
 import {
   Flex,
   Label,
-  Input
+  Input,
+  Box,
+  Text,
+  Grid
 } from 'theme-ui'
 import IconButton from '../IconButton'
 
@@ -11,24 +14,33 @@ export interface ConfigFieldProps<C extends ElementType> {
   name: string
   as?: C
   randomizable?: boolean
+  compact?: boolean
 }
 
-export const ConfigField = <C extends ElementType = typeof Input> ({
+export const ConfigField = <C extends ElementType = typeof Input>({
   as,
   randomizable = false,
   label,
   name,
+  compact = false,
   ...additionalProps
 }: ConfigFieldProps<C> & Omit<ComponentPropsWithoutRef<C>, keyof ConfigFieldProps<C>>): JSX.Element => {
   const Control = as === undefined || as === null ? Input : as
-  return (
-    <Flex variant='forms.menu.field'>
-      <Flex sx={{ justifyContent: 'space-between', alignItems: 'baseline' }}>
-        <Label htmlFor={name}>{label}</Label>
-        {randomizable ? <IconButton icon='dice' /> : undefined}
-      </Flex>
+  const leftGutter = <IconButton icon='dice' sx={{ gridArea: 'gutter' }} />
+  const control = (
+    <Box variant='forms.menu.field.control'>
       <Control id={name} name={name} {...additionalProps} />
-    </Flex>
+    </Box>
+  )
+  return (
+    <Box
+      variant='forms.menu.field' as={Label}
+      htmlFor={name}
+    >
+      {randomizable ? leftGutter : null}
+      <Text variant='forms.label' sx={{ gridArea: 'label' }}>{label}</Text>
+      {control}
+    </Box>
   )
 }
 

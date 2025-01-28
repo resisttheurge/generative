@@ -55,8 +55,8 @@ export const Layout = ({ meta, ...props }: LayoutProps): JSX.Element => {
     open
       ? (
         <Flex variant='layout.moreMenu'>
-          <IconButton variant='layout.iconButton' icon='color-mode' onClick={toggleColorMode} />
-          <IconButton variant='layout.iconButton' icon='expand' onClick={toggleFullscreen} />
+          <IconButton fab icon='color-mode' onClick={toggleColorMode} />
+          <IconButton fab icon='expand' onClick={toggleFullscreen} />
         </Flex>
         )
       : null
@@ -70,13 +70,13 @@ export const Layout = ({ meta, ...props }: LayoutProps): JSX.Element => {
       <Box ref={node} variant='layout.container' {...props}>
         <Box variant='layout.headerBar' />
         <Flex variant='layout.leftMenu'>
-          <IconButton variant='layout.iconButton' icon={navOpen ? 'close' : 'menu'} onClick={toggleNav} />
+          <IconButton icon={navOpen ? 'close' : 'menu'} onClick={toggleNav} />
         </Flex>
         <Heading variant='layout.heading'>
           {meta.title}
         </Heading>
         <Flex variant='layout.rightMenu'>
-          <IconButton variant='layout.iconButton' icon='more' onClick={toggleMore} />
+          <IconButton icon='more' onClick={toggleMore} />
         </Flex>
         <Box as='main' variant='layout.content' onClick={closeMenus}>
           {props.children}

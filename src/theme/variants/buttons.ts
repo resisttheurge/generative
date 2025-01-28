@@ -37,14 +37,38 @@ export const muted: ThemeUIStyleObject = {
 }
 
 export const icon: ThemeUIStyleObject = {
-  fill: 'text',
-  bg: 'background',
-  borderRadius: '16px',
-  p: 1,
-  transitionProperty: 'background-color',
-  transitionTimingFunction: 'ease-in-out',
-  transitionDuration: '.25s',
-  '&:hover': {
-    bg: 'darkBackground'
+  p: 0,
+  size: 'fit-content',
+  display: 'grid',
+  gridTemplateColumns: '1fr',
+  gridTemplateRows: '1fr',
+  gridTemplateAreas: '"center"',
+  placeItems: 'center',
+  fontSize: 'inherit',
+  transition: 'activate',
+  overflow: 'clip',
+  borderRadius: '9999px',
+  ':hover': {
+    boxShadow: 'button',
+    zIndex: '1'
+  },
+  '& > *': {
+    gridArea: 'center'
   }
+}
+
+export const tint: ThemeUIStyleObject = {
+  alignSelf: 'stretch',
+  justifySelf: 'stretch',
+  transition: 'activate',
+  ':hover': {
+    bg: 'lightShadow'
+  }
+}
+
+export const fab: ThemeUIStyleObject = {
+  variant: 'buttons.icon',
+  bg: 'background',
+  boxShadow: 'fab',
+  m: [4, 3, 2]
 }

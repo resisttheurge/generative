@@ -1,6 +1,6 @@
 export const links = {
   Home: '/',
-  About: '/about',
+  // About: '/about',
   Attribution: '/attribution',
   Art: {
     Grids: '/art/grids',

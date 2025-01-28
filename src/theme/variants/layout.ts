@@ -8,6 +8,7 @@ export const container: ThemeUIStyleObject = {
   gridTemplateRows: 'min-content 1fr',
   gridTemplateColumns: 'min-content 1fr min-content',
   gridTemplateAreas: '"leftMenu title rightMenu" "content content content"',
+  placeItems: 'center',
   overflow: 'clip',
   width: '100%',
   height: '100%'
@@ -20,21 +21,19 @@ export const headerBar: ThemeUIStyleObject = {
   gridRowEnd: 1,
   bg: 'background',
   boxShadow: 'card',
-  zIndex: 'header'
-}
-
-export const iconButton: ThemeUIStyleObject = {
-  variant: 'buttons.icon',
-  m: 2
+  zIndex: 'header',
+  placeSelf: 'stretch'
 }
 
 export const leftMenu: ThemeUIStyleObject = {
+  p: [4, 3, 2],
   gridArea: 'leftMenu',
   zIndex: 'header'
 }
 
 export const heading: ThemeUIStyleObject = {
   variant: 'text.display',
+  fontSize: [6, 5, 4],
   gridArea: 'title',
   justifySelf: 'center',
   alignSelf: 'center',
@@ -42,6 +41,7 @@ export const heading: ThemeUIStyleObject = {
 }
 
 export const rightMenu: ThemeUIStyleObject = {
+  p: [4, 3, 2],
   gridArea: 'rightMenu',
   zIndex: 'header'
 }
@@ -58,13 +58,9 @@ export const content: ThemeUIStyleObject = {
 export const moreMenu: ThemeUIStyleObject = {
   gridArea: 'content',
   justifySelf: 'right',
-  alignSelf: 'top',
+  alignSelf: 'stretch',
   zIndex: 'header',
-
-  flexDirection: 'column',
-  '& > *': {
-    boxShadow: 'card'
-  }
+  flexDirection: 'column'
 }
 
 export const sideNav: ThemeUIStyleObject = {
@@ -73,8 +69,9 @@ export const sideNav: ThemeUIStyleObject = {
   top: 0,
   bottom: 0,
   left: '-100vw',
-  maxWidth: 'sidenav',
   zIndex: 'sidenav',
   bg: 'background',
-  boxShadow: 'sidenav'
+  boxShadow: 'sidenav',
+  alignSelf: 'start',
+  justifySelf: 'left'
 }

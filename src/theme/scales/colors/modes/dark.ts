@@ -27,10 +27,16 @@ export const secondary = palette.colors[2]
 export const accent = palette.colors[1]
 
 /** A background color for highlighting text */
-export const highlight = palette.colors[3]
+export const highlight = brightBackground
 
 /** A faint color for backgrounds, borders, and accents that do not require high contrast with the background color */
 export const gray = chroma(palette.colors[1]).brighten(3).desaturate(0.5).hex()
 
 /** Used by @theme-ui/prism for code syntax highlighting */
 export const muted = chroma(palette.colors[0]).brighten(2).desaturate(0.5).hex()
+
+export const darkShadow = chroma.rgb(255, 255, 255, 0.125).hex()
+
+export const shadow = chroma.rgb(127, 127, 127, 0.25).hex()
+
+export const lightShadow = chroma.rgb(0, 0, 0, 0.125).hex()

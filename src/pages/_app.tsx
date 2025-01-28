@@ -1,6 +1,6 @@
 import App from 'next/app'
 import React from 'react'
-import { NavLink, ThemeProvider } from 'theme-ui'
+import { NavLink, ThemeUIProvider } from 'theme-ui'
 import Prism from '@theme-ui/prism'
 import {
   MDXProvider,
@@ -19,7 +19,7 @@ const Anchor: React.FC<JSX.IntrinsicElements['a']> = ({ href = '#', target, chil
 }
 
 interface AppProviderProps {
-  theme: Parameters<typeof ThemeProvider>[0]['theme']
+  theme: Parameters<typeof ThemeUIProvider>[0]['theme']
   components: Parameters<typeof MDXProvider>[0]['components']
   children: React.ReactNode
 }
@@ -27,11 +27,11 @@ interface AppProviderProps {
 const AppProvider: React.FC<AppProviderProps> = ({ theme, components, children }) => {
   const componentsWithStyles = useThemedStylesWithMdx(useMDXComponents(components))
   return (
-    <ThemeProvider theme={theme}>
+    <ThemeUIProvider theme={theme}>
       <MDXProvider components={componentsWithStyles}>
         {children}
       </MDXProvider>
-    </ThemeProvider>
+    </ThemeUIProvider>
   )
 }
 
