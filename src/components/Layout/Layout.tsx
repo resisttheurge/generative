@@ -14,17 +14,22 @@ export interface MetaProps {
 
 export interface LayoutProps extends BoxProps {
   meta: MetaProps
-
 }
 
 export const Layout = ({ meta, ...props }: LayoutProps): JSX.Element => {
   const { theme } = useTheme()
   const [navOpen, setNavOpen] = useState(false)
-  const toggleNav = useCallback(() => setNavOpen(!navOpen), [navOpen, setNavOpen])
+  const toggleNav = useCallback(
+    () => setNavOpen(!navOpen),
+    [navOpen, setNavOpen],
+  )
   const closeNav = useCallback(() => setNavOpen(false), [setNavOpen])
 
   const [moreOpen, setMoreOpen] = useState(false)
-  const toggleMore = useCallback(() => setMoreOpen(!moreOpen), [moreOpen, setMoreOpen])
+  const toggleMore = useCallback(
+    () => setMoreOpen(!moreOpen),
+    [moreOpen, setMoreOpen],
+  )
   const closeMore = useCallback(() => setMoreOpen(false), [setMoreOpen])
 
   const closeMenus = useCallback(() => {
@@ -33,34 +38,32 @@ export const Layout = ({ meta, ...props }: LayoutProps): JSX.Element => {
   }, [closeNav, closeMore])
 
   const [colorMode, setColorMode] = useColorMode()
-  const toggleColorMode = useCallback(() => setColorMode(colorMode === 'default' ? 'dark' : 'default'), [colorMode, setColorMode])
+  const toggleColorMode = useCallback(
+    () => setColorMode(colorMode === 'default' ? 'dark' : 'default'),
+    [colorMode, setColorMode],
+  )
 
   const { active, enter, exit, node } = useFullscreen()
-  const toggleFullscreen = useCallback(
-    () => {
-      (active ? exit() : enter())
-        .catch((reason: Error) => {
-          console.error(`Promise rejected while ${active ? 'exiting' : 'entering'} fullscreen with reason: ${reason.message}`)
-          console.error(reason)
-        })
-    },
-    [active, enter, exit]
-  )
+  const toggleFullscreen = useCallback(() => {
+    ;(active ? exit() : enter()).catch((reason: Error) => {
+      console.error(
+        `Promise rejected while ${active ? 'exiting' : 'entering'} fullscreen with reason: ${reason.message}`,
+      )
+      console.error(reason)
+    })
+  }, [active, enter, exit])
 
   interface MoreMenuProps {
     open: boolean
   }
 
-  const MoreMenu = ({ open }: MoreMenuProps): JSX.Element | null => (
-    open
-      ? (
-        <Flex variant='layout.moreMenu'>
-          <IconButton variant='layout.iconButton' icon='color-mode' onClick={toggleColorMode} />
-          <IconButton variant='layout.iconButton' icon='expand' onClick={toggleFullscreen} />
-        </Flex>
-        )
-      : null
-  )
+  const MoreMenu = ({ open }: MoreMenuProps): JSX.Element | null =>
+    open ? (
+      <Flex variant='layout.moreMenu'>
+        <IconButton fab icon='color-mode' onClick={toggleColorMode} />
+        <IconButton fab icon='expand' onClick={toggleFullscreen} />
+      </Flex>
+    ) : null
   return (
     <>
       <Head>
@@ -70,13 +73,11 @@ export const Layout = ({ meta, ...props }: LayoutProps): JSX.Element => {
       <Box ref={node} variant='layout.container' {...props}>
         <Box variant='layout.headerBar' />
         <Flex variant='layout.leftMenu'>
-          <IconButton variant='layout.iconButton' icon={navOpen ? 'close' : 'menu'} onClick={toggleNav} />
+          <IconButton icon={navOpen ? 'close' : 'menu'} onClick={toggleNav} />
         </Flex>
-        <Heading variant='layout.heading'>
-          {meta.title}
-        </Heading>
+        <Heading variant='layout.heading'>{meta.title}</Heading>
         <Flex variant='layout.rightMenu'>
-          <IconButton variant='layout.iconButton' icon='more' onClick={toggleMore} />
+          <IconButton icon='more' onClick={toggleMore} />
         </Flex>
         <Box as='main' variant='layout.content' onClick={closeMenus}>
           {props.children}

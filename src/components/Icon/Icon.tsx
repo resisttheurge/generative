@@ -5,37 +5,120 @@ import dynamic from 'next/dynamic'
 import { keyframes } from '@emotion/react'
 
 import Loading from './svg/noun-loading.svg'
+import { ThemeUIStyleObject } from 'theme-ui'
 
 const load = keyframes({ to: { transform: 'rotate(1turn)' } })
 
-const Fallback = (): JSX.Element => <Loading sx={{ variant: 'images.icon', animation: `${load} 0.5s steps(7) infinite` }} />
+const Fallback = (): JSX.Element => (
+  <Loading
+    sx={{ variant: 'images.icon', animation: `${load} 0.5s steps(7) infinite` }}
+  />
+)
 
-const ArrowDown = dynamic(async () => await import('./svg/noun-arrow-down.svg'), { ssr: false, loading: Fallback })
-const ArrowUp = dynamic(async () => await import('./svg/noun-arrow-up.svg'), { ssr: false, loading: Fallback })
-const BookmarkFilled = dynamic(async () => await import('./svg/noun-bookmark-filled.svg'), { ssr: false, loading: Fallback })
-const Bookmark = dynamic(async () => await import('./svg/noun-bookmark.svg'), { ssr: false, loading: Fallback })
-const Check = dynamic(async () => await import('./svg/noun-check.svg'), { ssr: false, loading: Fallback })
-const CheckboxChecked = dynamic(async () => await import('./svg/noun-checkbox-checked.svg'), { ssr: false, loading: Fallback })
-const CheckboxIndeterminate = dynamic(async () => await import('./svg/noun-checkbox-indeterminate.svg'), { ssr: false, loading: Fallback })
-const Checkbox = dynamic(async () => await import('./svg/noun-checkbox.svg'), { ssr: false, loading: Fallback })
-const Close = dynamic(async () => await import('./svg/noun-close.svg'), { ssr: false, loading: Fallback })
-const ColorMode = dynamic(async () => await import('./svg/noun-color-mode.svg'), { ssr: false, loading: Fallback })
-const Dice = dynamic(async () => await import('./svg/noun-dice.svg'), { ssr: false, loading: Fallback })
-const Download = dynamic(async () => await import('./svg/noun-download.svg'), { ssr: false, loading: Fallback })
-const Edit = dynamic(async () => await import('./svg/noun-edit.svg'), { ssr: false, loading: Fallback })
-const Expand = dynamic(async () => await import('./svg/noun-expand.svg'), { ssr: false, loading: Fallback })
-const EyeClosed = dynamic(async () => await import('./svg/noun-eye-closed.svg'), { ssr: false, loading: Fallback })
-const Eye = dynamic(async () => await import('./svg/noun-eye.svg'), { ssr: false, loading: Fallback })
-const Gear = dynamic(async () => await import('./svg/noun-gear.svg'), { ssr: false, loading: Fallback })
-const LockOpen = dynamic(async () => await import('./svg/noun-lock-open.svg'), { ssr: false, loading: Fallback })
-const Lock = dynamic(async () => await import('./svg/noun-lock.svg'), { ssr: false, loading: Fallback })
-const Menu = dynamic(async () => await import('./svg/noun-menu.svg'), { ssr: false, loading: Fallback })
-const More = dynamic(async () => await import('./svg/noun-more.svg'), { ssr: false, loading: Fallback })
-const RadioButtonOff = dynamic(async () => await import('./svg/noun-radio-button-off.svg'), { ssr: false, loading: Fallback })
-const RadioButtonOn = dynamic(async () => await import('./svg/noun-radio-button-on.svg'), { ssr: false, loading: Fallback })
-const Random = dynamic(async () => await import('./svg/noun-random.svg'), { ssr: false, loading: Fallback })
-const Refresh = dynamic(async () => await import('./svg/noun-refresh.svg'), { ssr: false, loading: Fallback })
-const Trash = dynamic(async () => await import('./svg/noun-trash.svg'), { ssr: false, loading: Fallback })
+const ArrowDown = dynamic(
+  async () => await import('./svg/noun-arrow-down.svg'),
+  { ssr: false, loading: Fallback },
+)
+const ArrowUp = dynamic(async () => await import('./svg/noun-arrow-up.svg'), {
+  ssr: false,
+  loading: Fallback,
+})
+const BookmarkFilled = dynamic(
+  async () => await import('./svg/noun-bookmark-filled.svg'),
+  { ssr: false, loading: Fallback },
+)
+const Bookmark = dynamic(async () => await import('./svg/noun-bookmark.svg'), {
+  ssr: false,
+  loading: Fallback,
+})
+const Check = dynamic(async () => await import('./svg/noun-check.svg'), {
+  ssr: false,
+  loading: Fallback,
+})
+const CheckboxChecked = dynamic(
+  async () => await import('./svg/noun-checkbox-checked.svg'),
+  { ssr: false, loading: Fallback },
+)
+const CheckboxIndeterminate = dynamic(
+  async () => await import('./svg/noun-checkbox-indeterminate.svg'),
+  { ssr: false, loading: Fallback },
+)
+const Checkbox = dynamic(async () => await import('./svg/noun-checkbox.svg'), {
+  ssr: false,
+  loading: Fallback,
+})
+const Close = dynamic(async () => await import('./svg/noun-close.svg'), {
+  ssr: false,
+  loading: Fallback,
+})
+const ColorMode = dynamic(
+  async () => await import('./svg/noun-color-mode.svg'),
+  { ssr: false, loading: Fallback },
+)
+const Dice = dynamic(async () => await import('./svg/noun-dice.svg'), {
+  ssr: false,
+  loading: Fallback,
+})
+const Download = dynamic(async () => await import('./svg/noun-download.svg'), {
+  ssr: false,
+  loading: Fallback,
+})
+const Edit = dynamic(async () => await import('./svg/noun-edit.svg'), {
+  ssr: false,
+  loading: Fallback,
+})
+const Expand = dynamic(async () => await import('./svg/noun-expand.svg'), {
+  ssr: false,
+  loading: Fallback,
+})
+const EyeClosed = dynamic(
+  async () => await import('./svg/noun-eye-closed.svg'),
+  { ssr: false, loading: Fallback },
+)
+const Eye = dynamic(async () => await import('./svg/noun-eye.svg'), {
+  ssr: false,
+  loading: Fallback,
+})
+const Gear = dynamic(async () => await import('./svg/noun-gear.svg'), {
+  ssr: false,
+  loading: Fallback,
+})
+const LockOpen = dynamic(async () => await import('./svg/noun-lock-open.svg'), {
+  ssr: false,
+  loading: Fallback,
+})
+const Lock = dynamic(async () => await import('./svg/noun-lock.svg'), {
+  ssr: false,
+  loading: Fallback,
+})
+const Menu = dynamic(async () => await import('./svg/noun-menu.svg'), {
+  ssr: false,
+  loading: Fallback,
+})
+const More = dynamic(async () => await import('./svg/noun-more.svg'), {
+  ssr: false,
+  loading: Fallback,
+})
+const RadioButtonOff = dynamic(
+  async () => await import('./svg/noun-radio-button-off.svg'),
+  { ssr: false, loading: Fallback },
+)
+const RadioButtonOn = dynamic(
+  async () => await import('./svg/noun-radio-button-on.svg'),
+  { ssr: false, loading: Fallback },
+)
+const Random = dynamic(async () => await import('./svg/noun-random.svg'), {
+  ssr: false,
+  loading: Fallback,
+})
+const Refresh = dynamic(async () => await import('./svg/noun-refresh.svg'), {
+  ssr: false,
+  loading: Fallback,
+})
+const Trash = dynamic(async () => await import('./svg/noun-trash.svg'), {
+  ssr: false,
+  loading: Fallback,
+})
 
 const arrowDown = 'arrow-down'
 const arrowUp = 'arrow-up'
@@ -92,16 +175,19 @@ export const nouns = [
   radioButtonOn,
   random,
   refresh,
-  trash
+  trash,
 ]
 
 export interface IconProps {
   noun: string
-  size?: number
+  sx?: ThemeUIStyleObject
 }
 
-export const Icon = ({ noun, size = 0 }: IconProps): JSX.Element => {
-  invariant(nouns.includes(noun), `Cannot create Icon with noun '${noun}' because is is not one of [${nouns.join(', ')}]`)
+export const Icon = ({ noun, sx }: IconProps): JSX.Element => {
+  invariant(
+    nouns.includes(noun),
+    `Cannot create Icon with noun '${noun}' because is is not one of [${nouns.join(', ')}]`,
+  )
   const Svg = useMemo(() => {
     switch (noun) {
       case arrowDown:
@@ -164,7 +250,8 @@ export const Icon = ({ noun, size = 0 }: IconProps): JSX.Element => {
   return (
     <Svg
       sx={{
-        variant: 'images.icon'
+        variant: 'images.icon',
+        ...sx,
       }}
     />
   )
@@ -173,7 +260,7 @@ export const Icon = ({ noun, size = 0 }: IconProps): JSX.Element => {
 Icon.nouns = nouns
 
 Icon.propTypes = {
-  noun: propTypes.oneOf(Icon.nouns).isRequired
+  noun: propTypes.oneOf(Icon.nouns).isRequired,
 }
 
 export default Icon

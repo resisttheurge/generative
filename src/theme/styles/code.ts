@@ -5,23 +5,24 @@ export const code: ThemeUIStyleObject = {
   fontFamily: 'monospace',
   fontSize: 'inherit',
   '.highlight': {
-    bg: 'highlight'
+    bg: 'highlight',
   },
   '.comment,.prolog,.doctype,.cdata,.punctuation,.operator,.entity,.url': {
-    color: 'gray'
+    color: 'gray',
   },
   '.comment': {
-    fontStyle: 'italic'
+    fontStyle: 'italic',
   },
-  '.property, .tag, .boolean, .number, .constant, .symbol, .deleted, .function, .class-name, .regex, .important, .variable': {
-    color: 'accent'
-  },
+  '.property, .tag, .boolean, .number, .constant, .symbol, .deleted, .function, .class-name, .regex, .important, .variable':
+    {
+      color: 'accent',
+    },
   '.atrule, .attr-value, .keyword': {
-    color: 'primary'
+    color: 'primary',
   },
   '.selector, .attr-name, .string, .char, .builtin, .inserted': {
-    color: 'secondary'
-  }
+    color: 'secondary',
+  },
 }
 
 export const inlineCode = code

@@ -4,6 +4,6 @@ export const a: ThemeUIStyleObject = {
   color: 'gray',
   textDecoration: 'none',
   '&:hover': {
-    color: 'muted'
-  }
+    color: 'muted',
+  },
 }

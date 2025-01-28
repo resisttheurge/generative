@@ -1,9 +1,8 @@
-export type Number<N extends number> =
-  N extends N
-    ? number extends N
-      ? never
-      : N
-    : never
+export type Number<N extends number> = N extends N
+  ? number extends N
+    ? never
+    : N
+  : never
 
 export type Int<N extends number> =
   N extends Number<N>
@@ -20,11 +19,7 @@ export type Float<N extends number> =
     : never
 
 export type NonZero<N extends number> =
-  N extends Number<N>
-    ? N extends 0
-      ? never
-      : N
-    : never
+  N extends Number<N> ? (N extends 0 ? never : N) : never
 
 export type Positive<N extends number> =
   N extends Number<N>
@@ -42,18 +37,15 @@ export type Negative<N extends number> =
 
 export type Natural<N extends number> = Positive<Int<N>>
 
-type Counter<Size extends number> =
-  CounterOf<Size, []>
+type Counter<Size extends number> = CounterOf<Size, []>
 
-type CounterOf<Size extends number, R extends unknown[]> =
-  R['length'] extends Size
-    ? R
-    : CounterOf<Size, [unknown, ...R]>
+type CounterOf<
+  Size extends number,
+  R extends unknown[],
+> = R['length'] extends Size ? R : CounterOf<Size, [unknown, ...R]>
 
 export type Increment<N extends number> =
-  N extends Natural<N>
-    ? [...Counter<N>, unknown]['length']
-    : never
+  N extends Natural<N> ? [...Counter<N>, unknown]['length'] : never
 
 export type Decrement<N extends number> =
   N extends NonZero<Natural<N>>
@@ -62,17 +54,25 @@ export type Decrement<N extends number> =
       : never
     : never
 
-export type Add <A extends number, B extends number> =
-  [A, B] extends [Natural<A>, Natural<B>]
-    ? [...Counter<A>, ...Counter<B>]['length']
-    : never
+export type Add<A extends number, B extends number> = [A, B] extends [
+  Natural<A>,
+  Natural<B>,
+]
+  ? [...Counter<A>, ...Counter<B>]['length']
+  : never
 
-export type Multiply <A extends number, B extends number> =
-    [A, B] extends [Natural<A>, Natural<B>]
-      ? MultiplyAccumulator<A, B, [], []>
-      : never
+export type Multiply<A extends number, B extends number> = [A, B] extends [
+  Natural<A>,
+  Natural<B>,
+]
+  ? MultiplyAccumulator<A, B, [], []>
+  : never
 
-type MultiplyAccumulator <A extends number, B extends number, R extends unknown[], Acc extends unknown[]> =
-  Acc['length'] extends B
-    ? R['length']
-    : MultiplyAccumulator<A, B, [...R, ...Counter<A>], [...Acc, unknown]>
+type MultiplyAccumulator<
+  A extends number,
+  B extends number,
+  R extends unknown[],
+  Acc extends unknown[],
+> = Acc['length'] extends B
+  ? R['length']
+  : MultiplyAccumulator<A, B, [...R, ...Counter<A>], [...Acc, unknown]>

@@ -5,91 +5,85 @@ import { isList } from 'immutable'
 import { ConcretePRN, calculateState } from '@prngs/PRNG'
 
 describe('an arbitrary PRNG', () => {
-  it.prop([arb.prng()])(
-    'should match the PRNG interface',
-    prng => {
-      expect(prng).toHaveProperty('name')
-      if (prng.name !== undefined) {
-        expect(typeof prng.name).toBe('string')
-      }
-
-      expect(prng).toHaveProperty('min')
-      expect(typeof prng.min).toBe('number')
-
-      expect(prng).toHaveProperty('max')
-      expect(typeof prng.max).toBe('number')
-
-      expect(prng).toHaveProperty('initState')
-      expect(prng.initState).toBeInstanceOf(Function)
-
-      expect(prng).toHaveProperty('nextState')
-      expect(prng.nextState).toBeInstanceOf(Function)
-
-      expect(prng).toHaveProperty('hashState')
-      if (prng.hashState !== undefined) {
-        expect(prng.hashState).toBeInstanceOf(Function)
-      }
-
-      expect(prng).toHaveProperty('formatState')
-      if (prng.formatState !== undefined) {
-        expect(prng.formatState).toBeInstanceOf(Function)
-      }
-
-      expect(prng).toHaveProperty('extractValue')
-      expect(prng.extractValue).toBeInstanceOf(Function)
+  it.prop([arb.prng()])('should match the PRNG interface', prng => {
+    expect(prng).toHaveProperty('name')
+    if (prng.name !== undefined) {
+      expect(typeof prng.name).toBe('string')
     }
-  )
 
-  it.prop([arb.prng()])(
-    'should have a valid range',
-    prng => {
-      expect(prng.min).toBeLessThan(prng.max)
+    expect(prng).toHaveProperty('min')
+    expect(typeof prng.min).toBe('number')
+
+    expect(prng).toHaveProperty('max')
+    expect(typeof prng.max).toBe('number')
+
+    expect(prng).toHaveProperty('initState')
+    expect(prng.initState).toBeInstanceOf(Function)
+
+    expect(prng).toHaveProperty('nextState')
+    expect(prng.nextState).toBeInstanceOf(Function)
+
+    expect(prng).toHaveProperty('hashState')
+    if (prng.hashState !== undefined) {
+      expect(prng.hashState).toBeInstanceOf(Function)
     }
-  )
+
+    expect(prng).toHaveProperty('formatState')
+    if (prng.formatState !== undefined) {
+      expect(prng.formatState).toBeInstanceOf(Function)
+    }
+
+    expect(prng).toHaveProperty('extractValue')
+    expect(prng.extractValue).toBeInstanceOf(Function)
+  })
+
+  it.prop([arb.prng()])('should have a valid range', prng => {
+    expect(prng.min).toBeLessThan(prng.max)
+  })
 
   it.prop({ prng: arb.prng(), seed: fc.string() })(
     'should always initialize to the same state given the same seed',
     ({ prng, seed }) => {
       expect(prng.initState(seed)).toEqual(prng.initState(seed))
-    }
+    },
   )
 
   it.prop({ prng: arb.prng(), state: fc.anything() })(
     'should always produce the same next state given the same current state',
     ({ prng, state }) => {
       expect(prng.nextState(state)).toEqual(prng.nextState(state))
-    }
+    },
   )
 
   it.prop({
     prng: arb.prng(undefined, { noHashState: false }),
-    state: fc.anything()
+    state: fc.anything(),
   })(
     'should always produce the same hashed state given the same current state',
     ({ prng, state }) => {
       if (prng.hashState !== undefined) {
         expect(prng.hashState(state)).toEqual(prng.hashState(state))
       }
-    }
+    },
   )
 
   it.prop({
     prng: arb.prng(undefined, { noFormatState: false }),
-    state: fc.anything()
+    state: fc.anything(),
   })(
     'should always produce the same formatted state given the same current state',
     ({ prng, state }) => {
       if (prng.formatState !== undefined) {
         expect(prng.formatState(state)).toEqual(prng.formatState(state))
       }
-    }
+    },
   )
 
   it.prop({ prng: arb.prng(), state: fc.anything() })(
     'should always extract the same value given the same current state',
     ({ prng, state }) => {
       expect(prng.extractValue(state)).toEqual(prng.extractValue(state))
-    }
+    },
   )
 
   it.prop({ prng: arb.prng(), state: fc.anything() })(
@@ -98,7 +92,7 @@ describe('an arbitrary PRNG', () => {
       const value = prng.extractValue(state)
       expect(value).toBeGreaterThanOrEqual(prng.min)
       expect(value).toBeLessThanOrEqual(prng.max)
-    }
+    },
   )
 
   it.prop([fc.string()])(
@@ -107,40 +101,58 @@ describe('an arbitrary PRNG', () => {
       const concrete = fc.sample(arb.prng(undefined, { name }), 1)[0]
       expect(concrete.name).toBe(name)
 
-      const arbitrary = fc.sample(arb.prng(undefined, { name: fc.constant(name) }), 1)[0]
+      const arbitrary = fc.sample(
+        arb.prng(undefined, { name: fc.constant(name) }),
+        1,
+      )[0]
       expect(arbitrary.name).toBe(name)
-    }
+    },
   )
 
   it.prop({
-    range: fc.integer({
-      max: 0x7FFFFFFE
-    }).chain(min => fc.integer({
-      min: min + 1
-    }).map(max => [min, max])),
-    state: fc.anything()
+    range: fc
+      .integer({
+        max: 0x7ffffffe,
+      })
+      .chain(min =>
+        fc
+          .integer({
+            min: min + 1,
+          })
+          .map(max => [min, max]),
+      ),
+    state: fc.anything(),
   })(
     'should allow the caller to provide a concrete or arbitrary range',
     ({ range: [min, max], state }) => {
-      const concrete = fc.sample(arb.prng(undefined, { range: [min, max] }), 1)[0]
+      const concrete = fc.sample(
+        arb.prng(undefined, { range: [min, max] }),
+        1,
+      )[0]
       expect(concrete.min).toBe(min)
       expect(concrete.extractValue(state)).toBeGreaterThanOrEqual(min)
       expect(concrete.max).toBe(max)
       expect(concrete.extractValue(state)).toBeLessThanOrEqual(max)
 
-      const arbitrary = fc.sample(arb.prng(undefined, { range: fc.constant([min, max]) }), 1)[0]
+      const arbitrary = fc.sample(
+        arb.prng(undefined, { range: fc.constant([min, max]) }),
+        1,
+      )[0]
       expect(arbitrary.min).toBe(min)
       expect(arbitrary.extractValue(state)).toBeGreaterThanOrEqual(min)
       expect(arbitrary.max).toBe(max)
       expect(arbitrary.extractValue(state)).toBeLessThanOrEqual(max)
-    }
+    },
   )
 
   it.prop([fc.boolean()])(
     'should allow the caller to flag whether or not the PRNG has a hashState function',
     noHashState => {
       const concrete = fc.sample(arb.prng(undefined, { noHashState }), 1)[0]
-      const arbitrary = fc.sample(arb.prng(undefined, { noHashState: fc.constant(noHashState) }), 1)[0]
+      const arbitrary = fc.sample(
+        arb.prng(undefined, { noHashState: fc.constant(noHashState) }),
+        1,
+      )[0]
 
       if (noHashState) {
         expect(concrete.hashState).toBeUndefined()
@@ -149,14 +161,17 @@ describe('an arbitrary PRNG', () => {
         expect(concrete.hashState).toBeInstanceOf(Function)
         expect(arbitrary.hashState).toBeInstanceOf(Function)
       }
-    }
+    },
   )
 
   it.prop([fc.boolean()])(
     'should allow the caller to flag whether or not the PRNG has a formatState function',
     noFormatState => {
       const concrete = fc.sample(arb.prng(undefined, { noFormatState }), 1)[0]
-      const arbitrary = fc.sample(arb.prng(undefined, { noFormatState: fc.constant(noFormatState) }), 1)[0]
+      const arbitrary = fc.sample(
+        arb.prng(undefined, { noFormatState: fc.constant(noFormatState) }),
+        1,
+      )[0]
 
       if (noFormatState) {
         expect(concrete.formatState).toBeUndefined()
@@ -165,60 +180,52 @@ describe('an arbitrary PRNG', () => {
         expect(concrete.formatState).toBeInstanceOf(Function)
         expect(arbitrary.formatState).toBeInstanceOf(Function)
       }
-    }
+    },
   )
 })
 
 describe('an arbitrary PRN', () => {
-  it.prop([arb.prn()])(
-    'should match the PRN interface',
-    prn => {
-      expect(prn).toHaveProperty('prng')
+  it.prop([arb.prn()])('should match the PRN interface', prn => {
+    expect(prn).toHaveProperty('prng')
 
-      expect(prn).toHaveProperty('seed')
-      expect(typeof prn.seed).toBe('string')
+    expect(prn).toHaveProperty('seed')
+    expect(typeof prn.seed).toBe('string')
 
-      expect(prn).toHaveProperty('path')
-      expect(isList(prn.path)).toBeTrue()
+    expect(prn).toHaveProperty('path')
+    expect(isList(prn.path)).toBeTrue()
 
-      expect(prn).toHaveProperty('iteration')
-      expect(typeof prn.iteration).toBe('number')
+    expect(prn).toHaveProperty('iteration')
+    expect(typeof prn.iteration).toBe('number')
 
-      expect(prn).toHaveProperty('state')
+    expect(prn).toHaveProperty('state')
 
-      expect(prn).toHaveProperty('value')
-      expect(prn.value).toBeGreaterThanOrEqual(prn.prng.min)
-      expect(prn.value).toBeLessThanOrEqual(prn.prng.max)
+    expect(prn).toHaveProperty('value')
+    expect(prn.value).toBeGreaterThanOrEqual(prn.prng.min)
+    expect(prn.value).toBeLessThanOrEqual(prn.prng.max)
 
-      expect(prn).toHaveProperty('normalized')
-      expect(prn.normalized).toBeGreaterThanOrEqual(0)
-      expect(prn.normalized).toBeLessThanOrEqual(1)
+    expect(prn).toHaveProperty('normalized')
+    expect(prn.normalized).toBeGreaterThanOrEqual(0)
+    expect(prn.normalized).toBeLessThanOrEqual(1)
 
-      expect(prn).toHaveProperty('next')
-      expect(prn.next).toBeInstanceOf(ConcretePRN)
+    expect(prn).toHaveProperty('next')
+    expect(prn.next).toBeInstanceOf(ConcretePRN)
 
-      expect(prn).toHaveProperty('variation')
-      if (prn.prng.hashState !== undefined) {
-        expect(prn.variation).toBeInstanceOf(ConcretePRN)
-      } else {
-        expect(prn.variation).toBeUndefined()
-      }
+    expect(prn).toHaveProperty('variation')
+    if (prn.prng.hashState !== undefined) {
+      expect(prn.variation).toBeInstanceOf(ConcretePRN)
+    } else {
+      expect(prn.variation).toBeUndefined()
     }
-  )
+  })
 
   it.prop([arb.prng()])(
     'should allow the caller to provide an arbitrary PRNG',
     prng => {
       const prn = fc.sample(arb.prn(fc.constant(prng)), 1)[0]
-      expect(prn.state)
-        .toEqual(calculateState(
-          prng,
-          prn.seed,
-          prn.offset,
-          prn.path,
-          prn.iteration
-        ))
-    }
+      expect(prn.state).toEqual(
+        calculateState(prng, prn.seed, prn.offset, prn.path, prn.iteration),
+      )
+    },
   )
 
   it.prop([fc.string()])(
@@ -227,9 +234,12 @@ describe('an arbitrary PRN', () => {
       const concrete = fc.sample(arb.prn(arb.prng(), { seed }), 1)[0]
       expect(concrete.seed).toBe(seed)
 
-      const arbitrary = fc.sample(arb.prn(arb.prng(), { seed: fc.constant(seed) }), 1)[0]
+      const arbitrary = fc.sample(
+        arb.prn(arb.prng(), { seed: fc.constant(seed) }),
+        1,
+      )[0]
       expect(arbitrary.seed).toBe(seed)
-    }
+    },
   )
 
   it.prop([fc.nat(1000)])(
@@ -238,43 +248,45 @@ describe('an arbitrary PRN', () => {
       const concrete = fc.sample(arb.prn(arb.prng(), { iteration }), 1)[0]
       expect(concrete.iteration).toBe(iteration)
 
-      const arbitrary = fc.sample(arb.prn(arb.prng(), { iteration: fc.constant(iteration) }), 1)[0]
+      const arbitrary = fc.sample(
+        arb.prn(arb.prng(), { iteration: fc.constant(iteration) }),
+        1,
+      )[0]
       expect(arbitrary.iteration).toBe(iteration)
-    }
+    },
   )
 
   it.prop([fc.boolean()])(
     'should allow the caller to flag that the PRN has no path',
     noVariation => {
-      const concrete = fc.sample(arb.prn(
-        arb.prng(),
-        { noVariation }
-      ), 1)[0]
+      const concrete = fc.sample(arb.prn(arb.prng(), { noVariation }), 1)[0]
 
-      const arbitrary = fc.sample(arb.prn(
-        arb.prng(),
-        { noVariation: fc.constant(noVariation) }
-      ), 1)[0]
+      const arbitrary = fc.sample(
+        arb.prn(arb.prng(), { noVariation: fc.constant(noVariation) }),
+        1,
+      )[0]
 
       if (noVariation) {
         expect(concrete.path.isEmpty()).toBeTrue()
         expect(arbitrary.path.isEmpty()).toBeTrue()
       }
-    }
+    },
   )
 
   it.prop([fc.nat(1000)])(
     'should allow the caller to provide a concrete or arbitrary maxPathIterations',
     maxPathIterations => {
-      const concrete = fc.sample(arb.prn(
-        arb.prng(),
-        { maxPathIterations }
-      ), 1)[0]
+      const concrete = fc.sample(
+        arb.prn(arb.prng(), { maxPathIterations }),
+        1,
+      )[0]
 
-      const arbitrary = fc.sample(arb.prn(
-        arb.prng(),
-        { maxPathIterations: fc.constant(maxPathIterations) }
-      ), 1)[0]
+      const arbitrary = fc.sample(
+        arb.prn(arb.prng(), {
+          maxPathIterations: fc.constant(maxPathIterations),
+        }),
+        1,
+      )[0]
 
       for (const segment of concrete.path) {
         expect(segment).toBeLessThanOrEqual(maxPathIterations)
@@ -283,24 +295,29 @@ describe('an arbitrary PRN', () => {
       for (const segment of arbitrary.path) {
         expect(segment).toBeLessThanOrEqual(maxPathIterations)
       }
-    }
+    },
   )
 
-  it.prop([fc.constantFrom<fc.Size>('xsmall', 'small', 'medium', 'large', 'xlarge')])(
+  it.prop([
+    fc.constantFrom<fc.Size>('xsmall', 'small', 'medium', 'large', 'xlarge'),
+  ])(
     'should allow the caller to provide a concrete or arbitrary pathSize',
     pathSize => {
-      const concrete = fc.sample(arb.prn(
-        arb.prng(fc.anything(), { noHashState: false }),
-        { pathSize, maxPathIterations: 1 }
-      ), 1)[0]
+      const concrete = fc.sample(
+        arb.prn(arb.prng(fc.anything(), { noHashState: false }), {
+          pathSize,
+          maxPathIterations: 1,
+        }),
+        1,
+      )[0]
 
-      const arbitrary = fc.sample(arb.prn(
-        arb.prng(fc.anything(), { noHashState: false }),
-        {
+      const arbitrary = fc.sample(
+        arb.prn(arb.prng(fc.anything(), { noHashState: false }), {
           pathSize: fc.constant(pathSize),
-          maxPathIterations: 1
-        }
-      ), 1)[0]
+          maxPathIterations: 1,
+        }),
+        1,
+      )[0]
 
       if (pathSize === 'xsmall') {
         expect(concrete.path.size).toBeLessThanOrEqual(1)
@@ -318,6 +335,6 @@ describe('an arbitrary PRN', () => {
         expect(concrete.path.size).toBeLessThanOrEqual(10000)
         expect(arbitrary.path.size).toBeLessThanOrEqual(10000)
       }
-    }
+    },
   )
 })

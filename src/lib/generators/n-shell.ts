@@ -13,16 +13,28 @@ import invariant from 'tiny-invariant'
  * @param dimensions the number of dimensions of the shell
  * @param rRange the mininmum and maximum radius of the shell. Defaults to the unit sphere.
  */
-export function nShell <N extends number> (dimensions: N, radiusRange: Partial<Range> = {}): Generator<Vector<N>> {
-  invariant(dimensions >= 1, () => `dimensions must be equal to or greater than 0, got ${dimensions}`)
-  invariant(dimensions !== Infinity, () => `dimensions must be finite, got ${dimensions}`)
-  invariant(!isNaN(dimensions), () => `dimensions must be a number, got ${dimensions}`)
+export function nShell<N extends number>(
+  dimensions: N,
+  radiusRange: Partial<Range> = {},
+): Generator<Vector<N>> {
+  invariant(
+    dimensions >= 1,
+    () => `dimensions must be equal to or greater than 0, got ${dimensions}`,
+  )
+  invariant(
+    dimensions !== Infinity,
+    () => `dimensions must be finite, got ${dimensions}`,
+  )
+  invariant(
+    !isNaN(dimensions),
+    () => `dimensions must be a number, got ${dimensions}`,
+  )
   const { min = 0, max = 1 } = radiusRange
   validate({ min, max }, { finite: true, polarity: 'positive' })
   return Generator.record({
     radius: Generator.number({ min, max }), // choose radius in given range
-    vector: gaussianVector(dimensions) // generate normally-distributed vector
-  }).map(({ radius, vector }) =>
-    normalize(vector, radius) // return vector scaled to radius
+    vector: gaussianVector(dimensions), // generate normally-distributed vector
+  }).map(
+    ({ radius, vector }) => normalize(vector, radius), // return vector scaled to radius
   )
 }

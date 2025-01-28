@@ -1,25 +1,25 @@
 import { ThemeUIStyleObject } from 'theme-ui'
 
 export const body: ThemeUIStyleObject = {
-  fontSize: 1,
+  fontSize: [4, 3, 2],
   fontFamily: 'body',
   fontWeight: 'body',
-  lineHeight: 'body'
+  lineHeight: 'body',
 }
 
 export const bold: ThemeUIStyleObject = {
   ...body,
-  fontWeight: 'bold'
+  fontWeight: 'bold',
 }
 
 export const italic: ThemeUIStyleObject = {
   ...body,
-  fontStyle: 'italic'
+  fontStyle: 'italic',
 }
 
 export const boldItalic: ThemeUIStyleObject = {
   ...bold,
-  ...italic
+  ...italic,
 }
 
 export const display: ThemeUIStyleObject = {
@@ -27,14 +27,14 @@ export const display: ThemeUIStyleObject = {
   fontFamily: 'display',
   fontWeight: 'display',
   lineHeight: 'display',
-  my: 1
+  my: 1,
 }
 
 export const heading: ThemeUIStyleObject = {
   fontSize: 2,
   fontFamily: 'heading',
   fontWeight: 'heading',
-  lineHeight: 'heading'
+  lineHeight: 'heading',
 }
 
 export const monospace: ThemeUIStyleObject = {
@@ -42,7 +42,7 @@ export const monospace: ThemeUIStyleObject = {
   fontFamily: 'monospace',
   fontWeight: 'monospace',
   lineHeight: 'monospace',
-  p: 1
+  p: 1,
 }
 
 export default body

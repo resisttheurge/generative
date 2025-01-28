@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Flex, Divider } from 'theme-ui'
+import { Box } from 'theme-ui'
 import IconButton from '../IconButton'
 
 export const ConfigMenu = ({
@@ -7,40 +7,46 @@ export const ConfigMenu = ({
   onClickDownload = () => {},
   visibleOnInit = false,
   ...props
-}) => {
+}): JSX.Element => {
   const [visible, setVisible] = useState(visibleOnInit)
 
-  const toggleMenuButton = <IconButton icon='gear' onClick={() => setVisible(!visible)} />
-
-  const formContents =
-    !visible
-      ? toggleMenuButton
-      : (
-        <>
-          <Divider />
-          {props.children}
-          <Divider />
-          <Flex variant='forms.menu.actions'>
-            <IconButton icon='download' onClick={onClickDownload} />
-            {toggleMenuButton}
-            <IconButton icon='dice' onClick={onClickRandom} />
-          </Flex>
-        </>
-        )
+  const toggleMenuButton = (
+    <IconButton
+      icon='gear'
+      fab={!visible}
+      key='toggleMenu'
+      onClick={() => setVisible(!visible)}
+      sx={{ gridArea: 'center' }}
+    />
+  )
 
   return (
-    <Flex
+    <Box
       as='form'
-      variant='forms.menu'
-      sx={{
-        borderRadius: visible ? '4px' : '16px',
-        mb: visible ? 1 : 2,
-        p: visible ? 1 : 0
-      }}
+      variant={visible ? 'forms.menu' : 'forms.menuCollapsed'}
       {...props}
     >
-      {formContents}
-    </Flex>
+      {!visible ? (
+        toggleMenuButton
+      ) : (
+        <>
+          <Box variant='forms.menu.fieldset'>{props.children}</Box>
+          <Box variant='forms.menu.actions'>
+            <IconButton
+              icon='dice'
+              onClick={onClickRandom}
+              sx={{ gridArea: 'left' }}
+            />
+            {toggleMenuButton}
+            <IconButton
+              icon='download'
+              onClick={onClickDownload}
+              sx={{ gridArea: 'right' }}
+            />
+          </Box>
+        </>
+      )}
+    </Box>
   )
 }
 

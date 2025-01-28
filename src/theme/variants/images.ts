@@ -2,6 +2,7 @@ import { ThemeUIStyleObject } from 'theme-ui'
 
 export const icon: ThemeUIStyleObject = {
   fill: 'text',
-  width: 'icon',
-  height: 'icon'
+  size: '1em',
+  pointerEvents: 'none',
+  m: [4, 3],
 }

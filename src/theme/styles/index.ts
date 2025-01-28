@@ -1,6 +1,7 @@
 import { ThemeStyles } from 'theme-ui'
 import * as a from './a'
 import * as blockquote from './blockquote'
+import * as body from './body'
 import * as code from './code'
 import * as h from './h'
 import * as hr from './hr'
@@ -14,6 +15,7 @@ import * as ul from './ul'
 export const styles: ThemeStyles = {
   ...a,
   ...blockquote,
+  ...body,
   ...code,
   ...h,
   ...hr,
@@ -22,7 +24,7 @@ export const styles: ThemeStyles = {
   ...pre,
   ...root,
   ...table,
-  ...ul
+  ...ul,
 }
 
 export default styles

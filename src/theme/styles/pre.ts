@@ -9,8 +9,8 @@ export const pre: ThemeUIStyleObject = {
   code: {
     ...code,
     color: 'inherit',
-    fontSize: 'inherit'
+    fontSize: 'inherit',
   },
   px: 1,
-  mx: 0
+  mx: 0,
 }

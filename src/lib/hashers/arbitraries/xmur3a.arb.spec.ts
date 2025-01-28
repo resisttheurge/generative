@@ -8,6 +8,6 @@ describe('an arbitrary xmur3a implementation', () => {
     'should always be the canonical implementation',
     hasher => {
       expect(hasher).toBe(impl.xmur3a)
-    }
+    },
   )
 })

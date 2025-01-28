@@ -8,7 +8,7 @@ export const h1: ThemeUIStyleObject = {
   marginBlockStart: 5,
   marginBlockEnd: 5,
   ml: [1, 2, 3],
-  mr: [1, 2, 3]
+  mr: [1, 2, 3],
 }
 
 export const h2: ThemeUIStyleObject = {
@@ -19,7 +19,7 @@ export const h2: ThemeUIStyleObject = {
   marginBlockStart: 4,
   marginBlockEnd: 4,
   ml: [1, 2, 3],
-  mr: [1, 2, 3]
+  mr: [1, 2, 3],
 }
 
 export const h3: ThemeUIStyleObject = {
@@ -30,7 +30,7 @@ export const h3: ThemeUIStyleObject = {
   marginBlockStart: 3,
   marginBlockEnd: 3,
   ml: [1, 2, 3],
-  mr: [1, 2, 3]
+  mr: [1, 2, 3],
 }
 
 export const h4: ThemeUIStyleObject = {
@@ -41,7 +41,7 @@ export const h4: ThemeUIStyleObject = {
   marginBlockStart: 2,
   marginBlockEnd: 2,
   ml: [1, 2, 3],
-  mr: [1, 2, 3]
+  mr: [1, 2, 3],
 }
 
 export const h5: ThemeUIStyleObject = {
@@ -52,7 +52,7 @@ export const h5: ThemeUIStyleObject = {
   marginBlockStart: 1,
   marginBlockEnd: 1,
   ml: [1, 2, 3],
-  mr: [1, 2, 3]
+  mr: [1, 2, 3],
 }
 
 export const h6: ThemeUIStyleObject = {
@@ -63,5 +63,5 @@ export const h6: ThemeUIStyleObject = {
   marginBlockStart: 0,
   marginBlockEnd: 0,
   ml: [1, 2, 3],
-  mr: [1, 2, 3]
+  mr: [1, 2, 3],
 }
