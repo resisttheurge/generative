@@ -1,27 +1,82 @@
-import { Box, Checkbox, Select, Slider } from 'theme-ui'
-
+import { Box, Select, Slider } from 'theme-ui'
 import { ConfigMenu, Layout, ConfigField } from 'components'
-import { Canvas, useThree } from '@react-three/fiber'
 import {
-  RefObject,
-  useCallback,
-  useLayoutEffect,
-  useMemo,
-  useRef,
-  useState,
-} from 'react'
-import { CameraControls } from '@react-three/drei'
-import { get, getRandom, getNames, PaletteName } from 'chromotome'
+  Canvas,
+  extend,
+  MaterialNode,
+  useFrame,
+  useThree,
+} from '@react-three/fiber'
+import { RefObject, useMemo, useRef, useState } from 'react'
+import {
+  CameraControls,
+  createInstances,
+  InstancedAttribute,
+  shaderMaterial,
+} from '@react-three/drei'
+import { get, getNames, PaletteName, getAll } from 'chromotome'
 import chroma from 'chroma-js'
-import { Color, InstancedMesh, Object3D } from 'three'
-import { makeNoise2D, makeNoise3D } from 'open-simplex-noise'
-import { Noise2D } from 'open-simplex-noise/lib/2d'
-import { Noise3D } from 'open-simplex-noise/lib/3d'
+import { Color, InstancedMesh, ShaderMaterial } from 'three'
+import { useGenerators } from 'effects'
+import { Generator } from '@generators/Generator'
+import { noise2D } from '@generators/simplex-noise'
+
+interface CubeAttributes {
+  hColor: Color
+  vColor: Color
+  coords: [number, number]
+}
+
+interface CubeUniforms {
+  uTime?: number
+  uScale?: number
+}
+
+const [Cubes, Cube] = createInstances<CubeAttributes>()
+
+const CubeShaderMaterial = shaderMaterial(
+  { uTime: 0, uScale: 1 },
+  `
+  attribute vec3 vColor;
+  attribute vec3 hColor;
+  attribute vec2 coords;
+  varying vec4 vertexColor;
+  uniform float uTime;
+  uniform float uScale;
+  float offset = 3.1459 / 12.0;
+  void main() {
+    vertexColor = vec4(mix(vColor, hColor, sin(uTime + coords.x * offset + coords.y * offset) * 0.5 + 0.5), 1.0);
+    gl_Position = projectionMatrix * viewMatrix * modelMatrix * instanceMatrix * vec4(position + vec3(0.0, 0.0, sin(uTime + coords.x * offset * 2.0 + coords.y * offset * 2.0) * uScale), 1.0);
+  }
+  `,
+  `
+  varying vec4 vertexColor;
+  void main() {
+    gl_FragColor.rgba = vertexColor;
+  }
+  `,
+)
+
+extend({ CubeShaderMaterial })
+
+declare module '@react-three/fiber' {
+  interface ThreeElements {
+    cubeShaderMaterial: MaterialNode<
+      ShaderMaterial & CubeUniforms,
+      typeof CubeShaderMaterial
+    >
+  }
+}
 
 const Sketch = (): JSX.Element => {
-  const [verticalPalette, setVerticalPalette] = useState(getRandom())
-  const [horizontalPalette, setHorizontalPalette] = useState(getRandom())
-  const [gridShown, showGrid] = useState(false)
+  const [seed, setSeed] = useState('Show me everything!')
+  const { generate } = useGenerators(seed)
+  const [verticalPalette, setVerticalPalette] = useState(
+    generate(Generator.choose(getAll())),
+  )
+  const [horizontalPalette, setHorizontalPalette] = useState(
+    generate(Generator.choose(getAll())),
+  )
   const [gridScale, setGridScale] = useState(75)
 
   const verticalColorScale = useMemo(
@@ -33,36 +88,15 @@ const Sketch = (): JSX.Element => {
     [horizontalPalette],
   )
 
-  let seed = 666
-  const projectNoise =
-    (noise2d: Noise2D) =>
-    (noise3d: Noise3D): Noise2D => {
-      return (x, y) => noise3d(x, y, noise2d(x, y))
-    }
-  const depthNoise = makeNoise2D(seed++)
-  const projectDepth = projectNoise(depthNoise)
-  const noises = {
-    depth: depthNoise,
-    roughness: projectDepth(makeNoise3D(seed++)),
-    dispersion: projectDepth(makeNoise3D(seed++)),
-    reflectivity: projectDepth(makeNoise3D(seed++)),
-    iridescence: projectDepth(makeNoise3D(seed++)),
-    sheen: projectDepth(makeNoise3D(seed++)),
-    sheenRoughness: projectDepth(makeNoise3D(seed++)),
-    clearcoat: projectDepth(makeNoise3D(seed++)),
-    clearcoatRoughness: projectDepth(makeNoise3D(seed++)),
-    transmission: projectDepth(makeNoise3D(seed++)),
-  }
-  const o = new Object3D()
-  const c = new Color()
+  const depthNoise = generate(noise2D({ zoom: 300 }))
 
   const Grid = ({
     scale = gridScale,
-    showLines = gridShown,
     verticalColors = verticalColorScale,
     horizontalColors = horizontalColorScale,
   }): JSX.Element => {
     const cells: RefObject<InstancedMesh> = useRef<InstancedMesh>(null)
+    const cubeMaterial = useRef<ShaderMaterial>(null!)
     const { size } = useThree()
     const { cols, rows, count, top, left } = useMemo(() => {
       const cols = Math.ceil(size.width / scale)
@@ -73,99 +107,69 @@ const Sketch = (): JSX.Element => {
       return { cols, rows, count, top, left, bottom, right }
     }, [size, scale])
 
-    const coords = useCallback(
-      (i: number) => {
+    useFrame((_, delta) => {
+      if (cubeMaterial.current) {
+        cubeMaterial.current.uniforms.uTime.value += delta
+      }
+    })
+
+    const instances = useMemo(() => {
+      return Array.from({ length: count }, (_, i) => {
         const col = i % cols
         const row = Math.floor(i / cols)
+        const hColor = new Color().setStyle(horizontalColors(col / cols).hex())
+        const vColor = new Color().setStyle(verticalColors(row / rows).hex())
         const x = left + col * scale
         const y = top + row * scale
-        return { x, y }
-      },
-      [left, scale, top, cols],
-    )
-
-    const noiseArray = useCallback(
-      (noise: Noise2D) =>
-        new Float32Array(
-          Array.from({ length: count }, (_, i) => {
-            const { x, y } = coords(i)
-            return noise(x, y)
-          }),
-        ),
-      [coords, count],
-    )
-
-    const colors = useMemo(
-      () =>
-        Array.from({ length: count }, (_, i) => {
-          const col = i % cols
-          const row = Math.floor(i / cols)
-          return c
-            .set(
-              chroma
-                .mix(horizontalColors(col / cols), verticalColors(row / rows))
-                .hex(),
-            )
-            .clone()
-        }),
-      [count, cols, rows, horizontalColors, verticalColors],
-    )
-
-    const noiseArrays = useMemo(
-      () =>
-        Object.fromEntries(
-          Object.entries(noises).map(([name, noise]) => [
-            name,
-            noiseArray(noise).map(n => (n + 1) / 2),
-          ]),
-        ),
-      [noiseArray],
-    )
-
-    useLayoutEffect(() => {
-      for (let col = 0; col < cols; col++) {
-        for (let row = 0; row < rows; row++) {
-          const x = left + col * scale
-          const y = top + row * scale
-          o.position.set(
-            x + scale / 2,
-            y + scale / 2,
-            (depthNoise(x, y) * scale) / 2,
-          )
-          o.updateMatrix()
-          const index = row * cols + col
-          cells.current?.setMatrixAt(index, o.matrix)
-          cells.current?.setColorAt(index, colors[index])
-        }
-      }
-      if (cells.current != null) {
-        cells.current.instanceMatrix.needsUpdate = true
-        if (cells.current.instanceColor != null) {
-          cells.current.instanceColor.needsUpdate = true
-        }
-      }
-    }, [cols, rows, count, colors, left, scale, top])
+        const position = [
+          x + scale / 2,
+          y + scale / 2,
+          (depthNoise([x, y]) * scale) / 2,
+        ] as const
+        return (
+          <Cube
+            key={i}
+            position={position}
+            hColor={hColor}
+            vColor={vColor}
+            coords={[col, row]}
+          />
+        )
+      })
+    }, [count, horizontalColors, verticalColors, cols, rows, left, top, scale])
     return (
       <group>
-        <instancedMesh ref={cells} args={[undefined, undefined, count]}>
+        <Cubes ref={cells} args={[undefined, undefined, count]}>
           <boxGeometry args={[scale, scale, scale]} />
-          <meshPhysicalMaterial wireframe={showLines} />
-          {Object.entries(noiseArrays).map(([name, array]) => (
-            <instancedBufferAttribute
-              key={name}
-              attach={`material-${name}`}
-              args={[array, 1]}
-            />
-          ))}
-        </instancedMesh>
+          <cubeShaderMaterial ref={cubeMaterial} uScale={scale} />
+          <InstancedAttribute
+            key={'hColor-attribute'}
+            name='hColor'
+            itemSize={3}
+            defaultValue={[1.0, 0.0, 0.0]}
+          />
+          <InstancedAttribute
+            key={'vColor-attribute'}
+            name='vColor'
+            itemSize={3}
+            defaultValue={[0.0, 0.0, 1.0]}
+          />
+          <InstancedAttribute
+            key={'coords-attribute'}
+            name='coords'
+            itemSize={2}
+            defaultValue={[0.0, 0.0]}
+          />
+          {instances}
+        </Cubes>
       </group>
     )
   }
 
   return (
-    <Layout meta={{ title: 'Hello, World' }}>
+    <Layout meta={{ title: 'Quilts of a Sort' }}>
       <Box sx={{ position: 'relative', width: '100%', height: '100%' }}>
-        <Canvas frameloop='demand' camera={{ position: [0, 0, 750] }}>
+        <Canvas frameloop='always' camera={{ position: [0, 0, 750] }}>
           <ambientLight intensity={Math.PI / 2} />
           <pointLight
             position={[-2000, 3000, 2000]}
@@ -179,6 +183,12 @@ const Sketch = (): JSX.Element => {
         <ConfigMenu
           onSubmit={(event: React.FormEvent) => event.preventDefault()}
         >
+          <ConfigField
+            label='Seed'
+            name='seed'
+            value={seed}
+            onChange={({ target: { value } }) => setSeed(value)}
+          />
           <ConfigField
             as={Select}
             label='Horizontal Palette'
@@ -210,19 +220,11 @@ const Sketch = (): JSX.Element => {
             ))}
           </ConfigField>
           <ConfigField
-            as={Checkbox}
-            label='Show Grid'
-            name='gridShown'
-            checked={gridShown}
-            onChange={() => showGrid(!gridShown)}
-          />
-          <ConfigField
             as={Slider}
             label='Grid Scale'
             name='gridScale'
-            min={75}
+            min={50}
             max={200}
-            step={10}
             value={gridScale}
             onChange={({ target: { value } }) =>
               setGridScale(Number.parseInt(value))
