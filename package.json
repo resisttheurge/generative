@@ -58,7 +58,7 @@
     "@types/fscreen": "^1.0.4",
     "@types/jest": "^29.5.6",
     "@types/ramda": "^0.29.9",
-    "@types/react-dom": "^19.1.6",
+    "@types/react-dom": "^18.2.0",
     "@types/three": "^0.170.0",
     "cypress": "^13.6.1",
     "eslint-config-next": "^14.0.4",
