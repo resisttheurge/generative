@@ -30,7 +30,7 @@
     "fscreen": "^1.2.0",
     "gl-matrix": "^3.4.3",
     "immutable": "^4.3.4",
-    "material-icons": "^1.13.12",
+    "material-icons": "^1.13.14",
     "next": "^14.0.4",
     "normalize.css": "^8.0.1",
     "open-simplex-noise": "^2.5.0",
